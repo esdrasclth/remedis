@@ -51,7 +51,7 @@ export function ProductTable({ products }: { products: Product[] }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nombre..."
-            className="w-full bg-ash-gray border border-iron-gray/40 rounded-[4px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:border-slate-gray transition-colors h-9"
+            className="w-full bg-ash-gray  rounded-[4px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:border-slate-gray transition-colors h-9"
           />
         </div>
         <Link href="/inventory/new">
@@ -65,10 +65,10 @@ export function ProductTable({ products }: { products: Product[] }) {
       {filtered.length === 0 ? (
         <EmptyState hasSearch={search.length > 0} />
       ) : (
-        <div className="rounded-[12px] overflow-hidden border border-iron-gray/20">
+        <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-ash-gray border-b border-iron-gray/30">
+              <tr className="bg-ash-gray ">
                 <th className={`${COL.product}  text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Producto</th>
                 <th className={`${COL.category} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Categoría</th>
                 <th className={`${COL.form}     text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Presentación</th>
@@ -78,7 +78,7 @@ export function ProductTable({ products }: { products: Product[] }) {
                 <th className={COL.action} />
               </tr>
             </thead>
-            <tbody className="bg-deep-space-black divide-y divide-iron-gray/10">
+            <tbody className="bg-deep-space-black ">
               {filtered.map((p) => (
                 <ProductRow key={p.id} product={p} />
               ))}
@@ -99,7 +99,7 @@ function ProductRow({ product: p }: { product: Product }) {
       {/* Product */}
       <td className={COL.product}>
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-[4px] bg-ash-gray border border-iron-gray/30 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-[4px] bg-ash-gray flex items-center justify-center shrink-0">
             <Package className="w-3.5 h-3.5 text-iron-gray" />
           </div>
           <div className="min-w-0">
@@ -166,7 +166,7 @@ function ProductRow({ product: p }: { product: Product }) {
 
 function EmptyState({ hasSearch }: { hasSearch: boolean }) {
   return (
-    <div className="rounded-[12px] border border-iron-gray/20 py-16 flex flex-col items-center gap-3">
+    <div className="rounded-[12px] py-16 flex flex-col items-center gap-3">
       <div className="w-10 h-10 rounded-full bg-ash-gray flex items-center justify-center">
         <Package className="w-5 h-5 text-iron-gray" />
       </div>

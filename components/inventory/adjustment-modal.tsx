@@ -48,9 +48,9 @@ export function AdjustmentModal({ batch, tenantId, productId, onClose }: Adjustm
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-ash-gray rounded-[12px] w-full max-w-md shadow-xl">
+      <div className="bg-ash-gray rounded-[12px] w-full max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-iron-gray/40">
+        <div className="flex items-center justify-between px-5 py-4">
           <div>
             <h2 className="text-[15px] font-medium text-pure-white">Ajuste de stock</h2>
             <p className="text-[12px] text-slate-gray mt-0.5">Lote {batch.batchNumber}</p>

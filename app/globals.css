@@ -55,5 +55,5 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--color-slate-gray); }
 
 /* ── Table baseline alignment ── */
-table { border-collapse: collapse; width: 100%; }
+table { width: 100%; }
 th, td { vertical-align: middle; }

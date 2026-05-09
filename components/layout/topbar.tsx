@@ -30,8 +30,7 @@ export function Topbar({ user }: TopbarProps) {
       className="flex items-center justify-between px-5 shrink-0"
       style={{
         height: "var(--header-h, 56px)",
-        background: "#141210",           /* matches sidebar header exactly */
-        borderBottom: "1px solid #252220",
+        background: "#141210",
       }}
     >
       {/* Empty left — page title lives in page content */}
@@ -48,12 +47,11 @@ export function Topbar({ user }: TopbarProps) {
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-sunbeam-yellow" />
         </button>
 
-        {/* Divider */}
-        <div className="w-px h-4 bg-iron-gray/40 mx-1.5" />
+        <div className="w-2" />
 
         {/* Avatar + user info */}
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-ocean-abyss border border-iron-gray/50 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-full bg-ocean-abyss flex items-center justify-center shrink-0">
             <span className="text-[11px] font-medium text-sunbeam-yellow">
               {initials(user.name, user.email)}
             </span>
@@ -68,8 +66,7 @@ export function Topbar({ user }: TopbarProps) {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-4 bg-iron-gray/40 mx-1.5" />
+        <div className="w-2" />
 
         {/* Sign out */}
         <button

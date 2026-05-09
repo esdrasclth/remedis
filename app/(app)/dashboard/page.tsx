@@ -44,7 +44,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Módulos en desarrollo */}
-      <div className="rounded-[10px] border border-[#2e2c29] bg-[#1c1b1a] px-5 py-4">
+      <div className="rounded-[10px]  bg-[#1c1b1a] px-5 py-4">
         <p className="text-[13px] text-slate-gray">
           Módulos en desarrollo — citas, consultas, farmacia y más próximamente.
         </p>
@@ -65,8 +65,8 @@ function StatCard({
   const inner = (
     <div
       className={[
-        "bg-[#1c1b1a] border border-[#2e2c29] rounded-[10px] px-5 py-4 flex flex-col gap-1.5",
-        href ? "hover:border-[#3d3b38] transition-colors cursor-pointer" : "",
+        "bg-[#1c1b1a]  rounded-[10px] px-5 py-4 flex flex-col gap-1.5",
+        href ? "transition-colors cursor-pointer" : "",
       ].join(" ")}
     >
       <span className="text-[11px] text-slate-gray uppercase tracking-wide">{label}</span>

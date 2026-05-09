@@ -51,14 +51,14 @@ export function BatchList({
 
   return (
     <>
-      <div className="flex justify-end px-4 py-3 border-b border-iron-gray/20">
+      <div className="flex justify-end px-4 py-3 ">
         <Link href={`/inventory/${productId}/batches/new`}>
           <Button size="sm"><Plus className="w-3.5 h-3.5" /> Registrar ingreso</Button>
         </Link>
       </div>
       <table className="w-full">
         <thead>
-          <tr className="border-b border-iron-gray/20 bg-ash-gray/40">
+          <tr className=" bg-ash-gray/40">
             <th className={`${COL.batch}    ${TH_CLASS} text-left`}>N° Lote</th>
             <th className={`${COL.warehouse}${TH_CLASS} text-left`}>Almacén</th>
             <th className={`${COL.source}   ${TH_CLASS} text-left`}>Fuente</th>
@@ -69,7 +69,7 @@ export function BatchList({
             <th className={COL.action} />
           </tr>
         </thead>
-        <tbody className="divide-y divide-iron-gray/10">
+        <tbody className="">
           {batches.map((b) => {
             const days = daysUntil(b.expiryDate);
             const expired = days <= 0;

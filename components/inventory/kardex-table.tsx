@@ -36,7 +36,7 @@ export function KardexTable({ movements }: { movements: Movement[] }) {
   return (
     <table className="w-full">
       <thead>
-        <tr className="border-b border-iron-gray/20 bg-ash-gray/40">
+        <tr className="bg-ash-gray/40">
           <th className={`${COL.date}  ${TH} text-left`}>Fecha</th>
           <th className={`${COL.type}  ${TH} text-left`}>Tipo</th>
           <th className={`${COL.batch} ${TH} text-left`}>Lote</th>
@@ -46,7 +46,7 @@ export function KardexTable({ movements }: { movements: Movement[] }) {
           <th className={`${COL.user}  ${TH} text-left`}>Usuario</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-iron-gray/10">
+      <tbody className="">
         {movements.map((m) => {
           const cfg = TYPE_CONFIG[m.type] ?? { label: m.type, variant: "muted" as const };
           const isPositive = m.quantity > 0;

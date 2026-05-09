@@ -114,7 +114,7 @@ export function BatchForm({ tenantId, productId, warehouses }: BatchFormProps) {
       </div>
 
       {serverError && (
-        <div className="bg-blaze-orange/10 border border-blaze-orange/30 rounded-[10px] px-4 py-3">
+        <div className="bg-blaze-orange/10 rounded-[10px] px-4 py-3">
           <p className="text-[13px] text-blaze-orange">{serverError}</p>
         </div>
       )}

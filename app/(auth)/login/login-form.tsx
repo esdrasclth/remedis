@@ -30,7 +30,7 @@ export function LoginForm() {
     <div className="min-h-screen flex bg-deep-space-black">
       {/* Left — branding panel */}
       <div
-        className="hidden lg:flex flex-col justify-between w-[400px] shrink-0 p-10 border-r border-iron-gray/20"
+        className="hidden lg:flex flex-col justify-between w-[400px] shrink-0 p-10"
         style={{ background: "#0e0d0b" }}
       >
         <div className="flex items-center gap-2.5">
@@ -83,7 +83,7 @@ export function LoginForm() {
                 placeholder="nombre@empresa.com"
                 required
                 autoComplete="email"
-                className="w-full bg-ash-gray border border-iron-gray/60 rounded-[4px] px-4 py-2.5 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
+                className="w-full bg-ash-gray rounded-[4px] px-4 py-2.5 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
               />
             </div>
 
@@ -100,7 +100,7 @@ export function LoginForm() {
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full bg-ash-gray border border-iron-gray/60 rounded-[4px] px-4 py-2.5 pr-11 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
+                  className="w-full bg-ash-gray rounded-[4px] px-4 py-2.5 pr-11 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
                 />
                 <button
                   type="button"
@@ -114,7 +114,7 @@ export function LoginForm() {
 
             {/* Error */}
             {error && (
-              <div className="bg-blaze-orange/10 border border-blaze-orange/30 rounded-[4px] px-3 py-2.5">
+              <div className="bg-blaze-orange/10 rounded-[4px] px-3 py-2.5">
                 <p className="text-[13px] text-blaze-orange">{error}</p>
               </div>
             )}

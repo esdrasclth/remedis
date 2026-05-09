@@ -46,7 +46,7 @@ export default async function InventoryPage() {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="bg-[#1c1b1a] border border-[#2e2c29] rounded-[10px] px-5 py-4 flex flex-col gap-1.5"
+            className="bg-[#1c1b1a] rounded-[10px] px-5 py-4 flex flex-col gap-1.5"
           >
             <span className="text-[11px] text-slate-gray uppercase tracking-wide">{s.label}</span>
             <span

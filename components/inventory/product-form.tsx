@@ -102,7 +102,7 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
       </FormSection>
 
       {serverError && (
-        <div className="bg-[#ff492c]/10 border border-[#ff492c]/20 rounded-[8px] px-4 py-3">
+        <div className="bg-[#ff492c]/10 rounded-[8px] px-4 py-3">
           <p className="text-[13px] text-blaze-orange">{serverError}</p>
         </div>
       )}
@@ -121,7 +121,7 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[#1c1b1a] border border-[#2e2c29] rounded-[10px] p-5 space-y-4">
+    <div className="bg-ash-gray rounded-[12px] p-5 space-y-4">
       <h3 className="text-[11px] text-[#5a5854] uppercase tracking-wide font-medium">{title}</h3>
       {children}
     </div>
