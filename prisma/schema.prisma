@@ -1,0 +1,695 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────────────
+
+enum TenantPlan {
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN_CLINICA
+  MEDICO
+  ENFERMERA
+  FARMACEUTICO
+  RRHH
+  AUDITOR
+  RECEPCIONISTA
+}
+
+enum Gender {
+  MASCULINO
+  FEMENINO
+  OTRO
+}
+
+enum BloodType {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+}
+
+enum AppointmentType {
+  PRIMERA_VEZ
+  CONTROL
+  URGENCIA
+  SEGUIMIENTO
+}
+
+enum AppointmentStatus {
+  PROGRAMADA
+  CONFIRMADA
+  EN_CONSULTA
+  COMPLETADA
+  CANCELADA
+  NO_ASISTIO
+}
+
+enum PrescriptionStatus {
+  EMITIDA
+  DISPENSADA
+  PARCIAL
+  VENCIDA
+  CANCELADA
+}
+
+enum ProductCategory {
+  MEDICAMENTO
+  INSUMO_DESCARTABLE
+  EQUIPO_MEDICO
+}
+
+enum ProductSource {
+  EMPRESA
+  IHSS
+}
+
+enum MovementType {
+  ENTRADA
+  SALIDA
+  AJUSTE
+  TRANSFERENCIA
+  VENCIMIENTO
+  DEVOLUCION
+}
+
+enum DispensationType {
+  VENTANILLA
+  CON_RECETA
+  MEDICAMENTO_PERMANENTE
+}
+
+enum PurchaseOrderStatus {
+  BORRADOR
+  ENVIADA
+  PARCIAL
+  RECIBIDA
+  CANCELADA
+}
+
+enum AlertType {
+  STOCK_MINIMO
+  VENCIMIENTO_PROXIMO
+  MEDICAMENTO_VENCIDO
+  RECETA_VENCIDA
+  CITA_RECORDATORIO
+}
+
+enum AlertStatus {
+  PENDIENTE
+  LEIDA
+  RESUELTA
+}
+
+enum DependentRelationship {
+  CONYUGUE
+  HIJO
+  HIJA
+  PADRE
+  MADRE
+  OTRO
+}
+
+// ─── MULTI-TENANT ─────────────────────────────────────────────────────────────
+
+model Tenant {
+  id            String       @id @default(cuid())
+  name          String
+  slug          String       @unique
+  plan          TenantPlan   @default(BASIC)
+  status        TenantStatus @default(ACTIVE)
+  stripeId      String?      @unique
+  logo          String?
+  primaryColor  String?
+  config        Json         @default("{}")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  clinics       Clinic[]
+  users         User[]
+  employees     Employee[]
+  products      Product[]
+  warehouses    Warehouse[]
+  suppliers     Supplier[]
+  alerts        Alert[]
+  appointments  Appointment[]
+  prescriptions Prescription[]
+  dispensations Dispensation[]
+  purchaseOrders PurchaseOrder[]
+  inventoryMovements InventoryMovement[]
+  permanentMeds PermanentMedication[]
+  medicalRecords MedicalRecord[]
+
+  @@map("tenants")
+}
+
+model Clinic {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  address     String?
+  phone       String?
+  schedule    Json     @default("{}")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  users        User[]
+  appointments Appointment[]
+  warehouses   Warehouse[]
+
+  @@map("clinics")
+}
+
+// ─── USERS & AUTH ─────────────────────────────────────────────────────────────
+
+model User {
+  id              String    @id @default(cuid())
+  tenantId        String?
+  clinicId        String?
+  email           String    @unique
+  emailVerified   DateTime?
+  hashedPassword  String?
+  name            String?
+  role            UserRole  @default(RECEPCIONISTA)
+  signatureImage  String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  clinic      Clinic?  @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+  accounts    Account[]
+  sessions    Session[]
+
+  appointmentsAsDoctor  Appointment[]     @relation("DoctorAppointments")
+  medicalRecords        MedicalRecord[]   @relation("DoctorRecords")
+  prescriptionsIssued   Prescription[]    @relation("DoctorPrescriptions")
+  dispensationsBy       Dispensation[]    @relation("PharmacistDispensations")
+  inventoryMovementsBy  InventoryMovement[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── PATIENTS ─────────────────────────────────────────────────────────────────
+
+model Employee {
+  id              String    @id @default(cuid())
+  tenantId        String
+  employeeNumber  String
+  firstName       String
+  lastName        String
+  gender          Gender?
+  birthDate       DateTime?
+  phone           String?
+  email           String?
+  department      String?
+  position        String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant         Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  dependents     Dependent[]
+  medicalHistory MedicalHistory?
+  appointments   Appointment[]
+  medicalRecords MedicalRecord[]
+  prescriptions  Prescription[]
+  dispensations  Dispensation[]
+  permanentMeds  PermanentMedication[]
+
+  @@unique([tenantId, employeeNumber])
+  @@map("employees")
+}
+
+model Dependent {
+  id           String                @id @default(cuid())
+  employeeId   String
+  firstName    String
+  lastName     String
+  gender       Gender?
+  birthDate    DateTime?
+  relationship DependentRelationship
+  isActive     Boolean               @default(true)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  employee      Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  appointments  Appointment[]
+  medicalRecords MedicalRecord[]
+  prescriptions  Prescription[]
+  dispensations  Dispensation[]
+
+  @@map("dependents")
+}
+
+model MedicalHistory {
+  id             String    @id @default(cuid())
+  employeeId     String    @unique
+  bloodType      BloodType?
+  allergies      String[]
+  chronicConditions String[]
+  notes          String?
+  updatedAt      DateTime  @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("medical_histories")
+}
+
+// ─── APPOINTMENTS ─────────────────────────────────────────────────────────────
+
+model Appointment {
+  id           String            @id @default(cuid())
+  tenantId     String
+  clinicId     String
+  doctorId     String
+  employeeId   String?
+  dependentId  String?
+  type         AppointmentType   @default(PRIMERA_VEZ)
+  status       AppointmentStatus @default(PROGRAMADA)
+  scheduledAt  DateTime
+  duration     Int               @default(30)
+  notes        String?
+  cancelReason String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  clinic      Clinic      @relation(fields: [clinicId], references: [id])
+  doctor      User        @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  employee    Employee?   @relation(fields: [employeeId], references: [id])
+  dependent   Dependent?  @relation(fields: [dependentId], references: [id])
+  medicalRecord MedicalRecord?
+
+  @@map("appointments")
+}
+
+// ─── MEDICAL RECORDS ──────────────────────────────────────────────────────────
+
+model MedicalRecord {
+  id             String   @id @default(cuid())
+  tenantId       String
+  doctorId       String
+  employeeId     String?
+  dependentId    String?
+  appointmentId  String?  @unique
+  subjective     String?
+  objective      String?
+  assessment     String?
+  plan           String?
+  notes          String?
+  referral       String?
+  attachments    String[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  doctor      User        @relation("DoctorRecords", fields: [doctorId], references: [id])
+  employee    Employee?   @relation(fields: [employeeId], references: [id])
+  dependent   Dependent?  @relation(fields: [dependentId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+  vitalSigns  VitalSigns?
+  diagnoses   Diagnosis[]
+  prescriptions Prescription[]
+
+  @@map("medical_records")
+}
+
+model VitalSigns {
+  id              String  @id @default(cuid())
+  medicalRecordId String  @unique
+  weight          Float?
+  height          Float?
+  bmi             Float?
+  systolicBp      Int?
+  diastolicBp     Int?
+  heartRate       Int?
+  temperature     Float?
+  glucose         Float?
+  spo2            Float?
+  respiratoryRate Int?
+
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
+
+  @@map("vital_signs")
+}
+
+model Diagnosis {
+  id              String  @id @default(cuid())
+  medicalRecordId String
+  cie10Code       String
+  description     String
+  isPrimary       Boolean @default(false)
+
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
+
+  @@map("diagnoses")
+}
+
+// ─── PRESCRIPTIONS ────────────────────────────────────────────────────────────
+
+model Prescription {
+  id              String             @id @default(cuid())
+  tenantId        String
+  medicalRecordId String?
+  doctorId        String
+  employeeId      String?
+  dependentId     String?
+  status          PrescriptionStatus @default(EMITIDA)
+  expiresAt       DateTime
+  pdfUrl          String?
+  notes           String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  medicalRecord MedicalRecord?      @relation(fields: [medicalRecordId], references: [id])
+  doctor        User                @relation("DoctorPrescriptions", fields: [doctorId], references: [id])
+  employee      Employee?           @relation(fields: [employeeId], references: [id])
+  dependent     Dependent?          @relation(fields: [dependentId], references: [id])
+  items         PrescriptionItem[]
+  dispensations Dispensation[]
+
+  @@map("prescriptions")
+}
+
+model PrescriptionItem {
+  id              String @id @default(cuid())
+  prescriptionId  String
+  productId       String
+  dose            String
+  frequency       String
+  duration        String
+  instructions    String?
+  quantity        Int    @default(1)
+  dispensedQty    Int    @default(0)
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  product      Product      @relation(fields: [productId], references: [id])
+
+  @@map("prescription_items")
+}
+
+// ─── INVENTORY ────────────────────────────────────────────────────────────────
+
+model Warehouse {
+  id       String        @id @default(cuid())
+  tenantId String
+  clinicId String?
+  name     String
+  source   ProductSource @default(EMPRESA)
+  isActive Boolean       @default(true)
+
+  tenant  Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  clinic  Clinic?  @relation(fields: [clinicId], references: [id])
+  batches ProductBatch[]
+
+  @@map("warehouses")
+}
+
+model Product {
+  id                   String          @id @default(cuid())
+  tenantId             String
+  genericName          String
+  commercialName       String?
+  category             ProductCategory @default(MEDICAMENTO)
+  form                 String?
+  concentration        String?
+  unit                 String?
+  requiresPrescription Boolean         @default(false)
+  defaultSource        ProductSource   @default(EMPRESA)
+  minStock             Int             @default(0)
+  isActive             Boolean         @default(true)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  batches            ProductBatch[]
+  prescriptionItems  PrescriptionItem[]
+  dispensationItems  DispensationItem[]
+  permanentMeds      PermanentMedication[]
+  purchaseOrderItems PurchaseOrderItem[]
+  inventoryMovements InventoryMovement[]
+
+  @@map("products")
+}
+
+model ProductBatch {
+  id           String    @id @default(cuid())
+  productId    String
+  warehouseId  String
+  batchNumber  String
+  mfgDate      DateTime?
+  expiryDate   DateTime
+  initialQty   Int
+  currentQty   Int
+  source       ProductSource @default(EMPRESA)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+
+  product          Product             @relation(fields: [productId], references: [id])
+  warehouse        Warehouse           @relation(fields: [warehouseId], references: [id])
+  dispensationItems DispensationItem[]
+  inventoryMovements InventoryMovement[]
+
+  @@map("product_batches")
+}
+
+model InventoryMovement {
+  id          String       @id @default(cuid())
+  tenantId    String
+  productId   String
+  batchId     String?
+  userId      String
+  type        MovementType
+  quantity    Int
+  reason      String?
+  reference   String?
+  createdAt   DateTime     @default(now())
+
+  tenant  Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product Product       @relation(fields: [productId], references: [id])
+  batch   ProductBatch? @relation(fields: [batchId], references: [id])
+  user    User          @relation(fields: [userId], references: [id])
+
+  @@map("inventory_movements")
+}
+
+// ─── PHARMACY ─────────────────────────────────────────────────────────────────
+
+model Dispensation {
+  id             String           @id @default(cuid())
+  tenantId       String
+  pharmacistId   String
+  prescriptionId String?
+  employeeId     String?
+  dependentId    String?
+  type           DispensationType @default(VENTANILLA)
+  notes          String?
+  createdAt      DateTime         @default(now())
+
+  tenant       Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pharmacist   User               @relation("PharmacistDispensations", fields: [pharmacistId], references: [id])
+  prescription Prescription?      @relation(fields: [prescriptionId], references: [id])
+  employee     Employee?          @relation(fields: [employeeId], references: [id])
+  dependent    Dependent?         @relation(fields: [dependentId], references: [id])
+  items        DispensationItem[]
+
+  @@map("dispensations")
+}
+
+model DispensationItem {
+  id             String @id @default(cuid())
+  dispensationId String
+  productId      String
+  batchId        String
+  quantity       Int
+
+  dispensation Dispensation @relation(fields: [dispensationId], references: [id], onDelete: Cascade)
+  product      Product      @relation(fields: [productId], references: [id])
+  batch        ProductBatch @relation(fields: [batchId], references: [id])
+
+  @@map("dispensation_items")
+}
+
+// ─── PERMANENT MEDICATIONS ────────────────────────────────────────────────────
+
+model PermanentMedication {
+  id          String    @id @default(cuid())
+  tenantId    String
+  employeeId  String
+  productId   String
+  dose        String
+  frequency   String
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+  notes       String?
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  employee  Employee   @relation(fields: [employeeId], references: [id])
+  product   Product    @relation(fields: [productId], references: [id])
+  deliveries PermanentMedDelivery[]
+
+  @@map("permanent_medications")
+}
+
+model PermanentMedDelivery {
+  id                  String   @id @default(cuid())
+  permanentMedId      String
+  dispensationId      String?
+  deliveredAt         DateTime @default(now())
+  quantity            Int
+  notes               String?
+
+  permanentMed  PermanentMedication @relation(fields: [permanentMedId], references: [id], onDelete: Cascade)
+
+  @@map("permanent_med_deliveries")
+}
+
+// ─── SUPPLIERS & PURCHASES ────────────────────────────────────────────────────
+
+model Supplier {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  rtn       String?
+  contact   String?
+  phone     String?
+  email     String?
+  address   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  purchaseOrders PurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+model PurchaseOrder {
+  id         String              @id @default(cuid())
+  tenantId   String
+  supplierId String?
+  source     ProductSource       @default(EMPRESA)
+  status     PurchaseOrderStatus @default(BORRADOR)
+  orderDate  DateTime            @default(now())
+  notes      String?
+  documents  String[]
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  tenant   Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier Supplier?          @relation(fields: [supplierId], references: [id])
+  items    PurchaseOrderItem[]
+  receipts PurchaseReceipt[]
+
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id              String @id @default(cuid())
+  purchaseOrderId String
+  productId       String
+  requestedQty    Int
+  receivedQty     Int    @default(0)
+  unitCost        Float?
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id])
+
+  @@map("purchase_order_items")
+}
+
+model PurchaseReceipt {
+  id              String   @id @default(cuid())
+  purchaseOrderId String
+  receivedAt      DateTime @default(now())
+  notes           String?
+  documents       String[]
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@map("purchase_receipts")
+}
+
+// ─── ALERTS ───────────────────────────────────────────────────────────────────
+
+model Alert {
+  id         String      @id @default(cuid())
+  tenantId   String
+  type       AlertType
+  status     AlertStatus @default(PENDIENTE)
+  entityId   String?
+  entityType String?
+  message    String
+  metadata   Json        @default("{}")
+  readAt     DateTime?
+  createdAt  DateTime    @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}

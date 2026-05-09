@@ -1,26 +1,122 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ── Colors ── */
+  --color-deep-space-black: #0c0a08;
+  --color-pure-white: #ffffff;
+  --color-ash-gray: #1a1919;
+  --color-charcoal-black: #000000;
+  --color-ivory-white: #f4f2f0;
+  --color-slate-gray: #999ba3;
+  --color-iron-gray: #4d505d;
+  --color-midnight-ink: #010412;
+  --color-ocean-abyss: #0b0d1b;
+  --color-silver-mist: #d2cecb;
+  --color-sunbeam-yellow: #e4f222;
+  --color-emerald-green: #00d638;
+  --color-deep-sea-blue: #5683d2;
+  --color-electric-blue: #0066ff;
+  --color-blaze-orange: #ff492c;
+
+  /* ── Typography ── */
+  --font-lausanne: 'lausanne', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-arial: 'Arial', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Type Scale ── */
+  --text-caption: 10px;
+  --text-body-sm: 13px;
+  --text-body: 14px;
+  --text-body-lg: 16px;
+  --text-subheading: 18px;
+  --text-heading-sm: 24px;
+  --text-heading-md: 28px;
+  --text-heading: 40px;
+  --text-heading-lg: 48px;
+  --text-display: 64px;
+
+  --leading-caption: 1.5;
+  --leading-subheading: 1.38;
+  --leading-heading-sm: 1.33;
+  --leading-heading: 1.17;
+  --leading-heading-lg: 1.14;
+  --leading-display: 1.05;
+
+  /* ── Font Weights ── */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  /* ── Spacing ── */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-13: 52px;
+  --spacing-16: 64px;
+  --spacing-19: 76px;
+  --spacing-32: 128px;
+  --spacing-40: 160px;
+  --spacing-44: 176px;
+
+  /* ── Border Radius ── */
+  --radius-nav: 4px;
+  --radius-btn: 4px;
+  --radius-input: 10px;
+  --radius-card: 12px;
+  --radius-default: 12px;
+
+  /* ── Shadows ── */
+  --shadow-nav: rgba(255, 255, 255, 0.6) 0px 0px 2px 0px inset;
+
+  /* ── Surfaces ── */
+  --surface-canvas: #0c0a08;
+  --surface-card: #1a1919;
+  --surface-interactive: #0b0d1b;
+  --surface-accent: rgba(33, 33, 33, 0.024);
+  --surface-light: #f4f2f0;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0c0a08;
+  color: #ffffff;
+  font-family: var(--font-lausanne);
+  font-size: 14px;
+  line-height: 1.5;
+  font-feature-settings: "ss01";
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1919;
+}
+::-webkit-scrollbar-thumb {
+  background: #4d505d;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #999ba3;
+}
+
+/* ── Typography utilities ── */
+.font-ss01 {
+  font-feature-settings: "ss01";
 }
