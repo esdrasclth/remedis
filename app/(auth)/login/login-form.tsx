@@ -83,7 +83,7 @@ export function LoginForm() {
                 placeholder="nombre@empresa.com"
                 required
                 autoComplete="email"
-                className="w-full bg-ash-gray rounded-[4px] px-4 py-2.5 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
+                className="w-full bg-[#2a2825] rounded-[4px] px-4 py-2.5 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
               />
             </div>
 
@@ -100,7 +100,7 @@ export function LoginForm() {
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full bg-ash-gray rounded-[4px] px-4 py-2.5 pr-11 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
+                  className="w-full bg-[#2a2825] rounded-[4px] px-4 py-2.5 pr-11 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
                 />
                 <button
                   type="button"

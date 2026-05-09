@@ -19,7 +19,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={id}
           className={cn(
-            "bg-[#191817] rounded-[8px] px-3 py-2 text-[13px] text-white placeholder:text-[#5a5854] focus:outline-none transition-colors h-9",
+            "bg-[#2a2825] rounded-[8px] px-3 py-2 text-[13px] text-white placeholder:text-iron-gray focus:outline-none focus:bg-[#322f2c] transition-colors h-9",
             error && "outline outline-1 outline-blaze-orange/60",
             className
           )}
