@@ -1,11 +1,20 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getTenantFromHeaders } from "@/lib/tenant";
+import { getLowStockCount, getExpiringCount } from "@/lib/actions/inventory";
 import type { SessionUser } from "@/types";
 
 export default async function DashboardPage() {
   const session = await auth();
-  const { tenantSlug } = await getTenantFromHeaders();
+  const { tenantId } = await getTenantFromHeaders();
   const user = session?.user as unknown as SessionUser;
+
+  const [lowStock, expiring30] = tenantId
+    ? await Promise.all([
+        getLowStockCount(tenantId),
+        getExpiringCount(tenantId, 30),
+      ])
+    : [0, 0];
 
   return (
     <div className="space-y-6">
@@ -23,40 +32,60 @@ export default async function DashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {STATS.map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-ash-gray rounded-[12px] p-6 flex flex-col gap-2"
-          >
-            <span className="text-[12px] text-slate-gray uppercase tracking-wide">
-              {stat.label}
-            </span>
-            <span
-              className="text-[28px] font-medium text-pure-white"
-              style={{ fontFeatureSettings: '"ss01"' }}
-            >
-              {stat.value}
-            </span>
-            {stat.sub && (
-              <span className="text-[12px] text-slate-gray">{stat.sub}</span>
-            )}
-          </div>
-        ))}
+        <StatCard label="Citas hoy" value={0} sub="Sin citas programadas" />
+        <StatCard
+          label="Stock bajo"
+          value={lowStock}
+          sub="Productos bajo mínimo"
+          alert={lowStock > 0}
+          href="/inventory"
+        />
+        <StatCard
+          label="Por vencer"
+          value={expiring30}
+          sub="Próximos 30 días"
+          alert={expiring30 > 0}
+          href="/inventory"
+        />
+        <StatCard label="Recetas activas" value={0} sub="Pendientes de despacho" />
       </div>
 
-      {/* Coming soon modules */}
+      {/* Modules */}
       <div className="bg-ash-gray rounded-[12px] p-6">
         <p className="text-slate-gray text-[14px]">
-          Módulos adicionales en desarrollo — inventario, citas, farmacia y más.
+          Módulos en desarrollo — citas, consultas, farmacia y más próximamente.
         </p>
       </div>
     </div>
   );
 }
 
-const STATS = [
-  { label: "Citas hoy", value: "0", sub: "Sin citas programadas" },
-  { label: "Stock bajo", value: "0", sub: "Productos bajo mínimo" },
-  { label: "Por vencer", value: "0", sub: "Próximos 30 días" },
-  { label: "Recetas activas", value: "0", sub: "Pendientes de despacho" },
-];
+function StatCard({
+  label,
+  value,
+  sub,
+  alert,
+  href,
+}: {
+  label: string;
+  value: number;
+  sub?: string;
+  alert?: boolean;
+  href?: string;
+}) {
+  const content = (
+    <div
+      className={`bg-ash-gray rounded-[12px] p-6 flex flex-col gap-2 ${href ? "hover:bg-ocean-abyss/60 transition-colors cursor-pointer" : ""}`}
+    >
+      <span className="text-[12px] text-slate-gray uppercase tracking-wide">{label}</span>
+      <span
+        className={`text-[28px] font-medium ${alert ? "text-blaze-orange" : "text-pure-white"}`}
+        style={{ fontFeatureSettings: '"ss01"' }}
+      >
+        {value}
+      </span>
+      {sub && <span className="text-[12px] text-slate-gray">{sub}</span>}
+    </div>
+  );
+  return href ? <Link href={href}>{content}</Link> : content;
+}
