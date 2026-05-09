@@ -51,11 +51,6 @@ export function BatchList({
 
   return (
     <>
-      <div className="flex justify-end px-4 py-3 ">
-        <Link href={`/inventory/${productId}/batches/new`}>
-          <Button size="sm"><Plus className="w-3.5 h-3.5" /> Registrar ingreso</Button>
-        </Link>
-      </div>
       <table className="w-full">
         <thead>
           <tr className=" bg-ash-gray/40">
