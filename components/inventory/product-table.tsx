@@ -68,7 +68,7 @@ export function ProductTable({ products }: { products: Product[] }) {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-ash-gray ">
+              <tr className="bg-[#222120]">
                 <th className={`${COL.product}  text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Producto</th>
                 <th className={`${COL.category} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Categoría</th>
                 <th className={`${COL.form}     text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Presentación</th>
@@ -78,7 +78,7 @@ export function ProductTable({ products }: { products: Product[] }) {
                 <th className={COL.action} />
               </tr>
             </thead>
-            <tbody className="bg-deep-space-black ">
+            <tbody className="bg-ash-gray">
               {filtered.map((p) => (
                 <ProductRow key={p.id} product={p} />
               ))}
@@ -95,7 +95,7 @@ function ProductRow({ product: p }: { product: Product }) {
   const isLow = totalStock <= p.minStock;
 
   return (
-    <tr className="hover:bg-ash-gray/50 transition-colors group">
+    <tr className="hover:bg-white/[0.04] transition-colors group">
       {/* Product */}
       <td className={COL.product}>
         <p className="text-[13px] text-pure-white font-medium leading-tight">{p.genericName}</p>
