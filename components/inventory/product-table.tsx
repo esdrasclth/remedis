@@ -98,17 +98,10 @@ function ProductRow({ product: p }: { product: Product }) {
     <tr className="hover:bg-ash-gray/50 transition-colors group">
       {/* Product */}
       <td className={COL.product}>
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-[4px] bg-ash-gray flex items-center justify-center shrink-0">
-            <Package className="w-3.5 h-3.5 text-iron-gray" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-[13px] text-pure-white font-medium leading-tight truncate">{p.genericName}</p>
-            {p.commercialName && (
-              <p className="text-[11px] text-slate-gray mt-0.5 truncate">{p.commercialName}</p>
-            )}
-          </div>
-        </div>
+        <p className="text-[13px] text-pure-white font-medium leading-tight">{p.genericName}</p>
+        {p.commercialName && (
+          <p className="text-[11px] text-slate-gray mt-0.5">{p.commercialName}</p>
+        )}
       </td>
 
       {/* Category */}
