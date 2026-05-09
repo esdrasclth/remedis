@@ -1,4 +1,3 @@
-import { Package, AlertTriangle, Clock } from "lucide-react";
 import { getTenantFromHeaders } from "@/lib/tenant";
 import { getProducts, getLowStockCount, getExpiringCount } from "@/lib/actions/inventory";
 import { ProductTable } from "@/components/inventory/product-table";
@@ -20,82 +19,48 @@ export default async function InventoryPage() {
     0
   );
 
+  const stats = [
+    { label: "Productos", value: totalProducts, sub: "en catálogo" },
+    { label: "Unidades", value: totalStock, sub: "en stock total" },
+    { label: "Stock bajo", value: lowStockCount, sub: "bajo el mínimo", alert: lowStockCount > 0 },
+    {
+      label: "Por vencer",
+      value: expiring30,
+      sub: expiring90 > 0 ? `${expiring90} en 90 días` : "próximos 30 días",
+      alert: expiring30 > 0,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h2
-            className="text-[24px] font-medium text-pure-white"
-            style={{ fontFeatureSettings: '"ss01"' }}
-          >
-            Inventario
-          </h2>
-          <p className="text-slate-gray text-[13px] mt-1">
-            Catálogo de productos, lotes y movimientos
-          </p>
-        </div>
+      <div>
+        <h2 className="text-[22px] font-medium text-white">Inventario</h2>
+        <p className="text-[13px] text-slate-gray mt-0.5">
+          Catálogo de productos, lotes y movimientos
+        </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatCard
-          label="Total productos"
-          value={totalProducts}
-          icon={<Package className="w-4 h-4" />}
-        />
-        <StatCard
-          label="Unidades en stock"
-          value={totalStock}
-          icon={<Package className="w-4 h-4" />}
-        />
-        <StatCard
-          label="Stock bajo"
-          value={lowStockCount}
-          icon={<AlertTriangle className="w-4 h-4" />}
-          alert={lowStockCount > 0}
-        />
-        <StatCard
-          label="Vencen en 30 días"
-          value={expiring30}
-          icon={<Clock className="w-4 h-4" />}
-          alert={expiring30 > 0}
-          sub={expiring90 > 0 ? `${expiring90} en 90 días` : undefined}
-        />
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+        {stats.map((s) => (
+          <div
+            key={s.label}
+            className="bg-[#1c1b1a] border border-[#2e2c29] rounded-[10px] px-5 py-4 flex flex-col gap-1.5"
+          >
+            <span className="text-[11px] text-slate-gray uppercase tracking-wide">{s.label}</span>
+            <span
+              className={`text-[30px] font-medium leading-none ${s.alert ? "text-blaze-orange" : "text-white"}`}
+            >
+              {s.value}
+            </span>
+            <span className="text-[12px] text-[#5a5854]">{s.sub}</span>
+          </div>
+        ))}
       </div>
 
-      {/* Product table */}
+      {/* Table */}
       <ProductTable products={products} />
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  icon,
-  alert,
-  sub,
-}: {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  alert?: boolean;
-  sub?: string;
-}) {
-  return (
-    <div className="bg-ash-gray rounded-[12px] p-5 flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] text-slate-gray uppercase tracking-wide">{label}</span>
-        <span className={alert ? "text-blaze-orange" : "text-iron-gray"}>{icon}</span>
-      </div>
-      <span
-        className={`text-[28px] font-medium ${alert ? "text-blaze-orange" : "text-pure-white"}`}
-        style={{ fontFeatureSettings: '"ss01"' }}
-      >
-        {value}
-      </span>
-      {sub && <span className="text-[11px] text-slate-gray">{sub}</span>}
     </div>
   );
 }

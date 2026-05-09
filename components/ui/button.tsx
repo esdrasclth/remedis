@@ -12,22 +12,18 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center gap-2 font-medium transition-opacity disabled:opacity-50 disabled:cursor-not-allowed",
-          {
-            "bg-sunbeam-yellow text-deep-space-black hover:opacity-90 rounded-[4px]":
-              variant === "primary",
-            "bg-ocean-abyss text-pure-white border border-iron-gray hover:border-slate-gray rounded-[4px]":
-              variant === "secondary",
-            "text-slate-gray hover:text-pure-white":
-              variant === "ghost",
-            "bg-blaze-orange/10 text-blaze-orange border border-blaze-orange/30 hover:bg-blaze-orange/20 rounded-[4px]":
-              variant === "danger",
-          },
-          {
-            "text-[12px] px-3 py-1.5": size === "sm",
-            "text-[13px] px-4 py-2": size === "md",
-            "text-[14px] px-5 py-2.5": size === "lg",
-          },
+          "inline-flex items-center justify-center gap-2 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed",
+          variant === "primary" &&
+            "bg-sunbeam-yellow text-deep-space-black hover:opacity-90 rounded-[6px]",
+          variant === "secondary" &&
+            "bg-[#252320] text-[#d4d0cc] border border-[#3d3b38] hover:bg-[#2e2c29] hover:text-white rounded-[6px]",
+          variant === "ghost" &&
+            "text-slate-gray hover:text-white hover:bg-[#252320] rounded-[6px]",
+          variant === "danger" &&
+            "bg-[#ff492c]/10 text-blaze-orange border border-[#ff492c]/25 hover:bg-[#ff492c]/20 rounded-[6px]",
+          size === "sm" && "text-[12px] px-3 py-1.5 h-7",
+          size === "md" && "text-[13px] px-4 py-2 h-8",
+          size === "lg" && "text-[14px] px-5 py-2.5 h-10",
           className
         )}
         {...props}

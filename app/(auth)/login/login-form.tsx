@@ -20,15 +20,8 @@ export function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
+    const result = await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
-
     if (result?.error) {
       setError("Credenciales incorrectas. Intenta de nuevo.");
     } else {
@@ -37,38 +30,53 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-deep-space-black flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="flex items-center justify-center w-8 h-8 rounded bg-sunbeam-yellow">
+    <div className="min-h-screen flex" style={{ background: "#f2f0ee" }}>
+      {/* Left panel – branding */}
+      <div
+        className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 p-10"
+        style={{ background: "#1a1918" }}
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-[6px] bg-sunbeam-yellow flex items-center justify-center">
             <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
           </div>
-          <span
-            className="text-pure-white font-medium text-[20px]"
-            style={{ fontFeatureSettings: '"ss01"' }}
-          >
-            Remedis
-          </span>
+          <span className="text-white font-medium text-[18px]">Remedis</span>
         </div>
+        <div>
+          <p className="text-[28px] font-medium text-white leading-snug mb-3">
+            Gestión clínica empresarial para Honduras
+          </p>
+          <p className="text-[14px] text-[#8a8784] leading-relaxed">
+            Control de inventario, citas, recetas y farmacia — todo en un solo lugar.
+          </p>
+        </div>
+        <p className="text-[12px] text-[#4d4b48]">
+          © {new Date().getFullYear()} Remedis
+        </p>
+      </div>
 
-        {/* Card */}
-        <div className="bg-ash-gray rounded-[12px] p-8 space-y-5">
-          <div>
-            <h1
-              className="text-pure-white font-medium text-[24px]"
-              style={{ fontFeatureSettings: '"ss01"' }}
-            >
-              Iniciar sesión
-            </h1>
-            <p className="text-slate-gray text-[13px] mt-1">
-              Ingresa tus credenciales para continuar
-            </p>
+      {/* Right panel – form */}
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2.5 mb-8 lg:hidden">
+            <div className="w-8 h-8 rounded-[6px] bg-sunbeam-yellow flex items-center justify-center">
+              <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
+            </div>
+            <span className="font-medium text-[18px] text-[#1a1918]">Remedis</span>
           </div>
 
+          <h1 className="text-[24px] font-medium text-[#1a1918] mb-1">
+            Iniciar sesión
+          </h1>
+          <p className="text-[14px] text-[#6b6966] mb-7">
+            Ingresa tus credenciales para continuar
+          </p>
+
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-[13px] text-slate-gray">
+              <label className="text-[12px] font-medium text-[#52504e] uppercase tracking-wide">
                 Correo electrónico
               </label>
               <input
@@ -78,12 +86,15 @@ export function LoginForm() {
                 placeholder="nombre@empresa.com"
                 required
                 autoComplete="email"
-                className="w-full bg-transparent border border-iron-gray rounded-[10px] px-4 py-2.5 text-[14px] text-pure-white placeholder:text-slate-gray/60 outline-none focus:border-pure-white/30 transition-colors"
+                className="w-full bg-white border border-[#d8d4cf] rounded-[8px] px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#b0ada9] outline-none focus:border-[#1a1918] transition-colors"
               />
             </div>
 
+            {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-[13px] text-slate-gray">Contraseña</label>
+              <label className="text-[12px] font-medium text-[#52504e] uppercase tracking-wide">
+                Contraseña
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -92,41 +103,39 @@ export function LoginForm() {
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full bg-transparent border border-iron-gray rounded-[10px] px-4 py-2.5 pr-10 text-[14px] text-pure-white placeholder:text-slate-gray/60 outline-none focus:border-pure-white/30 transition-colors"
+                  className="w-full bg-white border border-[#d8d4cf] rounded-[8px] px-3.5 py-2.5 pr-11 text-[14px] text-[#1a1918] placeholder:text-[#b0ada9] outline-none focus:border-[#1a1918] transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-gray hover:text-pure-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b0ada9] hover:text-[#6b6966] transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
+            {/* Error */}
             {error && (
-              <p className="text-blaze-orange text-[13px] bg-blaze-orange/10 rounded-[6px] px-3 py-2">
-                {error}
-              </p>
+              <div className="flex items-center gap-2 bg-[#fff0ed] border border-[#ffcfc7] rounded-[8px] px-3.5 py-2.5">
+                <span className="text-[13px] text-blaze-orange">{error}</span>
+              </div>
             )}
 
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-sunbeam-yellow text-deep-space-black font-medium text-[14px] rounded py-2.5 transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="w-full bg-[#1a1918] text-white font-medium text-[14px] rounded-[6px] py-2.5 mt-1 transition-opacity hover:opacity-80 disabled:opacity-50"
             >
               {loading ? "Ingresando..." : "Ingresar"}
             </button>
           </form>
-        </div>
 
-        <p className="text-center text-slate-gray/50 text-[12px] mt-6">
-          © {new Date().getFullYear()} Remedis. Todos los derechos reservados.
-        </p>
+          <p className="text-center text-[12px] text-[#b0ada9] mt-8">
+            © {new Date().getFullYear()} Remedis · Todos los derechos reservados
+          </p>
+        </div>
       </div>
     </div>
   );

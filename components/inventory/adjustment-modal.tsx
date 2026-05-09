@@ -7,7 +7,8 @@ import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { adjustStock, adjustmentSchema, type AdjustmentInput } from "@/lib/actions/inventory";
+import { adjustStock } from "@/lib/actions/inventory";
+import { adjustmentSchema, type AdjustmentInput } from "@/lib/validations/inventory";
 import type { getBatches } from "@/lib/actions/inventory";
 
 type Batch = Awaited<ReturnType<typeof getBatches>>[number];

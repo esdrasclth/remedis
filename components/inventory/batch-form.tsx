@@ -7,7 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { createBatch, batchSchema, type BatchInput } from "@/lib/actions/inventory";
+import { createBatch } from "@/lib/actions/inventory";
+import { batchSchema, type BatchInput } from "@/lib/validations/inventory";
 
 interface BatchFormProps {
   tenantId: string;

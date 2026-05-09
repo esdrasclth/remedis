@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Package, Search, AlertTriangle, Plus } from "lucide-react";
+import { Package, Search, AlertTriangle, Plus, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { getProducts } from "@/lib/actions/inventory";
@@ -31,21 +31,21 @@ export function ProductTable({ products }: { products: Product[] }) {
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Search + actions bar */}
+    <div className="space-y-3">
+      {/* Toolbar */}
       <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-iron-gray" />
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#5a5854]" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar producto..."
-            className="w-full bg-ocean-abyss border border-iron-gray rounded-[10px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:border-slate-gray"
+            placeholder="Buscar por nombre..."
+            className="w-full bg-[#191817] border border-[#3d3b38] rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-white placeholder:text-[#5a5854] focus:outline-none focus:border-[#6b6966] h-9"
           />
         </div>
         <Link href="/inventory/new">
           <Button size="md">
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             Nuevo producto
           </Button>
         </Link>
@@ -55,23 +55,22 @@ export function ProductTable({ products }: { products: Product[] }) {
       {filtered.length === 0 ? (
         <EmptyState hasSearch={search.length > 0} />
       ) : (
-        <div className="bg-ash-gray rounded-[12px] overflow-hidden">
+        <div className="rounded-[10px] border border-[#2e2c29] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-iron-gray/40">
+              <tr style={{ borderBottom: "1px solid #2e2c29", background: "#161514" }}>
                 <Th>Producto</Th>
                 <Th>Categoría</Th>
-                <Th>Forma / Concentración</Th>
-                <Th align="right">Stock actual</Th>
-                <Th align="right">Stock mínimo</Th>
+                <Th>Presentación</Th>
+                <Th align="right">Stock</Th>
                 <Th>Fuente</Th>
                 <Th>Receta</Th>
                 <Th />
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p) => (
-                <ProductRow key={p.id} product={p} />
+              {filtered.map((p, i) => (
+                <ProductRow key={p.id} product={p} last={i === filtered.length - 1} />
               ))}
             </tbody>
           </table>
@@ -81,24 +80,24 @@ export function ProductTable({ products }: { products: Product[] }) {
   );
 }
 
-function ProductRow({ product: p }: { product: Product }) {
+function ProductRow({ product: p, last }: { product: Product; last: boolean }) {
   const totalStock = p.batches.reduce((s, b) => s + b.currentQty, 0);
   const isLow = totalStock <= p.minStock;
-  const activeBatches = p.batches.length;
 
   return (
-    <tr className="border-b border-iron-gray/20 hover:bg-ocean-abyss/40 transition-colors">
+    <tr
+      className="hover:bg-[#1f1e1c] transition-colors group"
+      style={!last ? { borderBottom: "1px solid #252320" } : undefined}
+    >
       <td className="px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[6px] bg-ocean-abyss flex items-center justify-center flex-shrink-0">
-            <Package className="w-3.5 h-3.5 text-slate-gray" />
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-[6px] bg-[#252320] border border-[#2e2c29] flex items-center justify-center shrink-0">
+            <Package className="w-3.5 h-3.5 text-[#5a5854]" />
           </div>
           <div>
-            <p className="text-[13px] text-pure-white font-medium">
-              {p.genericName}
-            </p>
+            <p className="text-[13px] text-white font-medium leading-tight">{p.genericName}</p>
             {p.commercialName && (
-              <p className="text-[11px] text-slate-gray">{p.commercialName}</p>
+              <p className="text-[11px] text-[#5a5854] mt-0.5">{p.commercialName}</p>
             )}
           </div>
         </div>
@@ -112,56 +111,48 @@ function ProductRow({ product: p }: { product: Product }) {
         {[p.form, p.concentration].filter(Boolean).join(" · ") || "—"}
       </td>
       <td className="px-4 py-3 text-right">
-        <span
-          className={`text-[13px] font-medium ${isLow ? "text-blaze-orange" : "text-pure-white"}`}
-          style={{ fontFeatureSettings: '"ss01"' }}
-        >
-          {totalStock}
-        </span>
-        {p.unit && (
-          <span className="text-[11px] text-slate-gray ml-1">{p.unit}</span>
-        )}
+        <div className="flex items-center justify-end gap-1.5">
+          {isLow && <AlertTriangle className="w-3.5 h-3.5 text-blaze-orange" />}
+          <span
+            className={`text-[14px] font-medium ${isLow ? "text-blaze-orange" : "text-white"}`}
+          >
+            {totalStock}
+          </span>
+          {p.unit && <span className="text-[11px] text-[#5a5854]">{p.unit}</span>}
+        </div>
         {isLow && (
-          <AlertTriangle className="inline w-3.5 h-3.5 text-blaze-orange ml-1.5" />
+          <p className="text-[10px] text-[#5a5854] text-right mt-0.5">
+            mín. {p.minStock}
+          </p>
         )}
-      </td>
-      <td className="px-4 py-3 text-right text-[12px] text-slate-gray">
-        {p.minStock}
       </td>
       <td className="px-4 py-3">
         <Badge variant={p.defaultSource === "IHSS" ? "warning" : "muted"}>
           {p.defaultSource}
         </Badge>
       </td>
-      <td className="px-4 py-3 text-[12px] text-slate-gray">
+      <td className="px-4 py-3 text-[12px]">
         {p.requiresPrescription ? (
           <span className="text-sunbeam-yellow">Sí</span>
         ) : (
-          "No"
+          <span className="text-[#5a5854]">No</span>
         )}
       </td>
-      <td className="px-4 py-3 text-right">
-        <Link href={`/inventory/${p.id}`}>
-          <Button variant="ghost" size="sm">
-            Ver detalle →
-          </Button>
+      <td className="px-4 py-3">
+        <Link
+          href={`/inventory/${p.id}`}
+          className="flex items-center justify-end gap-1 text-[12px] text-[#5a5854] hover:text-white opacity-0 group-hover:opacity-100 transition-all"
+        >
+          Ver <ArrowRight className="w-3 h-3" />
         </Link>
       </td>
     </tr>
   );
 }
 
-function Th({
-  children,
-  align = "left",
-}: {
-  children?: React.ReactNode;
-  align?: "left" | "right";
-}) {
+function Th({ children, align = "left" }: { children?: React.ReactNode; align?: "left" | "right" }) {
   return (
-    <th
-      className={`px-4 py-3 text-[11px] text-slate-gray uppercase tracking-wide font-medium text-${align}`}
-    >
+    <th className={`px-4 py-2.5 text-[11px] text-[#5a5854] font-medium text-${align}`}>
       {children}
     </th>
   );
@@ -169,15 +160,17 @@ function Th({
 
 function EmptyState({ hasSearch }: { hasSearch: boolean }) {
   return (
-    <div className="bg-ash-gray rounded-[12px] py-16 flex flex-col items-center gap-3">
-      <Package className="w-10 h-10 text-iron-gray" />
-      <p className="text-slate-gray text-[14px]">
-        {hasSearch ? "Sin resultados para esa búsqueda" : "No hay productos registrados"}
+    <div className="rounded-[10px] border border-[#2e2c29] py-16 flex flex-col items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-[#1c1b1a] border border-[#2e2c29] flex items-center justify-center">
+        <Package className="w-5 h-5 text-[#3d3b38]" />
+      </div>
+      <p className="text-[13px] text-slate-gray">
+        {hasSearch ? "Sin resultados para esa búsqueda" : "No hay productos en el catálogo"}
       </p>
       {!hasSearch && (
         <Link href="/inventory/new">
           <Button size="sm">
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             Agregar primer producto
           </Button>
         </Link>

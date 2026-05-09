@@ -10,28 +10,21 @@ export default async function DashboardPage() {
   const user = session?.user as unknown as SessionUser;
 
   const [lowStock, expiring30] = tenantId
-    ? await Promise.all([
-        getLowStockCount(tenantId),
-        getExpiringCount(tenantId, 30),
-      ])
+    ? await Promise.all([getLowStockCount(tenantId), getExpiringCount(tenantId, 30)])
     : [0, 0];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
+      {/* Header */}
       <div>
-        <h2
-          className="text-[24px] font-medium text-pure-white"
-          style={{ fontFeatureSettings: '"ss01"' }}
-        >
-          Dashboard
-        </h2>
-        <p className="text-slate-gray text-[13px] mt-1">
-          Bienvenido de vuelta, {user?.name ?? user?.email}
+        <h2 className="text-[22px] font-medium text-white">Dashboard</h2>
+        <p className="text-[13px] text-slate-gray mt-0.5">
+          Bienvenido, {user?.name ?? user?.email}
         </p>
       </div>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {/* Stats */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
         <StatCard label="Citas hoy" value={0} sub="Sin citas programadas" />
         <StatCard
           label="Stock bajo"
@@ -50,9 +43,9 @@ export default async function DashboardPage() {
         <StatCard label="Recetas activas" value={0} sub="Pendientes de despacho" />
       </div>
 
-      {/* Modules */}
-      <div className="bg-ash-gray rounded-[12px] p-6">
-        <p className="text-slate-gray text-[14px]">
+      {/* Módulos en desarrollo */}
+      <div className="rounded-[10px] border border-[#2e2c29] bg-[#1c1b1a] px-5 py-4">
+        <p className="text-[13px] text-slate-gray">
           Módulos en desarrollo — citas, consultas, farmacia y más próximamente.
         </p>
       </div>
@@ -61,11 +54,7 @@ export default async function DashboardPage() {
 }
 
 function StatCard({
-  label,
-  value,
-  sub,
-  alert,
-  href,
+  label, value, sub, alert, href,
 }: {
   label: string;
   value: number;
@@ -73,19 +62,21 @@ function StatCard({
   alert?: boolean;
   href?: string;
 }) {
-  const content = (
+  const inner = (
     <div
-      className={`bg-ash-gray rounded-[12px] p-6 flex flex-col gap-2 ${href ? "hover:bg-ocean-abyss/60 transition-colors cursor-pointer" : ""}`}
+      className={[
+        "bg-[#1c1b1a] border border-[#2e2c29] rounded-[10px] px-5 py-4 flex flex-col gap-1.5",
+        href ? "hover:border-[#3d3b38] transition-colors cursor-pointer" : "",
+      ].join(" ")}
     >
-      <span className="text-[12px] text-slate-gray uppercase tracking-wide">{label}</span>
+      <span className="text-[11px] text-slate-gray uppercase tracking-wide">{label}</span>
       <span
-        className={`text-[28px] font-medium ${alert ? "text-blaze-orange" : "text-pure-white"}`}
-        style={{ fontFeatureSettings: '"ss01"' }}
+        className={`text-[30px] font-medium leading-none ${alert ? "text-blaze-orange" : "text-white"}`}
       >
         {value}
       </span>
-      {sub && <span className="text-[12px] text-slate-gray">{sub}</span>}
+      {sub && <span className="text-[12px] text-[#5a5854]">{sub}</span>}
     </div>
   );
-  return href ? <Link href={href}>{content}</Link> : content;
+  return href ? <Link href={href}>{inner}</Link> : inner;
 }
