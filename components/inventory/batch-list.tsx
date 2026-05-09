@@ -11,22 +11,26 @@ import type { getBatches } from "@/lib/actions/inventory";
 type Batch = Awaited<ReturnType<typeof getBatches>>[number];
 
 const MS_PER_DAY = 86_400_000;
-
-function daysUntilExpiry(date: Date): number {
+function daysUntil(date: Date) {
   return Math.ceil((new Date(date).getTime() - Date.now()) / MS_PER_DAY);
 }
 
-function expiryVariant(days: number): "danger" | "warning" | "success" | "muted" {
-  if (days <= 0) return "danger";
-  if (days <= 30) return "danger";
-  if (days <= 90) return "warning";
-  return "success";
-}
+/* Shared column widths */
+const COL = {
+  batch:    "w-auto  px-4 py-3",
+  warehouse:"w-40    px-4 py-3",
+  source:   "w-24    px-4 py-3",
+  initial:  "w-28    px-4 py-3 text-right",
+  current:  "w-28    px-4 py-3 text-right",
+  expiry:   "w-36    px-4 py-3",
+  status:   "w-28    px-4 py-3",
+  action:   "w-20    px-4 py-3 text-right",
+};
+
+const TH_CLASS = "text-[11px] font-medium text-slate-gray uppercase tracking-wide";
 
 export function BatchList({
-  batches,
-  tenantId,
-  productId,
+  batches, tenantId, productId,
 }: {
   batches: Batch[];
   tenantId: string;
@@ -37,12 +41,9 @@ export function BatchList({
   if (batches.length === 0) {
     return (
       <div className="py-12 flex flex-col items-center gap-3">
-        <p className="text-slate-gray text-[14px]">Sin lotes registrados para este producto.</p>
+        <p className="text-[13px] text-slate-gray">Sin lotes registrados.</p>
         <Link href={`/inventory/${productId}/batches/new`}>
-          <Button size="sm">
-            <Plus className="w-4 h-4" />
-            Registrar primer lote
-          </Button>
+          <Button size="sm"><Plus className="w-3.5 h-3.5" /> Registrar primer lote</Button>
         </Link>
       </div>
     );
@@ -50,73 +51,68 @@ export function BatchList({
 
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end px-4 py-3 border-b border-iron-gray/20">
         <Link href={`/inventory/${productId}/batches/new`}>
-          <Button size="sm">
-            <Plus className="w-4 h-4" />
-            Registrar ingreso
-          </Button>
+          <Button size="sm"><Plus className="w-3.5 h-3.5" /> Registrar ingreso</Button>
         </Link>
       </div>
       <table className="w-full">
         <thead>
-          <tr className="border-b border-iron-gray/40">
-            <Th>N° Lote</Th>
-            <Th>Almacén</Th>
-            <Th>Fuente</Th>
-            <Th align="right">Cantidad inicial</Th>
-            <Th align="right">Disponible</Th>
-            <Th>Vencimiento</Th>
-            <Th>Estado</Th>
-            <Th />
+          <tr className="border-b border-iron-gray/20 bg-ash-gray/40">
+            <th className={`${COL.batch}    ${TH_CLASS} text-left`}>N° Lote</th>
+            <th className={`${COL.warehouse}${TH_CLASS} text-left`}>Almacén</th>
+            <th className={`${COL.source}   ${TH_CLASS} text-left`}>Fuente</th>
+            <th className={`${COL.initial}  ${TH_CLASS}`}>Inicial</th>
+            <th className={`${COL.current}  ${TH_CLASS}`}>Disponible</th>
+            <th className={`${COL.expiry}   ${TH_CLASS} text-left`}>Vencimiento</th>
+            <th className={`${COL.status}   ${TH_CLASS} text-left`}>Estado</th>
+            <th className={COL.action} />
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-iron-gray/10">
           {batches.map((b) => {
-            const days = daysUntilExpiry(b.expiryDate);
-            const variant = expiryVariant(days);
+            const days = daysUntil(b.expiryDate);
+            const expired = days <= 0;
+            const warn30 = days > 0 && days <= 30;
+            const warn90 = days > 30 && days <= 90;
+
             return (
-              <tr key={b.id} className="border-b border-iron-gray/20 hover:bg-ocean-abyss/40 transition-colors">
-                <td className="px-4 py-3 text-[13px] text-pure-white font-mono">
+              <tr key={b.id} className="hover:bg-ash-gray/30 transition-colors">
+                <td className={`${COL.batch} font-mono text-[12px] text-pure-white`}>
                   {b.batchNumber}
                 </td>
-                <td className="px-4 py-3 text-[12px] text-slate-gray">
+                <td className={`${COL.warehouse} text-[12px] text-slate-gray`}>
                   {b.warehouse.name}
                 </td>
-                <td className="px-4 py-3">
-                  <Badge variant={b.source === "IHSS" ? "warning" : "muted"}>
-                    {b.source}
-                  </Badge>
+                <td className={COL.source}>
+                  <Badge variant={b.source === "IHSS" ? "warning" : "muted"}>{b.source}</Badge>
                 </td>
-                <td className="px-4 py-3 text-right text-[13px] text-slate-gray" style={{ fontFeatureSettings: '"ss01"' }}>
+                <td className={`${COL.initial} text-[13px] text-slate-gray tabular-nums`}>
                   {b.initialQty}
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <span
-                    className={`text-[13px] font-medium ${b.currentQty === 0 ? "text-slate-gray" : "text-pure-white"}`}
-                    style={{ fontFeatureSettings: '"ss01"' }}
-                  >
-                    {b.currentQty}
-                  </span>
+                <td className={`${COL.current} text-[13px] font-medium tabular-nums ${b.currentQty === 0 ? "text-iron-gray" : "text-pure-white"}`}>
+                  {b.currentQty}
                 </td>
-                <td className="px-4 py-3">
+                <td className={COL.expiry}>
                   <div className="flex items-center gap-1.5">
-                    {variant === "danger" && <AlertTriangle className="w-3.5 h-3.5 text-blaze-orange" />}
-                    <span className={`text-[12px] ${variant === "danger" ? "text-blaze-orange" : variant === "warning" ? "text-sunbeam-yellow" : "text-slate-gray"}`}>
-                      {new Date(b.expiryDate).toLocaleDateString("es-HN")}
-                    </span>
+                    {(expired || warn30) && <AlertTriangle className="w-3.5 h-3.5 text-blaze-orange shrink-0" />}
+                    <div>
+                      <p className={`text-[12px] ${expired || warn30 ? "text-blaze-orange" : warn90 ? "text-sunbeam-yellow" : "text-slate-gray"}`}>
+                        {new Date(b.expiryDate).toLocaleDateString("es-HN")}
+                      </p>
+                      <p className="text-[10px] text-iron-gray mt-0.5">
+                        {expired ? "Vencido" : `${days} días`}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-iron-gray mt-0.5">
-                    {days <= 0 ? "Vencido" : `${days} días`}
-                  </p>
                 </td>
-                <td className="px-4 py-3">
+                <td className={COL.status}>
                   {b.currentQty === 0 ? (
                     <div className="flex items-center gap-1.5">
                       <XCircle className="w-3.5 h-3.5 text-iron-gray" />
                       <span className="text-[12px] text-iron-gray">Agotado</span>
                     </div>
-                  ) : days <= 0 ? (
+                  ) : expired ? (
                     <Badge variant="danger">Vencido</Badge>
                   ) : (
                     <div className="flex items-center gap-1.5">
@@ -125,12 +121,8 @@ export function BatchList({
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setAdjustTarget(b)}
-                  >
+                <td className={COL.action}>
+                  <Button variant="ghost" size="sm" onClick={() => setAdjustTarget(b)}>
                     Ajustar
                   </Button>
                 </td>
@@ -149,13 +141,5 @@ export function BatchList({
         />
       )}
     </>
-  );
-}
-
-function Th({ children, align = "left" }: { children?: React.ReactNode; align?: "left" | "right" }) {
-  return (
-    <th className={`px-4 py-3 text-[11px] text-slate-gray uppercase tracking-wide font-medium text-${align}`}>
-      {children}
-    </th>
   );
 }

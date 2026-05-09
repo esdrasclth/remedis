@@ -27,24 +27,27 @@ export function Sidebar({ tenantName }: SidebarProps) {
     <aside
       className="flex flex-col w-56 shrink-0 h-screen sticky top-0"
       style={{
-        background: "var(--color-sidebar-bg)",
-        borderRight: "1px solid var(--color-sidebar-border)",
+        background: "#141210",           /* between canvas (#0c0a08) and ash-gray (#1a1919) */
+        borderRight: "1px solid #252220",
       }}
     >
-      {/* Tenant header */}
+      {/* ── Header — same height as topbar (--header-h: 56px) ── */}
       <div
-        className="flex items-center gap-2.5 px-4 py-4"
-        style={{ borderBottom: "1px solid var(--color-sidebar-border)" }}
+        className="flex items-center gap-2.5 px-4 shrink-0"
+        style={{
+          height: "var(--header-h, 56px)",
+          borderBottom: "1px solid #252220",
+        }}
       >
-        <div className="flex items-center justify-center w-7 h-7 rounded-[6px] bg-sunbeam-yellow shrink-0">
+        <div className="w-7 h-7 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center shrink-0">
           <Activity className="w-4 h-4 text-deep-space-black" strokeWidth={2.5} />
         </div>
-        <span className="font-medium text-[14px] text-[#1a1918] truncate">
+        <span className="font-medium text-[14px] text-pure-white truncate">
           {tenantName}
         </span>
       </div>
 
-      {/* Navigation */}
+      {/* ── Navigation ── */}
       <nav className="flex-1 overflow-y-auto py-2 px-2">
         <ul className="space-y-px">
           {NAV_ITEMS.map((item) => {
@@ -57,18 +60,20 @@ export function Sidebar({ tenantName }: SidebarProps) {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-[13px] transition-all duration-150",
+                    "flex items-center gap-2.5 px-3 py-[7px] rounded-[4px] text-[13px] transition-colors",
                     isActive
-                      ? "bg-[#1a1918] text-white font-medium"
-                      : "text-[#6b6966] hover:bg-[#e9e6e2] hover:text-[#1a1918]"
+                      ? "bg-ocean-abyss text-sunbeam-yellow font-medium"
+                      : "text-slate-gray hover:text-pure-white hover:bg-[#1a1919]"
                   )}
+                  style={
+                    isActive
+                      ? { boxShadow: "rgba(255,255,255,0.6) 0px 0px 2px 0px inset" }
+                      : undefined
+                  }
                 >
                   {Icon && (
                     <Icon
-                      className={cn(
-                        "w-4 h-4 shrink-0",
-                        isActive ? "text-sunbeam-yellow" : "text-current"
-                      )}
+                      className="w-4 h-4 shrink-0"
                       strokeWidth={isActive ? 2 : 1.5}
                     />
                   )}
@@ -83,12 +88,12 @@ export function Sidebar({ tenantName }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       <div
-        className="px-4 py-3"
-        style={{ borderTop: "1px solid var(--color-sidebar-border)" }}
+        className="px-4 py-3 shrink-0"
+        style={{ borderTop: "1px solid #252220" }}
       >
-        <p className="text-[11px] text-[#b0ada9]">Remedis v1.0</p>
+        <p className="text-[11px] text-iron-gray">Remedis v1.0</p>
       </div>
     </aside>
   );

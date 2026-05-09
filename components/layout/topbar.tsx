@@ -19,38 +19,29 @@ const ROLE_LABELS: Record<string, string> = {
   RECEPCIONISTA: "Recepcionista",
 };
 
-function getInitials(name?: string | null, email?: string | null): string {
-  if (name) {
-    return name
-      .split(" ")
-      .slice(0, 2)
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  }
+function initials(name?: string | null, email?: string | null) {
+  if (name) return name.split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase();
   return (email?.[0] ?? "U").toUpperCase();
 }
 
 export function Topbar({ user }: TopbarProps) {
-  const initials = getInitials(user.name, user.email);
-
   return (
     <header
-      className="h-13 flex items-center justify-between px-5 shrink-0"
+      className="flex items-center justify-between px-5 shrink-0"
       style={{
-        background: "var(--color-topbar-bg)",
-        borderBottom: "1px solid var(--color-topbar-border)",
-        height: "52px",
+        height: "var(--header-h, 56px)",
+        background: "#141210",           /* matches sidebar header exactly */
+        borderBottom: "1px solid #252220",
       }}
     >
-      {/* Left: breadcrumb placeholder */}
+      {/* Empty left — page title lives in page content */}
       <div />
 
-      {/* Right: actions */}
+      {/* Right actions */}
       <div className="flex items-center gap-1">
-        {/* Notifications */}
+        {/* Bell */}
         <button
-          className="relative w-8 h-8 flex items-center justify-center rounded-[6px] text-[#6b6966] hover:text-[#1a1918] hover:bg-[#f0eeeb] transition-colors"
+          className="relative w-8 h-8 flex items-center justify-center rounded-[4px] text-slate-gray hover:text-pure-white hover:bg-ash-gray transition-colors"
           title="Notificaciones"
         >
           <Bell className="w-4 h-4" strokeWidth={1.5} />
@@ -58,29 +49,32 @@ export function Topbar({ user }: TopbarProps) {
         </button>
 
         {/* Divider */}
-        <div className="w-px h-5 bg-[#e3e0db] mx-1" />
+        <div className="w-px h-4 bg-iron-gray/40 mx-1.5" />
 
-        {/* Avatar + name */}
-        <div className="flex items-center gap-2.5 pl-1">
-          <div className="w-7 h-7 rounded-full bg-[#1a1918] flex items-center justify-center shrink-0">
+        {/* Avatar + user info */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-ocean-abyss border border-iron-gray/50 flex items-center justify-center shrink-0">
             <span className="text-[11px] font-medium text-sunbeam-yellow">
-              {initials}
+              {initials(user.name, user.email)}
             </span>
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-[13px] font-medium text-[#1a1918]">
+            <span className="text-[13px] font-medium text-pure-white">
               {user.name ?? user.email}
             </span>
-            <span className="text-[11px] text-[#6b6966]">
+            <span className="text-[11px] text-slate-gray">
               {ROLE_LABELS[user.role] ?? user.role}
             </span>
           </div>
         </div>
 
+        {/* Divider */}
+        <div className="w-px h-4 bg-iron-gray/40 mx-1.5" />
+
         {/* Sign out */}
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-8 h-8 flex items-center justify-center rounded-[6px] text-[#6b6966] hover:text-blaze-orange hover:bg-[#fff0ed] transition-colors ml-1"
+          className="w-8 h-8 flex items-center justify-center rounded-[4px] text-slate-gray hover:text-blaze-orange hover:bg-ash-gray transition-colors"
           title="Cerrar sesión"
         >
           <LogOut className="w-4 h-4" strokeWidth={1.5} />

@@ -3,10 +3,7 @@ import type { getKardex } from "@/lib/actions/inventory";
 
 type Movement = Awaited<ReturnType<typeof getKardex>>[number];
 
-const TYPE_CONFIG: Record<
-  string,
-  { label: string; variant: "success" | "danger" | "warning" | "info" | "muted" }
-> = {
+const TYPE_CONFIG: Record<string, { label: string; variant: "success" | "danger" | "warning" | "info" | "muted" }> = {
   ENTRADA:       { label: "Entrada",       variant: "success" },
   SALIDA:        { label: "Salida",        variant: "danger"  },
   AJUSTE:        { label: "Ajuste",        variant: "warning" },
@@ -15,11 +12,23 @@ const TYPE_CONFIG: Record<
   DEVOLUCION:    { label: "Devolución",    variant: "muted"   },
 };
 
+const COL = {
+  date:  "w-36  px-4 py-3",
+  type:  "w-28  px-4 py-3",
+  batch: "w-32  px-4 py-3",
+  qty:   "w-24  px-4 py-3 text-right",
+  reason:"w-auto px-4 py-3",
+  ref:   "w-32  px-4 py-3",
+  user:  "w-36  px-4 py-3",
+};
+
+const TH = "text-[11px] font-medium text-slate-gray uppercase tracking-wide";
+
 export function KardexTable({ movements }: { movements: Movement[] }) {
   if (movements.length === 0) {
     return (
       <div className="py-12 text-center">
-        <p className="text-slate-gray text-[14px]">Sin movimientos registrados.</p>
+        <p className="text-[13px] text-slate-gray">Sin movimientos registrados.</p>
       </div>
     );
   }
@@ -27,52 +36,44 @@ export function KardexTable({ movements }: { movements: Movement[] }) {
   return (
     <table className="w-full">
       <thead>
-        <tr className="border-b border-iron-gray/40">
-          <Th>Fecha</Th>
-          <Th>Tipo</Th>
-          <Th>Lote</Th>
-          <Th align="right">Cantidad</Th>
-          <Th>Motivo</Th>
-          <Th>Referencia</Th>
-          <Th>Usuario</Th>
+        <tr className="border-b border-iron-gray/20 bg-ash-gray/40">
+          <th className={`${COL.date}  ${TH} text-left`}>Fecha</th>
+          <th className={`${COL.type}  ${TH} text-left`}>Tipo</th>
+          <th className={`${COL.batch} ${TH} text-left`}>Lote</th>
+          <th className={`${COL.qty}   ${TH}`}>Cantidad</th>
+          <th className={`${COL.reason}${TH} text-left`}>Motivo</th>
+          <th className={`${COL.ref}   ${TH} text-left`}>Referencia</th>
+          <th className={`${COL.user}  ${TH} text-left`}>Usuario</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="divide-y divide-iron-gray/10">
         {movements.map((m) => {
-          const config = TYPE_CONFIG[m.type] ?? { label: m.type, variant: "muted" as const };
+          const cfg = TYPE_CONFIG[m.type] ?? { label: m.type, variant: "muted" as const };
           const isPositive = m.quantity > 0;
           return (
-            <tr key={m.id} className="border-b border-iron-gray/20 hover:bg-ocean-abyss/40 transition-colors">
-              <td className="px-4 py-3 text-[12px] text-slate-gray whitespace-nowrap">
+            <tr key={m.id} className="hover:bg-ash-gray/30 transition-colors">
+              <td className={`${COL.date} text-[12px] text-slate-gray whitespace-nowrap`}>
                 {new Date(m.createdAt).toLocaleString("es-HN", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  day: "2-digit", month: "2-digit", year: "numeric",
+                  hour: "2-digit", minute: "2-digit",
                 })}
               </td>
-              <td className="px-4 py-3">
-                <Badge variant={config.variant}>{config.label}</Badge>
+              <td className={COL.type}>
+                <Badge variant={cfg.variant}>{cfg.label}</Badge>
               </td>
-              <td className="px-4 py-3 text-[12px] text-slate-gray font-mono">
+              <td className={`${COL.batch} font-mono text-[12px] text-slate-gray`}>
                 {m.batch?.batchNumber ?? "—"}
               </td>
-              <td className="px-4 py-3 text-right">
-                <span
-                  className={`text-[13px] font-medium ${isPositive ? "text-emerald-green" : "text-blaze-orange"}`}
-                  style={{ fontFeatureSettings: '"ss01"' }}
-                >
-                  {isPositive ? "+" : ""}{m.quantity}
-                </span>
+              <td className={`${COL.qty} text-[13px] font-medium tabular-nums ${isPositive ? "text-emerald-green" : "text-blaze-orange"}`}>
+                {isPositive ? "+" : ""}{m.quantity}
               </td>
-              <td className="px-4 py-3 text-[12px] text-slate-gray max-w-[200px] truncate">
-                {m.reason ?? "—"}
+              <td className={`${COL.reason} text-[12px] text-slate-gray`}>
+                <span className="line-clamp-1">{m.reason ?? "—"}</span>
               </td>
-              <td className="px-4 py-3 text-[12px] text-slate-gray font-mono">
+              <td className={`${COL.ref} font-mono text-[12px] text-iron-gray`}>
                 {m.reference ?? "—"}
               </td>
-              <td className="px-4 py-3 text-[12px] text-slate-gray">
+              <td className={`${COL.user} text-[12px] text-slate-gray`}>
                 {m.user.name ?? m.user.email}
               </td>
             </tr>
@@ -80,13 +81,5 @@ export function KardexTable({ movements }: { movements: Movement[] }) {
         })}
       </tbody>
     </table>
-  );
-}
-
-function Th({ children, align = "left" }: { children?: React.ReactNode; align?: "left" | "right" }) {
-  return (
-    <th className={`px-4 py-3 text-[11px] text-slate-gray uppercase tracking-wide font-medium text-${align}`}>
-      {children}
-    </th>
   );
 }

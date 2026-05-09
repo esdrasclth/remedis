@@ -22,61 +22,58 @@ export function LoginForm() {
     setError("");
     const result = await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
-    if (result?.error) {
-      setError("Credenciales incorrectas. Intenta de nuevo.");
-    } else {
-      router.push(callbackUrl);
-    }
+    if (result?.error) setError("Credenciales incorrectas. Intenta de nuevo.");
+    else router.push(callbackUrl);
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#f2f0ee" }}>
-      {/* Left panel – branding */}
+    <div className="min-h-screen flex bg-deep-space-black">
+      {/* Left — branding panel */}
       <div
-        className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 p-10"
-        style={{ background: "#1a1918" }}
+        className="hidden lg:flex flex-col justify-between w-[400px] shrink-0 p-10 border-r border-iron-gray/20"
+        style={{ background: "#0e0d0b" }}
       >
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-[6px] bg-sunbeam-yellow flex items-center justify-center">
+          <div className="w-8 h-8 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center">
             <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
           </div>
-          <span className="text-white font-medium text-[18px]">Remedis</span>
+          <span className="text-pure-white font-medium text-[18px]">Remedis</span>
         </div>
-        <div>
-          <p className="text-[28px] font-medium text-white leading-snug mb-3">
+
+        <div className="space-y-3">
+          <p className="text-[26px] font-medium text-pure-white leading-snug">
             Gestión clínica empresarial para Honduras
           </p>
-          <p className="text-[14px] text-[#8a8784] leading-relaxed">
-            Control de inventario, citas, recetas y farmacia — todo en un solo lugar.
+          <p className="text-[14px] text-slate-gray leading-relaxed">
+            Inventario médico, dispensación, consultas y farmacia — todo en un solo sistema.
           </p>
         </div>
-        <p className="text-[12px] text-[#4d4b48]">
-          © {new Date().getFullYear()} Remedis
-        </p>
+
+        <p className="text-[12px] text-iron-gray">© {new Date().getFullYear()} Remedis</p>
       </div>
 
-      {/* Right panel – form */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+      {/* Right — form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-[360px]">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
-            <div className="w-8 h-8 rounded-[6px] bg-sunbeam-yellow flex items-center justify-center">
+            <div className="w-8 h-8 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center">
               <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
             </div>
-            <span className="font-medium text-[18px] text-[#1a1918]">Remedis</span>
+            <span className="font-medium text-[18px] text-pure-white">Remedis</span>
           </div>
 
-          <h1 className="text-[24px] font-medium text-[#1a1918] mb-1">
+          <h1 className="text-[24px] font-medium text-pure-white mb-1">
             Iniciar sesión
           </h1>
-          <p className="text-[14px] text-[#6b6966] mb-7">
+          <p className="text-[14px] text-slate-gray mb-7">
             Ingresa tus credenciales para continuar
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-[12px] font-medium text-[#52504e] uppercase tracking-wide">
+              <label className="text-[12px] font-medium text-slate-gray uppercase tracking-wide">
                 Correo electrónico
               </label>
               <input
@@ -86,13 +83,13 @@ export function LoginForm() {
                 placeholder="nombre@empresa.com"
                 required
                 autoComplete="email"
-                className="w-full bg-white border border-[#d8d4cf] rounded-[8px] px-3.5 py-2.5 text-[14px] text-[#1a1918] placeholder:text-[#b0ada9] outline-none focus:border-[#1a1918] transition-colors"
+                className="w-full bg-ash-gray border border-iron-gray/60 rounded-[4px] px-4 py-2.5 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
               />
             </div>
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-[12px] font-medium text-[#52504e] uppercase tracking-wide">
+              <label className="text-[12px] font-medium text-slate-gray uppercase tracking-wide">
                 Contraseña
               </label>
               <div className="relative">
@@ -103,12 +100,12 @@ export function LoginForm() {
                   placeholder="••••••••"
                   required
                   autoComplete="current-password"
-                  className="w-full bg-white border border-[#d8d4cf] rounded-[8px] px-3.5 py-2.5 pr-11 text-[14px] text-[#1a1918] placeholder:text-[#b0ada9] outline-none focus:border-[#1a1918] transition-colors"
+                  className="w-full bg-ash-gray border border-iron-gray/60 rounded-[4px] px-4 py-2.5 pr-11 text-[14px] text-pure-white placeholder:text-iron-gray outline-none focus:border-slate-gray transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b0ada9] hover:text-[#6b6966] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-iron-gray hover:text-slate-gray transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -117,8 +114,8 @@ export function LoginForm() {
 
             {/* Error */}
             {error && (
-              <div className="flex items-center gap-2 bg-[#fff0ed] border border-[#ffcfc7] rounded-[8px] px-3.5 py-2.5">
-                <span className="text-[13px] text-blaze-orange">{error}</span>
+              <div className="bg-blaze-orange/10 border border-blaze-orange/30 rounded-[4px] px-3 py-2.5">
+                <p className="text-[13px] text-blaze-orange">{error}</p>
               </div>
             )}
 
@@ -126,13 +123,13 @@ export function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#1a1918] text-white font-medium text-[14px] rounded-[6px] py-2.5 mt-1 transition-opacity hover:opacity-80 disabled:opacity-50"
+              className="w-full bg-sunbeam-yellow text-deep-space-black font-medium text-[14px] rounded-[4px] py-2.5 mt-1 transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {loading ? "Ingresando..." : "Ingresar"}
             </button>
           </form>
 
-          <p className="text-center text-[12px] text-[#b0ada9] mt-8">
+          <p className="text-center text-[12px] text-iron-gray mt-8">
             © {new Date().getFullYear()} Remedis · Todos los derechos reservados
           </p>
         </div>
