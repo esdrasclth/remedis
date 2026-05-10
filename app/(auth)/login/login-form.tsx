@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Activity, Eye, EyeOff } from "lucide-react";
+import { Activity, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const callbackUrl = params.get("callbackUrl") ?? "/dashboard";
+  const registered  = params.get("registered") === "1";
+  const empresa     = params.get("empresa") ?? "";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -70,6 +73,20 @@ export function LoginForm() {
             Ingresa tus credenciales para continuar
           </p>
 
+          {registered && (
+            <div className="flex items-start gap-2.5 bg-emerald-green/10 rounded-[4px] px-3 py-3 mb-5">
+              <CheckCircle className="w-4 h-4 text-emerald-green shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[13px] text-emerald-green font-medium">
+                  {empresa ? `¡${empresa} ya está en Remedis!` : "¡Cuenta creada exitosamente!"}
+                </p>
+                <p className="text-[12px] text-emerald-green/70 mt-0.5">
+                  Inicia sesión con las credenciales que registraste.
+                </p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div className="space-y-1.5">
@@ -129,7 +146,13 @@ export function LoginForm() {
             </button>
           </form>
 
-          <p className="text-center text-[12px] text-iron-gray mt-8">
+          <p className="text-center text-[12px] text-iron-gray mt-6">
+            ¿Aún no tienes cuenta?{" "}
+            <Link href="/register" className="text-slate-gray hover:text-pure-white transition-colors underline underline-offset-2">
+              Registra tu clínica
+            </Link>
+          </p>
+          <p className="text-center text-[12px] text-iron-gray mt-3">
             © {new Date().getFullYear()} Remedis · Todos los derechos reservados
           </p>
         </div>
