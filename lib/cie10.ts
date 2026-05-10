@@ -1,0 +1,67 @@
+export interface Cie10Code { code: string; description: string }
+
+export const CIE10_COMMON: Cie10Code[] = [
+  { code: "J00",   description: "Rinofaringitis aguda (resfriado común)" },
+  { code: "J06.9", description: "Infección aguda de las vías respiratorias superiores" },
+  { code: "J20.9", description: "Bronquitis aguda, no especificada" },
+  { code: "J18.9", description: "Neumonía, no especificada" },
+  { code: "J45.9", description: "Asma, no especificada" },
+  { code: "J30.4", description: "Rinitis alérgica, no especificada" },
+  { code: "J30.1", description: "Rinitis alérgica debida al polen" },
+  { code: "K21.0", description: "Enfermedad por reflujo gastroesofágico con esofagitis" },
+  { code: "K29.7", description: "Gastritis, no especificada" },
+  { code: "K59.0", description: "Estreñimiento" },
+  { code: "K52.9", description: "Colitis y gastroenteritis, no especificadas" },
+  { code: "A09",   description: "Diarrea y gastroenteritis de presunto origen infeccioso" },
+  { code: "I10",   description: "Hipertensión esencial (primaria)" },
+  { code: "I25.1", description: "Enfermedad aterosclerótica del corazón" },
+  { code: "E11.9", description: "Diabetes mellitus tipo 2 sin complicaciones" },
+  { code: "E78.0", description: "Hipercolesterolemia pura" },
+  { code: "E78.5", description: "Hiperlipidemia no especificada" },
+  { code: "E66.9", description: "Obesidad, no especificada" },
+  { code: "M54.5", description: "Dolor lumbar bajo" },
+  { code: "M54.2", description: "Cervicalgia" },
+  { code: "M54.3", description: "Ciática" },
+  { code: "M25.5", description: "Dolor en articulación" },
+  { code: "M79.1", description: "Mialgia" },
+  { code: "R51",   description: "Cefalea" },
+  { code: "G43.9", description: "Migraña, no especificada" },
+  { code: "G44.2", description: "Cefalea tensional" },
+  { code: "F41.1", description: "Trastorno de ansiedad generalizada" },
+  { code: "F32.9", description: "Episodio depresivo, no especificado" },
+  { code: "F41.0", description: "Trastorno de pánico" },
+  { code: "Z73.0", description: "Sensación de estar quemado (burnout)" },
+  { code: "L30.9", description: "Dermatitis, no especificada" },
+  { code: "L50.9", description: "Urticaria, no especificada" },
+  { code: "L03.9", description: "Celulitis, no especificada" },
+  { code: "B35.1", description: "Tiña de las uñas" },
+  { code: "N39.0", description: "Infección de vías urinarias, sitio no especificado" },
+  { code: "N40",   description: "Hiperplasia de la próstata" },
+  { code: "N92.1", description: "Menstruación irregular" },
+  { code: "N94.6", description: "Dismenorrea, no especificada" },
+  { code: "H10.9", description: "Conjuntivitis, no especificada" },
+  { code: "H65.9", description: "Otitis media no supurativa, no especificada" },
+  { code: "H66.9", description: "Otitis media, no especificada" },
+  { code: "R05",   description: "Tos" },
+  { code: "R07.4", description: "Dolor torácico, no especificado" },
+  { code: "R10.4", description: "Dolor abdominal, no especificado" },
+  { code: "R11",   description: "Náusea y vómito" },
+  { code: "R50.9", description: "Fiebre, no especificada" },
+  { code: "S60.0", description: "Contusión del dedo de la mano" },
+  { code: "T14.0", description: "Herida de región no especificada" },
+  { code: "T30.0", description: "Quemadura de grado no especificado" },
+  { code: "Z00.0", description: "Examen médico general" },
+  { code: "Z10.0", description: "Examen de salud ocupacional" },
+  { code: "A90",   description: "Dengue clásico (sin hemorragia)" },
+  { code: "B34.9", description: "Infección viral, no especificada" },
+  { code: "B01.9", description: "Varicela sin complicaciones" },
+  { code: "U07.1", description: "COVID-19, virus identificado" },
+];
+
+export function searchCie10(query: string): Cie10Code[] {
+  if (!query || query.length < 2) return [];
+  const q = query.toLowerCase();
+  return CIE10_COMMON.filter(
+    c => c.code.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
+  ).slice(0, 8);
+}
