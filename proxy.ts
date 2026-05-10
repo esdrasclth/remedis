@@ -37,6 +37,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Guard /admin routes — SUPER_ADMIN only
+  if (pathname.startsWith("/admin") && token.role !== "SUPER_ADMIN") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
   if (token.tenantId) {
     requestHeaders.set("x-tenant-id", token.tenantId as string);
   }
