@@ -1,0 +1,130 @@
+import Link from "next/link";
+import { Settings, Building2, Users, FileText, Package } from "lucide-react";
+import { getTenantFromHeaders } from "@/lib/tenant";
+import { getTenantSettings, getTenantUsers } from "@/lib/actions/settings";
+import { getWarehouses } from "@/lib/actions/inventory";
+import { ClinicForm } from "@/components/settings/clinic-form";
+import { UsersPanel } from "@/components/settings/users-panel";
+import { PrescriptionForm } from "@/components/settings/prescription-form";
+import { WarehousesPanel } from "@/components/settings/warehouses-panel";
+
+const TABS = [
+  { key: "clinica",    label: "Clínica",  icon: Building2 },
+  { key: "usuarios",   label: "Usuarios", icon: Users },
+  { key: "recetas",    label: "Recetas",  icon: FileText },
+  { key: "almacenes",  label: "Almacenes", icon: Package },
+] as const;
+
+type Tab = typeof TABS[number]["key"];
+
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tenantId } = await getTenantFromHeaders();
+  if (!tenantId) return null;
+
+  const { tab: rawTab } = await searchParams;
+  const tab: Tab = (TABS.some(t => t.key === rawTab) ? rawTab : "clinica") as Tab;
+
+  const [tenant, users, warehouses] = await Promise.all([
+    getTenantSettings(tenantId),
+    getTenantUsers(tenantId),
+    getWarehouses(tenantId),
+  ]);
+  if (!tenant) return null;
+
+  const config = (tenant.config ?? {}) as Record<string, unknown>;
+  const prescriptionValidDays = (config.prescriptionValidDays as number | undefined) ?? 30;
+  const legalText = (config.legalText as string | undefined) ?? "";
+
+  return (
+    <div className="space-y-6 p-6 max-w-4xl">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Settings className="w-5 h-5 text-iron-gray" />
+        <div>
+          <h1 className="text-[20px] font-medium text-pure-white">Configuración</h1>
+          <p className="text-[13px] text-slate-gray mt-0.5">Gestiona la configuración de tu clínica</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 bg-ash-gray p-1 rounded-[10px] w-fit">
+        {TABS.map(t => {
+          const Icon = t.icon;
+          const active = tab === t.key;
+          return (
+            <Link
+              key={t.key}
+              href={`/settings?tab=${t.key}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] transition-colors ${
+                active
+                  ? "bg-sunbeam-yellow text-deep-space-black font-medium"
+                  : "text-slate-gray hover:text-pure-white"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {t.label}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Tab content */}
+      <div className="bg-ash-gray rounded-[12px] p-6">
+        {tab === "clinica" && (
+          <div className="space-y-1 mb-6">
+            <h2 className="text-[14px] font-medium text-pure-white">Información de la clínica</h2>
+            <p className="text-[12px] text-slate-gray">Datos que aparecerán en recetas y documentos oficiales.</p>
+          </div>
+        )}
+        {tab === "usuarios" && (
+          <div className="space-y-1 mb-6">
+            <h2 className="text-[14px] font-medium text-pure-white">Gestión de usuarios</h2>
+            <p className="text-[12px] text-slate-gray">Administra los miembros del equipo y sus permisos.</p>
+          </div>
+        )}
+        {tab === "recetas" && (
+          <div className="space-y-1 mb-6">
+            <h2 className="text-[14px] font-medium text-pure-white">Configuración de recetas</h2>
+            <p className="text-[12px] text-slate-gray">Define la validez y el texto legal de las recetas médicas.</p>
+          </div>
+        )}
+        {tab === "almacenes" && (
+          <div className="space-y-1 mb-6">
+            <h2 className="text-[14px] font-medium text-pure-white">Almacenes</h2>
+            <p className="text-[12px] text-slate-gray">Configura los almacenes físicos donde se almacena el inventario.</p>
+          </div>
+        )}
+
+        {tab === "clinica" && (
+          <ClinicForm
+            tenant={{
+              id:   tenant.id,
+              name: tenant.name,
+              slug: tenant.slug,
+              plan: tenant.plan,
+              logo: tenant.logo ?? null,
+            }}
+            tenantId={tenantId}
+          />
+        )}
+        {tab === "usuarios" && (
+          <UsersPanel tenantId={tenantId} users={users} />
+        )}
+        {tab === "recetas" && (
+          <PrescriptionForm
+            tenantId={tenantId}
+            initialDays={prescriptionValidDays}
+            initialLegalText={legalText}
+          />
+        )}
+        {tab === "almacenes" && (
+          <WarehousesPanel tenantId={tenantId} warehouses={warehouses} />
+        )}
+      </div>
+    </div>
+  );
+}
