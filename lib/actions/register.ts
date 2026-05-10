@@ -49,6 +49,10 @@ export async function registerTenant(raw: unknown): Promise<RegisterResult> {
       },
     });
 
+    await tx.clinic.create({
+      data: { tenantId: tenant.id, name: companyName },
+    });
+
     await tx.warehouse.createMany({
       data: [
         { tenantId: tenant.id, name: "Farmacia Empresa", source: "EMPRESA" },

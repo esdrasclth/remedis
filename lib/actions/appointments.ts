@@ -52,10 +52,20 @@ export async function getTodayAppointments(tenantId: string) {
 }
 
 export async function getClinics(tenantId: string) {
-  return prisma.clinic.findMany({
+  const clinics = await prisma.clinic.findMany({
     where: { tenantId, isActive: true },
     select: { id: true, name: true },
   });
+  if (clinics.length > 0) return clinics;
+
+  // Auto-create default clinic for tenants that registered before clinic creation was added
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { name: true } });
+  if (!tenant) return [];
+  const clinic = await prisma.clinic.create({
+    data:   { tenantId, name: tenant.name },
+    select: { id: true, name: true },
+  });
+  return [clinic];
 }
 
 export async function getDoctors(tenantId: string) {

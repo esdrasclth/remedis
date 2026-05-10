@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus, UserCheck, UserX, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,8 @@ const ROLES = [
 export function UsersPanel({ tenantId, users: initial }: Props) {
   const router  = useRouter();
   const [users, setUsers]     = useState(initial);
+
+  useEffect(() => { setUsers(initial); }, [initial]);
   const [modal, setModal]     = useState(false);
   const [busy,  setBusy]      = useState<string | null>(null);
   const [error, setError]     = useState("");

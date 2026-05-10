@@ -42,6 +42,7 @@ export default async function EditPatientPage({ params }: { params: Promise<{ em
             email:      employee.email      ?? undefined,
             department: employee.department ?? undefined,
             position:   employee.position   ?? undefined,
+            medicalHistory: employee.medicalHistory ?? undefined,
           }}
         />
       </div>

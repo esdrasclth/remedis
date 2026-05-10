@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Stethoscope, Calendar, Pencil } from "lucide-react";
+import { ArrowLeft, Stethoscope, Calendar, Pencil, UserPlus } from "lucide-react";
 import { getTenantFromHeaders } from "@/lib/tenant";
 import { getEmployee } from "@/lib/actions/patients";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const GENDER_LABEL: Record<string, string> = { MASCULINO: "Masculino", FEMENINO: "Femenino", OTRO: "Otro" };
+const REL_LABEL: Record<string, string> = {
+  CONYUGUE: "Cónyuge", HIJO: "Hijo", HIJA: "Hija", PADRE: "Padre", MADRE: "Madre", OTRO: "Otro",
+};
 
 const APPT_STATUS_VARIANT: Record<string, "info" | "success" | "warning" | "muted" | "danger"> = {
   PROGRAMADA: "info", CONFIRMADA: "success", EN_CONSULTA: "warning",
@@ -57,7 +60,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 auto-rows-min">
         {/* Info card */}
         <div className="bg-ash-gray rounded-[12px] p-5 space-y-4">
           <h2 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide">Información personal</h2>
@@ -109,6 +112,44 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
                 )}
               </dl>
             </>
+          )}
+        </div>
+
+        {/* Dependents */}
+        <div className="bg-ash-gray rounded-[12px] p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide">Dependientes</h2>
+            <Link href={`/patients/${employee.id}/dependents/new`} className="text-iron-gray hover:text-sunbeam-yellow transition-colors" title="Nuevo dependiente">
+              <UserPlus className="w-4 h-4" />
+            </Link>
+          </div>
+          {employee.dependents.length === 0 ? (
+            <div className="text-center py-3">
+              <p className="text-[12px] text-iron-gray">Sin dependientes registrados</p>
+              <Link href={`/patients/${employee.id}/dependents/new`} className="text-[12px] text-sunbeam-yellow hover:underline mt-1 inline-block">
+                Agregar dependiente
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {employee.dependents.map(d => {
+                const age = d.birthDate
+                  ? Math.floor((Date.now() - new Date(d.birthDate).getTime()) / (365.25 * 86400000))
+                  : null;
+                return (
+                  <div key={d.id} className="flex items-center justify-between py-1.5">
+                    <div>
+                      <p className="text-[13px] text-pure-white font-medium">{d.lastName}, {d.firstName}</p>
+                      <p className="text-[11px] text-slate-gray">
+                        {REL_LABEL[d.relationship] ?? d.relationship}
+                        {age !== null && ` · ${age} años`}
+                      </p>
+                    </div>
+                    {d.gender && <span className="text-[11px] text-iron-gray">{GENDER_LABEL[d.gender]}</span>}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
 

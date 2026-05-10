@@ -23,20 +23,23 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const isEdit = !!initial?.id;
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProductInput>({
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<ProductInput>({
     resolver: zodResolver(productSchema) as Resolver<ProductInput>,
     defaultValues: {
-      genericName: initial?.genericName ?? "",
-      commercialName: initial?.commercialName ?? "",
-      category: initial?.category ?? "MEDICAMENTO",
-      form: initial?.form ?? "",
-      concentration: initial?.concentration ?? "",
-      unit: initial?.unit ?? "",
+      genericName:          initial?.genericName ?? "",
+      commercialName:       initial?.commercialName ?? "",
+      category:             initial?.category ?? "MEDICAMENTO",
+      form:                 initial?.form ?? "",
+      concentration:        initial?.concentration ?? "",
+      unit:                 initial?.unit ?? "",
       requiresPrescription: initial?.requiresPrescription ?? false,
-      defaultSource: initial?.defaultSource ?? "EMPRESA",
-      minStock: initial?.minStock ?? 0,
+      defaultSource:        initial?.defaultSource ?? "EMPRESA",
+      minStock:             initial?.minStock ?? 0,
     },
   });
+
+  const category   = watch("category");
+  const isMed      = category === "MEDICAMENTO";
 
   async function onSubmit(data: ProductInput) {
     setServerError(null);
@@ -54,8 +57,10 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input id="genericName" label="Nombre genérico *" placeholder="Ej: Paracetamol"
             error={errors.genericName?.message} {...register("genericName")} />
-          <Input id="commercialName" label="Nombre comercial" placeholder="Ej: Tafirol"
-            error={errors.commercialName?.message} {...register("commercialName")} />
+          {isMed && (
+            <Input id="commercialName" label="Nombre comercial" placeholder="Ej: Tafirol"
+              error={errors.commercialName?.message} {...register("commercialName")} />
+          )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select id="category" label="Categoría *" error={errors.category?.message} {...register("category")}>
@@ -68,27 +73,43 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
             <option value="IHSS">IHSS</option>
           </Select>
         </div>
-        <label className="flex items-center gap-3 cursor-pointer w-fit">
-          <input type="checkbox" className="w-4 h-4 accent-sunbeam-yellow" {...register("requiresPrescription")} />
-          <span className="text-[13px] text-slate-gray">Requiere receta médica</span>
-        </label>
+        {isMed && (
+          <label className="flex items-center gap-3 cursor-pointer w-fit">
+            <input type="checkbox" className="w-4 h-4 accent-sunbeam-yellow" {...register("requiresPrescription")} />
+            <span className="text-[13px] text-slate-gray">Requiere receta médica</span>
+          </label>
+        )}
       </FormSection>
 
-      {/* Presentación */}
-      <FormSection title="Presentación farmacéutica">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Select id="form" label="Forma" error={errors.form?.message} {...register("form")}>
-            <option value="">— Seleccionar —</option>
-            {FORMS.map((f) => <option key={f} value={f}>{f}</option>)}
-          </Select>
-          <Input id="concentration" label="Concentración" placeholder="Ej: 500mg"
-            error={errors.concentration?.message} {...register("concentration")} />
-          <Select id="unit" label="Unidad" error={errors.unit?.message} {...register("unit")}>
-            <option value="">— Seleccionar —</option>
-            {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
-          </Select>
-        </div>
-      </FormSection>
+      {/* Presentación — solo medicamentos */}
+      {isMed && (
+        <FormSection title="Presentación farmacéutica">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Select id="form" label="Forma" error={errors.form?.message} {...register("form")}>
+              <option value="">— Seleccionar —</option>
+              {FORMS.map((f) => <option key={f} value={f}>{f}</option>)}
+            </Select>
+            <Input id="concentration" label="Concentración" placeholder="Ej: 500mg"
+              error={errors.concentration?.message} {...register("concentration")} />
+            <Select id="unit" label="Unidad" error={errors.unit?.message} {...register("unit")}>
+              <option value="">— Seleccionar —</option>
+              {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
+            </Select>
+          </div>
+        </FormSection>
+      )}
+
+      {/* Unidad para insumos/equipo */}
+      {!isMed && (
+        <FormSection title="Presentación">
+          <div className="max-w-xs">
+            <Select id="unit" label="Unidad de medida" error={errors.unit?.message} {...register("unit")}>
+              <option value="">— Seleccionar —</option>
+              {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
+            </Select>
+          </div>
+        </FormSection>
+      )}
 
       {/* Control de stock */}
       <FormSection title="Control de inventario">

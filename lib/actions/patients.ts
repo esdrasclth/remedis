@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { employeeSchema } from "@/lib/validations/patients";
+import { employeeSchema, dependentSchema } from "@/lib/validations/patients";
 
 export type { EmployeeInput } from "@/lib/validations/patients";
 
@@ -73,15 +73,29 @@ export async function createEmployee(
   });
   if (existing) return { success: false, error: "El número de empleado ya está en uso." };
 
+  const { bloodType, allergies, chronicConditions, ...employeeData } = parsed.data;
+
   const employee = await prisma.employee.create({
     data: {
       tenantId,
-      ...parsed.data,
-      birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
-      email: parsed.data.email || null,
-      gender: parsed.data.gender ?? null,
+      ...employeeData,
+      birthDate: employeeData.birthDate ? new Date(employeeData.birthDate) : null,
+      email:     employeeData.email || null,
+      gender:    employeeData.gender ?? null,
     },
   });
+
+  if (bloodType || (allergies?.length ?? 0) > 0 || (chronicConditions?.length ?? 0) > 0) {
+    await prisma.medicalHistory.create({
+      data: {
+        employeeId:        employee.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        bloodType:         (bloodType as any) ?? null,
+        allergies:         allergies ?? [],
+        chronicConditions: chronicConditions ?? [],
+      },
+    });
+  }
 
   revalidatePath("/patients");
   return { success: true, data: { id: employee.id } };
@@ -95,17 +109,66 @@ export async function updateEmployee(
   const parsed = employeeSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
 
+  const { bloodType, allergies, chronicConditions, ...employeeData } = parsed.data;
+
   await prisma.employee.updateMany({
     where: { id: employeeId, tenantId },
     data: {
-      ...parsed.data,
-      birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
-      email: parsed.data.email || null,
-      gender: parsed.data.gender ?? null,
+      ...employeeData,
+      birthDate: employeeData.birthDate ? new Date(employeeData.birthDate) : null,
+      email:     employeeData.email || null,
+      gender:    employeeData.gender ?? null,
     },
   });
 
+  await prisma.medicalHistory.upsert({
+    where:  { employeeId },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    create: { employeeId, bloodType: (bloodType as any) ?? null, allergies: allergies ?? [], chronicConditions: chronicConditions ?? [] },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    update: { bloodType: (bloodType as any) ?? null, allergies: allergies ?? [], chronicConditions: chronicConditions ?? [] },
+  });
+
   revalidatePath("/patients");
+  revalidatePath(`/patients/${employeeId}`);
+  return { success: true, data: undefined };
+}
+
+// ─── Dependents ───────────────────────────────────────────────────────────────
+
+export async function createDependent(
+  tenantId: string,
+  employeeId: string,
+  data: unknown
+): Promise<ActionResult<{ id: string }>> {
+  const emp = await prisma.employee.findFirst({ where: { id: employeeId, tenantId } });
+  if (!emp) return { success: false, error: "Paciente no encontrado." };
+
+  const parsed = dependentSchema.safeParse(data);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+
+  const dependent = await prisma.dependent.create({
+    data: {
+      employeeId,
+      ...parsed.data,
+      birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
+      gender:    parsed.data.gender ?? null,
+    },
+  });
+
+  revalidatePath(`/patients/${employeeId}`);
+  return { success: true, data: { id: dependent.id } };
+}
+
+export async function deactivateDependent(
+  tenantId: string,
+  employeeId: string,
+  dependentId: string
+): Promise<ActionResult<void>> {
+  const emp = await prisma.employee.findFirst({ where: { id: employeeId, tenantId } });
+  if (!emp) return { success: false, error: "Paciente no encontrado." };
+
+  await prisma.dependent.update({ where: { id: dependentId }, data: { isActive: false } });
   revalidatePath(`/patients/${employeeId}`);
   return { success: true, data: undefined };
 }

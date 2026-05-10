@@ -89,27 +89,37 @@ export function BatchForm({ tenantId, productId, warehouses }: BatchFormProps) {
           Almacén y fuente
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select
-            id="warehouseId"
-            label="Almacén de destino *"
-            error={errors.warehouseId?.message}
-            {...register("warehouseId")}
-          >
-            {warehouses.map((w) => (
-              <option key={w.id} value={w.id}>
-                {w.name} ({w.source})
-              </option>
-            ))}
-          </Select>
-          <Select
-            id="source"
-            label="Fuente del medicamento *"
-            error={errors.source?.message}
-            {...register("source")}
-          >
-            <option value="EMPRESA">Empresa</option>
-            <option value="IHSS">IHSS</option>
-          </Select>
+          <div>
+            <Select
+              id="warehouseId"
+              label="Almacén de destino *"
+              error={errors.warehouseId?.message}
+              {...register("warehouseId")}
+            >
+              {warehouses.map((w) => (
+                <option key={w.id} value={w.id}>
+                  {w.name} ({w.source})
+                </option>
+              ))}
+            </Select>
+            <p className="text-[11px] text-iron-gray mt-1.5">
+              Ubicación física donde se almacenará este lote (bodega, farmacia, etc.).
+            </p>
+          </div>
+          <div>
+            <Select
+              id="source"
+              label="Fuente del medicamento *"
+              error={errors.source?.message}
+              {...register("source")}
+            >
+              <option value="EMPRESA">Empresa</option>
+              <option value="IHSS">IHSS</option>
+            </Select>
+            <p className="text-[11px] text-iron-gray mt-1.5">
+              Presupuesto que financia este medicamento: Empresa (compra directa) o IHSS (seguro social).
+            </p>
+          </div>
         </div>
       </div>
 
