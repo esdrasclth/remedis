@@ -12,7 +12,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx prisma generate
+RUN DATABASE_URL=postgresql://placeholder:placeholder@localhost/placeholder npx prisma generate
 RUN pnpm build
 
 # ── Production runner ─────────────────────────────────────────────────────────
