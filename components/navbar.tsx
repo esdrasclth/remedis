@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import Image from "next/image";
 
 const NAV = [
   { label: "Características", href: "#features" },
@@ -35,7 +34,7 @@ export function Navbar() {
       <nav className="max-w-6xl mx-auto px-6 h-[62px] flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2.5 shrink-0">
-          <Image src="/iconoremedis.png" alt="Remedis" width={32} height={32} style={{ borderRadius: "4px" }} />
+          <img src="/iconoremedis.png" alt="Remedis" style={{ width: 32, height: 32, borderRadius: "4px", objectFit: "contain" }} />
           <span style={{ fontSize: "16px", fontWeight: 500, color: "#ffffff" }}>Remedis</span>
         </a>
 
