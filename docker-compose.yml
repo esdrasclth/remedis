@@ -23,6 +23,15 @@ services:
       restart: unless-stopped
       ports:
         - "3002:3000"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.remedis-app.rule=Host(`app.remedis.brandsofts.com`)"
+        - "traefik.http.routers.remedis-app.entrypoints=websecure"
+        - "traefik.http.routers.remedis-app.tls.certresolver=letsencrypt"
+        - "traefik.http.services.remedis-app.loadbalancer.server.port=3000"
+        - "traefik.http.routers.remedis-app-http.rule=Host(`app.remedis.brandsofts.com`)"
+        - "traefik.http.routers.remedis-app-http.entrypoints=web"
+        - "traefik.http.routers.remedis-app-http.middlewares=redirect-to-https"
       environment:
         NODE_ENV: production
         DATABASE_URL: "postgresql://remedis:remedis_dev@postgres:5432/remedis"
