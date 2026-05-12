@@ -10,6 +10,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Citas", href: "/appointments", icon: "CalendarDays" },
   { label: "Consultas", href: "/medical-records", icon: "Stethoscope" },
   { label: "Recetas", href: "/prescriptions", icon: "FileText" },
+  { label: "Incapacidades", href: "/incapacidades", icon: "ClipboardList" },
   { label: "Farmacia", href: "/pharmacy", icon: "Pill" },
   { label: "Inventario", href: "/inventory", icon: "Package" },
   { label: "Med. Permanentes", href: "/permanent-meds", icon: "Heart" },

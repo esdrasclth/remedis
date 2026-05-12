@@ -1,37 +1,100 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── DESIGN.md exact palette ── */
-  --color-deep-space-black: #0c0a08;
-  --color-pure-white:       #ffffff;
-  --color-ash-gray:         #1a1919;
-  --color-charcoal-black:   #000000;
-  --color-ivory-white:      #f4f2f0;
-  --color-slate-gray:       #999ba3;
-  --color-iron-gray:        #4d505d;
-  --color-midnight-ink:     #010412;
-  --color-ocean-abyss:      #0b0d1b;
-  --color-silver-mist:      #d2cecb;
+  /* ── Brand accent (never change) ── */
   --color-sunbeam-yellow:   #e4f222;
   --color-emerald-green:    #00d638;
   --color-deep-sea-blue:    #5683d2;
   --color-electric-blue:    #0066ff;
   --color-blaze-orange:     #ff492c;
+  --color-charcoal-black:   #0c0a08;
 
-  /* ── Font: Inter (Lausanne substitute per DESIGN.md) ── */
+  /* ── Semantic tokens — dark defaults, overridden by .light ── */
+  --color-deep-space-black: #0c0a08;
+  --color-ash-gray:         #1a1919;
+  --color-pure-white:       #ffffff;
+  --color-slate-gray:       #999ba3;
+  --color-iron-gray:        #4d505d;
+  --color-ivory-white:      #f4f2f0;
+  --color-silver-mist:      #d2cecb;
+
+  /* ── Static palette ── */
+  --color-midnight-ink:     #010412;
+  --color-ocean-abyss:      #0b0d1b;
+
+  /* ── Structural tokens — dark defaults, overridden by .light ── */
+  --color-panel-bg:     #141210;
+  --color-input-bg:     #2a2825;
+  --color-input-focus:  #322f2c;
+  --color-table-header: #222120;
+  --color-surface-dim:  #181716;
+  --color-auth-panel:   #0e0d0b;
+  --color-hover-bg:     #252320;
+  --color-divider:      rgba(255, 255, 255, 0.06);
+
+  /* ── Font ── */
   --font-lausanne: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* ── DESIGN.md border radii ── */
-  --radius-nav:     4px;
-  --radius-card:    12px;
-  --radius-input:   10px;
-  --radius-btn:     4px;
+  /* ── Radii ── */
+  --radius-nav:   4px;
+  --radius-card:  12px;
+  --radius-input: 10px;
+  --radius-btn:   4px;
 
-  /* ── DESIGN.md shadow ── */
+  /* ── Shadows ── */
   --shadow-subtle: rgba(255, 255, 255, 0.6) 0px 0px 2px 0px inset;
 
-  /* ── Layout constants ── */
-  --header-h: 56px;   /* topbar & sidebar-header share this exact height */
+  /* ── Layout ── */
+  --header-h: 56px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   DARK THEME (default)
+══════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: dark;
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --border-divider: rgba(255, 255, 255, 0.06);
+}
+
+/* ══════════════════════════════════════════════════════════
+   LIGHT THEME — overrides @theme color tokens
+══════════════════════════════════════════════════════════ */
+.light {
+  color-scheme: light;
+
+  /* Override Tailwind color tokens */
+  --color-deep-space-black: #f4f3f1;
+  --color-ash-gray:         #ffffff;
+  --color-pure-white:       #0f0e0c;
+  --color-slate-gray:       #5c5e66;
+  --color-iron-gray:        #9395a0;
+  --color-ivory-white:      #0c0a08;
+  --color-silver-mist:      #4d505d;
+
+  /*
+   * Accent en modo claro: amarillo → ámbar oscuro (#a16207).
+   * #e4f222 (yellow neón) no tiene contraste sobre fondos claros.
+   * #a16207 cumple WCAG AA como texto sobre blanco (5.2:1) y como
+   * fondo con texto oscuro encima (ratio aceptable para elementos grandes).
+   */
+  --color-sunbeam-yellow: #a16207;
+
+  /* Override structural tokens */
+  --color-panel-bg:     #ebe9e6;
+  --color-input-bg:     #e8e6e3;
+  --color-input-focus:  #dedbd7;
+  --color-table-header: #f0eeeb;
+  --color-surface-dim:  #f0eeeb;
+  --color-hover-bg:     #eceae7;
+  --color-divider:      rgba(0, 0, 0, 0.07);
+
+  /* auth-panel stays dark */
+  --color-auth-panel: #0e0d0b;
+
+  /* Component tokens */
+  --modal-overlay: rgba(0, 0, 0, 0.4);
+  --border-divider: rgba(0, 0, 0, 0.07);
 }
 
 /* ── Base ── */

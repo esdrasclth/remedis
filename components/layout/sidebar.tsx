@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, CalendarDays, Stethoscope,
   FileText, Pill, Package, Heart, Truck, BarChart3,
-  Settings, Activity,
+  Settings, Activity, ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "./nav-items";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   LayoutDashboard, Users, CalendarDays, Stethoscope,
-  FileText, Pill, Package, Heart, Truck, BarChart3, Settings,
+  FileText, Pill, Package, Heart, Truck, BarChart3, Settings, ClipboardList,
 };
 
 interface SidebarProps {
@@ -20,22 +21,32 @@ interface SidebarProps {
   tenantLogo?: string | null;
 }
 
-export function Sidebar({ tenantName }: SidebarProps) {
+export function Sidebar({ tenantName, tenantLogo }: SidebarProps) {
   const pathname = usePathname();
 
   return (
     <aside
-      className="flex flex-col w-56 shrink-0 h-screen sticky top-0"
-      style={{ background: "#141210" }}
+      className="flex flex-col w-56 shrink-0 h-screen sticky top-0 bg-panel-bg border-r border-[var(--border-divider)]"
     >
       {/* ── Header — same height as topbar (--header-h: 56px) ── */}
       <div
         className="flex items-center gap-2.5 px-4 shrink-0"
         style={{ height: "var(--header-h, 56px)" }}
       >
-        <div className="w-7 h-7 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center shrink-0">
-          <Activity className="w-4 h-4 text-deep-space-black" strokeWidth={2.5} />
-        </div>
+        {tenantLogo ? (
+          <Image
+            src={tenantLogo}
+            alt={tenantName}
+            width={28}
+            height={28}
+            className="w-7 h-7 rounded-[4px] object-contain shrink-0"
+            unoptimized
+          />
+        ) : (
+          <div className="w-7 h-7 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center shrink-0">
+            <Activity className="w-4 h-4 text-charcoal-black" strokeWidth={2.5} />
+          </div>
+        )}
         <span className="font-medium text-[14px] text-pure-white truncate">
           {tenantName}
         </span>
@@ -57,7 +68,7 @@ export function Sidebar({ tenantName }: SidebarProps) {
                     "flex items-center gap-2.5 px-3 py-[7px] rounded-[4px] text-[13px] transition-colors",
                     isActive
                       ? "bg-ocean-abyss text-sunbeam-yellow font-medium"
-                      : "text-slate-gray hover:text-pure-white hover:bg-[#1a1919]"
+                      : "text-slate-gray hover:text-pure-white hover:bg-ash-gray"
                   )}
                 >
                   {Icon && (

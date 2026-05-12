@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Pencil, ClipboardList } from "lucide-react";
 import { getTenantFromHeaders } from "@/lib/tenant";
 import { getMedicalRecord } from "@/lib/actions/medical-records";
 import { Badge } from "@/components/ui/badge";
+import { ExportButtons } from "@/components/ui/export-buttons";
 
 const RX_VARIANT: Record<string, "success" | "warning" | "muted" | "danger"> = {
   EMITIDA: "success", DISPENSADA: "muted", PARCIAL: "warning", VENCIDA: "danger", CANCELADA: "muted",
@@ -59,14 +60,23 @@ export default async function MedicalRecordDetailPage({
             </p>
           </div>
         </div>
-        {record.employee && (
+        <div className="flex items-center gap-3">
+          <ExportButtons pdfUrl={`/api/exports/medical-records/${recordId}`} compact />
           <Link
-            href={`/patients/${record.employee.employeeNumber ? "" : ""}${record.employeeId}`}
-            className="text-[12px] text-iron-gray hover:text-pure-white transition-colors"
+            href={`/medical-records/${recordId}/edit`}
+            className="flex items-center gap-1.5 text-[12px] text-iron-gray hover:text-pure-white transition-colors"
           >
-            Ver expediente →
+            <Pencil className="w-3.5 h-3.5" /> Editar
           </Link>
-        )}
+          {record.employee && (
+            <Link
+              href={`/patients/${record.employeeId}`}
+              className="text-[12px] text-iron-gray hover:text-pure-white transition-colors"
+            >
+              Ver expediente →
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -88,7 +98,7 @@ export default async function MedicalRecordDetailPage({
                     ["SpO₂", v.spo2 != null ? `${v.spo2}%` : null],
                     ["FR", v.respiratoryRate != null ? `${v.respiratoryRate} rpm` : null],
                   ].filter(([, val]) => val !== null).map(([label, val]) => (
-                    <div key={label as string} className="bg-[#222120] rounded-[6px] px-3 py-2">
+                    <div key={label as string} className="bg-table-header rounded-[6px] px-3 py-2">
                       <p className="text-[10px] text-slate-gray uppercase tracking-wide">{label}</p>
                       <p className="text-[14px] text-pure-white font-medium mt-0.5">{val}</p>
                     </div>
@@ -147,7 +157,7 @@ export default async function MedicalRecordDetailPage({
               </p>
               <div className="space-y-3">
                 {rx.items.map(item => (
-                  <div key={item.id} className="bg-[#222120] rounded-[6px] px-3 py-2.5">
+                  <div key={item.id} className="bg-table-header rounded-[6px] px-3 py-2.5">
                     <p className="text-[12px] text-pure-white font-medium">{item.product.genericName}</p>
                     <p className="text-[11px] text-slate-gray mt-0.5">
                       {item.dose} · {item.frequency} · {item.duration}
@@ -171,7 +181,98 @@ export default async function MedicalRecordDetailPage({
               <p className="text-[12px] text-iron-gray">Sin receta en esta consulta</p>
             </div>
           )}
+
+          {/* Incapacidad */}
+          {record.incapacidad ? (
+            <IncapacidadCard incapacidad={record.incapacidad} recordId={recordId} />
+          ) : (
+            <div className="bg-ash-gray rounded-[12px] p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide flex items-center gap-1.5">
+                  <ClipboardList className="w-3.5 h-3.5" /> Incapacidad
+                </h3>
+              </div>
+              <p className="text-[12px] text-iron-gray">Sin incapacidad en esta consulta</p>
+              <Link
+                href={`/incapacidades/new?recordId=${recordId}`}
+                className="inline-block text-[12px] text-sunbeam-yellow hover:text-sunbeam-yellow/80 transition-colors"
+              >
+                + Emitir incapacidad
+              </Link>
+            </div>
+          )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+const TIPO_LABEL: Record<string, string> = {
+  REPOSO_MEDICO:      "Reposo Médico",
+  INCAPACIDAD_IHSS:   "Incapacidad IHSS",
+  CERTIFICADO_TRABAJO:"Certificado Trabajo",
+};
+
+const ESTADO_VARIANT: Record<string, "success" | "warning" | "info" | "muted" | "danger"> = {
+  EMITIDA:            "success",
+  ENTREGADA_PACIENTE: "info",
+  PRESENTADA_RRHH:    "warning",
+  CANCELADA:          "muted",
+};
+
+const ESTADO_LABEL: Record<string, string> = {
+  EMITIDA:            "Emitida",
+  ENTREGADA_PACIENTE: "Entregada",
+  PRESENTADA_RRHH:    "En RRHH",
+  CANCELADA:          "Cancelada",
+};
+
+type RecordData = NonNullable<Awaited<ReturnType<typeof getMedicalRecord>>>;
+
+function IncapacidadCard({
+  incapacidad: inc,
+  recordId,
+}: {
+  incapacidad: NonNullable<RecordData["incapacidad"]>;
+  recordId: string;
+}) {
+  return (
+    <div className="bg-ash-gray rounded-[12px] p-5 space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide flex items-center gap-1.5">
+          <ClipboardList className="w-3.5 h-3.5" /> Incapacidad
+        </h3>
+        <Badge variant={ESTADO_VARIANT[inc.estado] ?? "muted"}>
+          {ESTADO_LABEL[inc.estado] ?? inc.estado}
+        </Badge>
+      </div>
+
+      <div className="bg-table-header rounded-[6px] px-3 py-2.5 space-y-1.5">
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-mono text-sunbeam-yellow">{inc.folio}</p>
+          <p className="text-[11px] text-iron-gray">{TIPO_LABEL[inc.tipo] ?? inc.tipo}</p>
+        </div>
+        <p className="text-[13px] text-pure-white font-medium">{inc.dias} día{inc.dias !== 1 ? "s" : ""} de reposo</p>
+        <p className="text-[11px] text-slate-gray">
+          {new Date(inc.fechaInicio).toLocaleDateString("es-HN")}
+          {" → "}
+          {new Date(inc.fechaFin).toLocaleDateString("es-HN")}
+        </p>
+        {inc.fechaRetorno && (
+          <p className="text-[11px] text-iron-gray">
+            Retorno: {new Date(inc.fechaRetorno).toLocaleDateString("es-HN")}
+          </p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <ExportButtons pdfUrl={`/api/exports/incapacidad/${inc.id}`} compact />
+        <Link
+          href={`/incapacidades/${inc.id}`}
+          className="text-[12px] text-iron-gray hover:text-pure-white transition-colors"
+        >
+          Ver detalle →
+        </Link>
       </div>
     </div>
   );

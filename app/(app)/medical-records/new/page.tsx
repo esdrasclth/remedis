@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getTenantFromHeaders } from "@/lib/tenant";
+import { getTenantFromHeaders, getClinicType } from "@/lib/tenant";
 import { auth } from "@/lib/auth";
 import { getAppointments } from "@/lib/actions/appointments";
 import { RecordForm } from "@/components/medical-records/record-form";
@@ -15,6 +15,7 @@ export default async function NewMedicalRecordPage({
   if (!tenantId || !session?.user?.id) return null;
 
   const { appointmentId, employeeId } = await searchParams;
+  const clinicType = await getClinicType(tenantId);
 
   let appointment = null;
   if (appointmentId) {
@@ -52,6 +53,7 @@ export default async function NewMedicalRecordPage({
         <RecordForm
           tenantId={tenantId}
           doctorId={session.user.id}
+          clinicType={clinicType}
           appointment={appointment}
         />
       </div>

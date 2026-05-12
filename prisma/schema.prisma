@@ -9,7 +9,13 @@ datasource db {
 
 // ─── ENUMS ────────────────────────────────────────────────────────────────────
 
+enum ClinicType {
+  EMPRESA
+  PRIVADA
+}
+
 enum TenantPlan {
+  TRIAL
   BASIC
   PROFESSIONAL
   ENTERPRISE
@@ -121,6 +127,19 @@ enum AlertStatus {
   RESUELTA
 }
 
+enum IncapacidadTipo {
+  REPOSO_MEDICO
+  INCAPACIDAD_IHSS
+  CERTIFICADO_TRABAJO
+}
+
+enum IncapacidadEstado {
+  EMITIDA
+  ENTREGADA_PACIENTE
+  PRESENTADA_RRHH
+  CANCELADA
+}
+
 enum DependentRelationship {
   CONYUGUE
   HIJO
@@ -136,12 +155,16 @@ model Tenant {
   id            String       @id @default(cuid())
   name          String
   slug          String       @unique
-  plan          TenantPlan   @default(BASIC)
+  plan          TenantPlan   @default(TRIAL)
+  clinicType    ClinicType   @default(EMPRESA)
   status        TenantStatus @default(ACTIVE)
   stripeId      String?      @unique
   logo          String?
   primaryColor  String?
   config        Json         @default("{}")
+  trialEndsAt   DateTime?
+  planExpiresAt DateTime?
+  planNotes     String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -159,8 +182,25 @@ model Tenant {
   inventoryMovements InventoryMovement[]
   permanentMeds PermanentMedication[]
   medicalRecords MedicalRecord[]
+  planRequests  PlanRequest[]
+  incapacidades Incapacidad[]
 
   @@map("tenants")
+}
+
+model PlanRequest {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  planKey      String
+  billing      String
+  contactName  String
+  contactEmail String
+  message      String?
+  status       String   @default("PENDING")
+  createdAt    DateTime @default(now())
+
+  @@map("plan_requests")
 }
 
 model Clinic {
@@ -192,9 +232,13 @@ model User {
   emailVerified   DateTime?
   hashedPassword  String?
   name            String?
+  avatar          String?
   role            UserRole  @default(RECEPCIONISTA)
+  specialty       String?
+  licenseNumber   String?
   signatureImage  String?
   isActive        Boolean   @default(true)
+  onboardingDone  Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -208,6 +252,8 @@ model User {
   prescriptionsIssued   Prescription[]    @relation("DoctorPrescriptions")
   dispensationsBy       Dispensation[]    @relation("PharmacistDispensations")
   inventoryMovementsBy  InventoryMovement[]
+  alerts                Alert[]
+  incapacidadesEmitidas Incapacidad[]     @relation("DoctorIncapacidades")
 
   @@map("users")
 }
@@ -278,6 +324,7 @@ model Employee {
   prescriptions  Prescription[]
   dispensations  Dispensation[]
   permanentMeds  PermanentMedication[]
+  incapacidades  Incapacidad[]
 
   @@unique([tenantId, employeeNumber])
   @@map("employees")
@@ -300,6 +347,7 @@ model Dependent {
   medicalRecords MedicalRecord[]
   prescriptions  Prescription[]
   dispensations  Dispensation[]
+  incapacidades  Incapacidad[]
 
   @@map("dependents")
 }
@@ -373,6 +421,7 @@ model MedicalRecord {
   vitalSigns  VitalSigns?
   diagnoses   Diagnosis[]
   prescriptions Prescription[]
+  incapacidad Incapacidad?
 
   @@map("medical_records")
 }
@@ -481,6 +530,7 @@ model Product {
   requiresPrescription Boolean         @default(false)
   defaultSource        ProductSource   @default(EMPRESA)
   minStock             Int             @default(0)
+  unitCost             Float?
   isActive             Boolean         @default(true)
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
@@ -675,11 +725,47 @@ model PurchaseReceipt {
   @@map("purchase_receipts")
 }
 
+// ─── INCAPACIDADES ────────────────────────────────────────────────────────────
+
+model Incapacidad {
+  id              String            @id @default(cuid())
+  folio           String            @unique
+  tenantId        String
+  medicalRecordId String            @unique
+  doctorId        String
+  employeeId      String?
+  dependentId     String?
+  tipo            IncapacidadTipo
+  estado          IncapacidadEstado @default(EMITIDA)
+  fechaInicio     DateTime
+  fechaFin        DateTime
+  dias            Int
+  diagnostico     String
+  motivo          String
+  restricciones   String?
+  recomendaciones String?
+  fechaRetorno    DateTime?
+  esIHSS          Boolean           @default(false)
+  numeroIHSS      String?
+  pdfUrl          String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+  doctor        User          @relation("DoctorIncapacidades", fields: [doctorId], references: [id])
+  employee      Employee?     @relation(fields: [employeeId], references: [id])
+  dependent     Dependent?    @relation(fields: [dependentId], references: [id])
+
+  @@map("incapacidades")
+}
+
 // ─── ALERTS ───────────────────────────────────────────────────────────────────
 
 model Alert {
   id         String      @id @default(cuid())
   tenantId   String
+  userId     String?
   type       AlertType
   status     AlertStatus @default(PENDIENTE)
   entityId   String?
@@ -690,6 +776,7 @@ model Alert {
   createdAt  DateTime    @default(now())
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("alerts")
 }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { incapacidadInputSchema } from "./incapacidades";
 
 export const diagnosisInputSchema = z.object({
   cie10Code:   z.string().min(1),
@@ -14,6 +15,7 @@ export const prescriptionItemInputSchema = z.object({
   duration:     z.string().min(1, "Duración requerida"),
   instructions: z.string().optional(),
   quantity:     z.number().int().min(1).default(1),
+  isPermanent:  z.boolean().default(false),
 });
 
 export const medicalRecordSchema = z.object({
@@ -40,8 +42,11 @@ export const medicalRecordSchema = z.object({
   diagnoses:              z.array(diagnosisInputSchema).default([]),
   prescriptionItems:      z.array(prescriptionItemInputSchema).default([]),
   prescriptionExpireDays: z.number().min(1).max(365).default(30),
+  incapacidad:            incapacidadInputSchema.optional(),
 });
 
 export type MedicalRecordInput    = z.infer<typeof medicalRecordSchema>;
 export type DiagnosisInput        = z.infer<typeof diagnosisInputSchema>;
 export type PrescriptionItemInput = z.infer<typeof prescriptionItemInputSchema>;
+export { incapacidadInputSchema };
+export type { IncapacidadInput } from "./incapacidades";
