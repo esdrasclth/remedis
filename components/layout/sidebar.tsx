@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, CalendarDays, Stethoscope,
   FileText, Pill, Package, Heart, Truck, BarChart3,
-  Settings, Activity, ClipboardList,
+  Settings, ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "./nav-items";
@@ -43,9 +43,13 @@ export function Sidebar({ tenantName, tenantLogo }: SidebarProps) {
             unoptimized
           />
         ) : (
-          <div className="w-7 h-7 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center shrink-0">
-            <Activity className="w-4 h-4 text-charcoal-black" strokeWidth={2.5} />
-          </div>
+          <Image
+            src="/images/iconoremedis.png"
+            alt="Remedis"
+            width={28}
+            height={28}
+            className="w-7 h-7 rounded-[4px] object-contain shrink-0"
+          />
         )}
         <span className="font-medium text-[14px] text-pure-white truncate">
           {tenantName}

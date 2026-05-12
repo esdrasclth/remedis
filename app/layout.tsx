@@ -13,6 +13,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Remedis — Sistema de Gestión de Clínica",
   description: "Control total de tu clínica empresarial",
+  icons: {
+    icon: "/images/iconoremedis.png",
+    apple: "/images/iconoremedis.png",
+    shortcut: "/images/iconoremedis.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -198,6 +198,7 @@ export async function deleteTenant(tenantId: string): Promise<ActionResult> {
       await tx.purchaseReceipt.deleteMany({ where: { purchaseOrder: { tenantId } } });
 
       // 2. Mid-level records
+      await tx.incapacidad.deleteMany({ where: { tenantId } });
       await tx.dispensation.deleteMany({ where: { tenantId } });
       await tx.prescription.deleteMany({ where: { tenantId } });
       await tx.medicalRecord.deleteMany({ where: { tenantId } });

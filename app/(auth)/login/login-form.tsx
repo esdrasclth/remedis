@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Activity, Eye, EyeOff, CheckCircle } from "lucide-react";
+import Image from "next/image";
+import { Eye, EyeOff, CheckCircle } from "lucide-react";
 
 export function LoginForm() {
   const router = useRouter();
@@ -45,9 +46,7 @@ export function LoginForm() {
 
         {/* Content sits above overlay */}
         <div className="relative z-10 flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center">
-            <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
-          </div>
+          <Image src="/images/iconoremedis.png" alt="Remedis" width={32} height={32} className="w-8 h-8 rounded-[4px] object-contain" />
           <span className="text-pure-white font-medium text-[18px]">Remedis</span>
         </div>
 
@@ -68,9 +67,7 @@ export function LoginForm() {
         <div className="w-full max-w-[360px]">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
-            <div className="w-8 h-8 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center">
-              <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
-            </div>
+            <Image src="/images/iconoremedis.png" alt="Remedis" width={32} height={32} className="w-8 h-8 rounded-[4px] object-contain" />
             <span className="font-medium text-[18px] text-pure-white">Remedis</span>
           </div>
 

@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Activity, CheckCircle, Eye, EyeOff, ArrowLeft, ArrowRight,
+  CheckCircle, Eye, EyeOff, ArrowLeft, ArrowRight,
   Building2, User, Sparkles, Briefcase, Stethoscope,
 } from "lucide-react";
 import { step1Schema, step2Schema } from "@/lib/validations/register";
@@ -182,9 +183,7 @@ export function RegisterForm() {
         <div className="absolute inset-0 bg-auth-panel/80 backdrop-blur-[1px]" />
 
         <div className="relative z-10 flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center">
-            <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
-          </div>
+          <Image src="/images/iconoremedis.png" alt="Remedis" width={32} height={32} className="w-8 h-8 rounded-[4px] object-contain" />
           <span className="text-pure-white font-medium text-[18px]">Remedis</span>
         </div>
 
@@ -263,7 +262,7 @@ export function RegisterForm() {
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
             <div className="w-8 h-8 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center">
-              <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
+              <Image src="/images/iconoremedis.png" alt="Remedis" width={32} height={32} className="w-8 h-8 rounded-[4px] object-contain" />
             </div>
             <span className="font-medium text-[18px] text-pure-white">Remedis</span>
           </div>
@@ -530,7 +529,7 @@ export function RegisterForm() {
                   badge={isEmpresa ? "EMPRESA" : "PRIVADA"}
                 />
                 <SummaryRow label={isEmpresa ? "Empresa" : "Clínica"} value={companyName} />
-                <SummaryRow label="Subdominio" value={`${slug}.remedis.com`} />
+                <SummaryRow label="Subdominio" value={`${slug}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "remedis.brandsofts.com"}`} />
                 {rtn && <SummaryRow label="RTN" value={rtn} />}
                 <SummaryRow label="Administrador" value={adminName} />
                 <SummaryRow label="Email" value={adminEmail} />
