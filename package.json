@@ -46,7 +46,9 @@
     "onlyBuiltDependencies": [
       "@prisma/engines",
       "esbuild",
-      "prisma"
+      "prisma",
+      "sharp",
+      "unrs-resolver"
     ]
   },
   "devDependencies": {
