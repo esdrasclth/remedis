@@ -91,7 +91,7 @@ export function AppointmentList({ appointments, tenantId, today }: Props) {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className={`${COL.time}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Hora</th>
                 <th className={`${COL.patient} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Paciente</th>
                 <th className={`${COL.type}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Tipo</th>

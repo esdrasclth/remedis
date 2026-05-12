@@ -105,7 +105,7 @@ export function ReceiveForm({ tenantId, userId, order, warehouses }: Props) {
       {batches.map((b, idx) => (
         <div
           key={b.orderItemId}
-          className={`rounded-[8px] p-4 space-y-3 transition-colors ${b.include ? "bg-[#2a2825]" : "bg-[#1e1c1a]"}`}
+          className={`rounded-[8px] p-4 space-y-3 transition-colors ${b.include ? "bg-input-bg" : "bg-[#1e1c1a]"}`}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -154,7 +154,7 @@ export function ReceiveForm({ tenantId, userId, order, warehouses }: Props) {
                 onChange={e => update(idx, "source", e.target.value as "EMPRESA" | "IHSS")}
               >
                 <option value="EMPRESA">Empresa</option>
-                <option value="IHSS">IHSS</option>
+                <option value="IHSS">Seguro Social</option>
               </Select>
             </div>
           )}

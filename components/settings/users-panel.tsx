@@ -95,7 +95,7 @@ export function UsersPanel({ tenantId, users: initial }: Props) {
       <div className="bg-ash-gray rounded-[12px] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#222120]">
+            <tr className="bg-table-header">
               <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Usuario</th>
               <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Rol</th>
               <th className="w-28 px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Estado</th>
@@ -118,7 +118,7 @@ export function UsersPanel({ tenantId, users: initial }: Props) {
                         value={u.role}
                         disabled={!!busy}
                         onChange={e => handleRoleChange(u.id, e.target.value)}
-                        className="w-full appearance-none bg-[#222120] border border-iron-gray/40 rounded-[8px] px-3 py-1.5 text-[12px] text-pure-white pr-7 cursor-pointer focus:outline-none focus:border-iron-gray disabled:opacity-50"
+                        className="w-full appearance-none bg-table-header border border-iron-gray/40 rounded-[8px] px-3 py-1.5 text-[12px] text-pure-white pr-7 cursor-pointer focus:outline-none focus:border-iron-gray disabled:opacity-50"
                       >
                         {ROLES.map(r => (
                           <option key={r} value={r}>{ROLE_LABEL[r]}</option>
@@ -164,7 +164,7 @@ export function UsersPanel({ tenantId, users: initial }: Props) {
               <select
                 value={role}
                 onChange={e => setRole(e.target.value)}
-                className="w-full appearance-none bg-[#2a2825] border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white pr-8 focus:outline-none focus:border-iron-gray"
+                className="w-full appearance-none bg-input-bg border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white pr-8 focus:outline-none focus:border-iron-gray"
               >
                 {ROLES.map(r => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
               </select>

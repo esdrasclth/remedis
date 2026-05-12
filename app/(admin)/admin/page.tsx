@@ -65,7 +65,7 @@ export default async function AdminOverviewPage() {
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-[#222120]">
+            <tr className="bg-table-header">
               <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Empresa</th>
               <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Plan</th>
               <th className="w-28 px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Estado</th>

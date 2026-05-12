@@ -3,6 +3,7 @@ import { FileText } from "lucide-react";
 import { getTenantFromHeaders } from "@/lib/tenant";
 import { getPrescriptions } from "@/lib/actions/medical-records";
 import { Badge } from "@/components/ui/badge";
+import { ExportButtons } from "@/components/ui/export-buttons";
 
 const STATUS_VARIANT: Record<string, "success" | "warning" | "muted" | "danger" | "info"> = {
   EMITIDA:    "success",
@@ -58,7 +59,7 @@ export default async function PrescriptionsPage() {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className={`${COL.date}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Fecha</th>
                 <th className={`${COL.patient} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Paciente</th>
                 <th className={`${COL.doctor}  text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Médico</th>
@@ -94,7 +95,7 @@ export default async function PrescriptionsPage() {
                     <td className={COL.items}>
                       <div className="flex flex-wrap gap-1">
                         {rx.items.slice(0, 3).map(item => (
-                          <span key={item.id} className="text-[11px] text-slate-gray bg-[#222120] rounded px-1.5 py-0.5">
+                          <span key={item.id} className="text-[11px] text-slate-gray bg-table-header rounded px-1.5 py-0.5">
                             {item.product.genericName}
                           </span>
                         ))}
@@ -110,14 +111,20 @@ export default async function PrescriptionsPage() {
                       <Badge variant={STATUS_VARIANT[rx.status]}>{STATUS_LABEL[rx.status]}</Badge>
                     </td>
                     <td className={COL.action}>
-                      {rx.medicalRecordId && (
-                        <Link
-                          href={`/medical-records/${rx.medicalRecordId}`}
-                          className="text-[12px] text-iron-gray hover:text-pure-white opacity-0 group-hover:opacity-100 transition-all"
-                        >
-                          Ver →
-                        </Link>
-                      )}
+                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <ExportButtons
+                          pdfUrl={`/api/exports/prescription/${rx.id}`}
+                          compact
+                        />
+                        {rx.medicalRecordId && (
+                          <Link
+                            href={`/medical-records/${rx.medicalRecordId}`}
+                            className="text-[12px] text-iron-gray hover:text-pure-white"
+                          >
+                            Ver →
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

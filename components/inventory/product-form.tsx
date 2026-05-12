@@ -35,6 +35,7 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
       requiresPrescription: initial?.requiresPrescription ?? false,
       defaultSource:        initial?.defaultSource ?? "EMPRESA",
       minStock:             initial?.minStock ?? 0,
+      unitCost:             initial?.unitCost ?? undefined,
     },
   });
 
@@ -70,7 +71,7 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
           </Select>
           <Select id="defaultSource" label="Fuente *" error={errors.defaultSource?.message} {...register("defaultSource")}>
             <option value="EMPRESA">Empresa</option>
-            <option value="IHSS">IHSS</option>
+            <option value="IHSS">Seguro Social</option>
           </Select>
         </div>
         {isMed && (
@@ -116,6 +117,8 @@ export function ProductForm({ tenantId, initial }: ProductFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input id="minStock" label="Stock mínimo (alerta)" type="number" min="0" placeholder="0"
             error={errors.minStock?.message} {...register("minStock")} />
+          <Input id="unitCost" label="Costo unitario (L)" type="number" min="0" step="0.01" placeholder="0.00"
+            error={errors.unitCost?.message} {...register("unitCost")} />
         </div>
         <p className="text-[12px] text-[#5a5854]">
           Se mostrará alerta cuando el stock total sea igual o menor a este valor.

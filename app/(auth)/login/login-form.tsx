@@ -33,26 +33,34 @@ export function LoginForm() {
     <div className="min-h-screen flex bg-deep-space-black">
       {/* Left — branding panel */}
       <div
-        className="hidden lg:flex flex-col justify-between w-[400px] shrink-0 p-10"
-        style={{ background: "#0e0d0b" }}
+        className="hidden lg:flex flex-col justify-between w-[580px] shrink-0 p-12 relative overflow-hidden"
+        style={{
+          backgroundImage: "url('/images/auth-bg.jpg')",
+          backgroundSize:  "cover",
+          backgroundPosition: "center",
+        }}
       >
-        <div className="flex items-center gap-2.5">
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-auth-panel/80 backdrop-blur-[1px]" />
+
+        {/* Content sits above overlay */}
+        <div className="relative z-10 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center">
             <Activity className="w-5 h-5 text-deep-space-black" strokeWidth={2.5} />
           </div>
           <span className="text-pure-white font-medium text-[18px]">Remedis</span>
         </div>
 
-        <div className="space-y-3">
-          <p className="text-[26px] font-medium text-pure-white leading-snug">
-            Gestión clínica empresarial para Honduras
+        <div className="relative z-10 space-y-4">
+          <p className="text-[32px] font-medium text-pure-white leading-tight">
+            Salud que se gestiona,<br />vida que se cuida.
           </p>
-          <p className="text-[14px] text-slate-gray leading-relaxed">
-            Inventario médico, dispensación, consultas y farmacia — todo en un solo sistema.
+          <p className="text-[15px] text-slate-gray leading-relaxed">
+            Expedientes clínicos, farmacia, inventario y dispensación — todo integrado en una sola plataforma.
           </p>
         </div>
 
-        <p className="text-[12px] text-iron-gray">© {new Date().getFullYear()} Remedis</p>
+        <p className="relative z-10 text-[12px] text-iron-gray">© {new Date().getFullYear()} Remedis</p>
       </div>
 
       {/* Right — form */}

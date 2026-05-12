@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { registerSchema } from "@/lib/validations/register";
+import { sendEmail, welcomeTenantEmail } from "@/lib/email";
 
 type RegisterResult =
   | { success: true; slug: string }
@@ -17,7 +18,7 @@ export async function registerTenant(raw: unknown): Promise<RegisterResult> {
   const parsed = registerSchema.safeParse(raw);
   if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
 
-  const { companyName, slug, rtn, adminName, adminEmail, password } = parsed.data;
+  const { companyName, slug, rtn, clinicType, adminName, adminEmail, password } = parsed.data;
 
   const slugTaken = await prisma.tenant.findUnique({ where: { slug } });
   if (slugTaken) return { success: false, error: "Ese subdominio ya está en uso" };
@@ -28,12 +29,16 @@ export async function registerTenant(raw: unknown): Promise<RegisterResult> {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   await prisma.$transaction(async tx => {
+    const trialEndsAt = new Date(Date.now() + 14 * 86400000);
+
     const tenant = await tx.tenant.create({
       data: {
-        name:   companyName,
+        name:        companyName,
         slug,
-        plan:   "BASIC",
-        status: "ACTIVE",
+        plan:        "TRIAL",
+        clinicType,
+        status:      "ACTIVE",
+        trialEndsAt,
         config: { rtn: rtn ?? "", prescriptionValidDays: 30, legalText: "" },
       },
     });
@@ -53,13 +58,27 @@ export async function registerTenant(raw: unknown): Promise<RegisterResult> {
       data: { tenantId: tenant.id, name: companyName },
     });
 
-    await tx.warehouse.createMany({
-      data: [
-        { tenantId: tenant.id, name: "Farmacia Empresa", source: "EMPRESA" },
-        { tenantId: tenant.id, name: "Farmacia IHSS",    source: "IHSS" },
-      ],
-    });
+    const warehouses = clinicType === "PRIVADA"
+      ? [{ tenantId: tenant.id, name: "Farmacia Principal", source: "EMPRESA" as const }]
+      : [
+          { tenantId: tenant.id, name: "Farmacia Empresa", source: "EMPRESA" as const },
+          { tenantId: tenant.id, name: "Farmacia Seguro Social", source: "IHSS" as const },
+        ];
+    await tx.warehouse.createMany({ data: warehouses });
   });
+
+  // Send welcome email (non-blocking)
+  sendEmail({
+    to:      adminEmail,
+    subject: `¡Bienvenido a Remedis, ${adminName}!`,
+    html:    welcomeTenantEmail({
+      adminName,
+      companyName,
+      slug,
+      clinicType,
+      trialDays: 14,
+    }),
+  }).catch(err => console.error("[register] Welcome email failed:", err));
 
   return { success: true, slug };
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 import { getTenantFromHeaders } from "@/lib/tenant";
 import {
   getFullStockReport,
@@ -7,6 +7,7 @@ import {
   getConsumptionReport,
   getAppointmentReport,
   getMorbidityReport,
+  getFinancialReport,
 } from "@/lib/actions/reports";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,36 +17,42 @@ const TABS = [
   { key: "consumo",       label: "Consumo" },
   { key: "citas",         label: "Citas" },
   { key: "morbilidad",    label: "Morbilidad" },
+  { key: "financiero",    label: "Financiero" },
 ] as const;
 
 type Tab = typeof TABS[number]["key"];
 
-function monthBounds() {
-  const now   = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-  return { start, end };
+function monthBounds(year?: number, month?: number) {
+  const now = new Date();
+  const y   = year  ?? now.getFullYear();
+  const m   = month ?? now.getMonth() + 1;
+  const start = new Date(y, m - 1, 1);
+  const end   = new Date(y, m, 0, 23, 59, 59);
+  return { start, end, year: y, month: m };
 }
 
 export default async function ReportsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; year?: string; month?: string }>;
 }) {
   const { tenantId } = await getTenantFromHeaders();
   if (!tenantId) return null;
 
-  const { tab = "inventario" } = await searchParams;
+  const { tab = "inventario", year: yearParam, month: monthParam } = await searchParams;
   const activeTab = TABS.find(t => t.key === tab)?.key ?? "inventario";
-  const { start, end } = monthBounds();
+
+  const now     = new Date();
+  const year    = yearParam  ? parseInt(yearParam)  : now.getFullYear();
+  const month   = monthParam ? parseInt(monthParam) : now.getMonth() + 1;
+  const { start, end } = monthBounds(year, month);
 
   return (
     <div className="space-y-6 p-6">
       <div>
         <h1 className="text-[20px] font-medium text-pure-white">Reportes</h1>
         <p className="text-[13px] text-slate-gray mt-0.5">
-          Datos en tiempo real — mes actual:{" "}
-          {start.toLocaleDateString("es-HN", { month: "long", year: "numeric" })}
+          Datos en tiempo real
         </p>
       </div>
 
@@ -57,7 +64,7 @@ export default async function ReportsPage({
             href={`/reports?tab=${t.key}`}
             className={`px-4 py-1.5 rounded-[6px] text-[13px] font-medium transition-colors whitespace-nowrap ${
               activeTab === t.key
-                ? "bg-sunbeam-yellow text-deep-space-black"
+                ? "bg-sunbeam-yellow text-charcoal-black"
                 : "text-slate-gray hover:text-pure-white"
             }`}
           >
@@ -71,6 +78,7 @@ export default async function ReportsPage({
       {activeTab === "consumo" && <ConsumptionReport tenantId={tenantId} start={start} end={end} />}
       {activeTab === "citas" && <AppointmentsReport tenantId={tenantId} start={start} end={end} />}
       {activeTab === "morbilidad" && <MorbidityReport tenantId={tenantId} start={start} end={end} />}
+      {activeTab === "financiero" && <FinancialReport tenantId={tenantId} year={year} month={month} />}
     </div>
   );
 }
@@ -101,7 +109,7 @@ async function StockReport({ tenantId }: { tenantId: string }) {
       <div className="rounded-[12px] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#222120]">
+            <tr className="bg-table-header">
               <th className={`${COL.name}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Producto</th>
               <th className={`${COL.cat}     text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Categoría</th>
               <th className={`${COL.batches} text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Lotes</th>
@@ -195,7 +203,7 @@ async function ExpiringReport({ tenantId }: { tenantId: string }) {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className={`${COL.product}   text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Producto</th>
                 <th className={`${COL.batch}     text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Lote</th>
                 <th className={`${COL.expiry}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Vencimiento</th>
@@ -254,7 +262,7 @@ async function ConsumptionReport({ tenantId, start, end }: { tenantId: string; s
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className="w-8 px-4 py-3 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">#</th>
                 <th className="w-auto px-4 py-3 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Medicamento</th>
                 <th className="w-32 px-4 py-3 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Categoría</th>
@@ -279,7 +287,7 @@ async function ConsumptionReport({ tenantId, start, end }: { tenantId: string; s
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 bg-[#222120] rounded-full h-1.5 overflow-hidden">
+                        <div className="w-16 bg-table-header rounded-full h-1.5 overflow-hidden">
                           <div
                             className="h-full bg-sunbeam-yellow rounded-full"
                             style={{ width: `${pct}%` }}
@@ -351,6 +359,132 @@ async function AppointmentsReport({ tenantId, start, end }: { tenantId: string; 
   );
 }
 
+// ─── Financial Report ──────────────────────────────────────────────────────────
+
+const MONTH_NAMES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+function prevMonth(year: number, month: number) {
+  if (month === 1) return { year: year - 1, month: 12 };
+  return { year, month: month - 1 };
+}
+function nextMonth(year: number, month: number) {
+  if (month === 12) return { year: year + 1, month: 1 };
+  return { year, month: month + 1 };
+}
+
+async function FinancialReport({ tenantId, year, month }: { tenantId: string; year: number; month: number }) {
+  const { productRows, totalInventoryValue, totalIncoming, totalOutgoing } =
+    await getFinancialReport(tenantId, year, month);
+
+  const prev = prevMonth(year, month);
+  const next = nextMonth(year, month);
+  const now  = new Date();
+  const isCurrentOrFuture = year > now.getFullYear() || (year === now.getFullYear() && month >= now.getMonth() + 1);
+
+  const fmt = (n: number) =>
+    `L ${n.toLocaleString("es-HN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  return (
+    <div className="space-y-5">
+      {/* Month navigation */}
+      <div className="flex items-center gap-3">
+        <Link
+          href={`/reports?tab=financiero&year=${prev.year}&month=${prev.month}`}
+          className="p-1.5 rounded-[6px] bg-ash-gray hover:bg-white/10 transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4 text-slate-gray" />
+        </Link>
+        <span className="text-[14px] font-medium text-pure-white min-w-[160px] text-center">
+          {MONTH_NAMES[month - 1]} {year}
+        </span>
+        {!isCurrentOrFuture && (
+          <Link
+            href={`/reports?tab=financiero&year=${next.year}&month=${next.month}`}
+            className="p-1.5 rounded-[6px] bg-ash-gray hover:bg-white/10 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4 text-slate-gray" />
+          </Link>
+        )}
+        {isCurrentOrFuture && (
+          <div className="p-1.5 rounded-[6px] bg-ash-gray opacity-30 cursor-not-allowed">
+            <ChevronRight className="w-4 h-4 text-slate-gray" />
+          </div>
+        )}
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-ash-gray rounded-[12px] px-5 py-4 space-y-1">
+          <p className="text-[11px] text-slate-gray uppercase tracking-wide">Valor en inventario</p>
+          <p className="text-[22px] font-medium text-pure-white tabular-nums">{fmt(totalInventoryValue)}</p>
+          <p className="text-[11px] text-iron-gray">Stock actual × costo unitario</p>
+        </div>
+        <div className="bg-ash-gray rounded-[12px] px-5 py-4 space-y-1">
+          <p className="text-[11px] text-emerald-green uppercase tracking-wide">Entradas del mes</p>
+          <p className="text-[22px] font-medium text-emerald-green tabular-nums">{fmt(totalIncoming)}</p>
+          <p className="text-[11px] text-iron-gray">Movimientos ENTRADA × costo</p>
+        </div>
+        <div className="bg-ash-gray rounded-[12px] px-5 py-4 space-y-1">
+          <p className="text-[11px] text-blaze-orange uppercase tracking-wide">Salidas del mes</p>
+          <p className="text-[22px] font-medium text-blaze-orange tabular-nums">{fmt(totalOutgoing)}</p>
+          <p className="text-[11px] text-iron-gray">Movimientos SALIDA × costo</p>
+        </div>
+      </div>
+
+      {/* Per-product table */}
+      <div className="rounded-[12px] overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-table-header">
+              <th className="w-auto px-4 py-3 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Producto</th>
+              <th className="w-28 px-4 py-3 text-right text-[11px] font-medium text-slate-gray uppercase tracking-wide">Costo unit.</th>
+              <th className="w-24 px-4 py-3 text-right text-[11px] font-medium text-slate-gray uppercase tracking-wide">Stock</th>
+              <th className="w-36 px-4 py-3 text-right text-[11px] font-medium text-slate-gray uppercase tracking-wide">Valor inventario</th>
+              <th className="w-32 px-4 py-3 text-right text-[11px] font-medium text-emerald-green uppercase tracking-wide">Entradas</th>
+              <th className="w-32 px-4 py-3 text-right text-[11px] font-medium text-blaze-orange uppercase tracking-wide">Salidas</th>
+            </tr>
+          </thead>
+          <tbody className="bg-ash-gray">
+            {productRows.map(p => (
+              <tr key={p.id} className="hover:bg-white/[0.04] transition-colors">
+                <td className="px-4 py-3">
+                  <Link href={`/inventory/${p.id}`} className="hover:underline">
+                    <p className="text-[13px] text-pure-white font-medium">{p.genericName}</p>
+                    {p.commercialName && <p className="text-[11px] text-slate-gray">{p.commercialName}</p>}
+                  </Link>
+                </td>
+                <td className="px-4 py-3 text-right text-[13px] text-slate-gray tabular-nums">
+                  {p.unitCost != null ? `L ${p.unitCost.toFixed(2)}` : <span className="text-iron-gray">—</span>}
+                </td>
+                <td className="px-4 py-3 text-right text-[13px] text-pure-white tabular-nums">
+                  {p.totalStock} {p.unit ?? ""}
+                </td>
+                <td className="px-4 py-3 text-right text-[13px] font-medium text-pure-white tabular-nums">
+                  {p.unitCost != null ? fmt(p.inventoryValue) : <span className="text-iron-gray">—</span>}
+                </td>
+                <td className="px-4 py-3 text-right text-[13px] text-emerald-green tabular-nums">
+                  {p.incoming > 0 ? fmt(p.incoming) : <span className="text-iron-gray">—</span>}
+                </td>
+                <td className="px-4 py-3 text-right text-[13px] text-blaze-orange tabular-nums">
+                  {p.outgoing > 0 ? fmt(p.outgoing) : <span className="text-iron-gray">—</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {productRows.every(p => p.unitCost == null) && (
+          <div className="bg-ash-gray px-4 py-6 text-center border-t border-white/5">
+            <p className="text-[13px] text-iron-gray">
+              Ningún producto tiene costo unitario configurado.{" "}
+              <Link href="/inventory" className="text-sunbeam-yellow hover:underline">Ir a inventario</Link> para asignar costos.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Morbidity Report ──────────────────────────────────────────────────────────
 
 async function MorbidityReport({ tenantId, start, end }: { tenantId: string; start: Date; end: Date }) {
@@ -368,7 +502,7 @@ async function MorbidityReport({ tenantId, start, end }: { tenantId: string; sta
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className="w-8 px-4 py-3 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">#</th>
                 <th className="w-24 px-4 py-3 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Código</th>
                 <th className="w-auto px-4 py-3 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Diagnóstico</th>
@@ -387,7 +521,7 @@ async function MorbidityReport({ tenantId, start, end }: { tenantId: string; sta
                     <td className="px-4 py-3 text-right text-[14px] font-medium text-pure-white tabular-nums">{d.count}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 bg-[#222120] rounded-full h-1.5 overflow-hidden">
+                        <div className="w-16 bg-table-header rounded-full h-1.5 overflow-hidden">
                           <div className="h-full bg-deep-sea-blue rounded-full" style={{ width: `${pct}%` }} />
                         </div>
                         <span className="text-[12px] text-slate-gray tabular-nums w-10 text-right">{pct}%</span>

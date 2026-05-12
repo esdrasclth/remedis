@@ -80,7 +80,7 @@ export function BatchList({
                   {b.warehouse.name}
                 </td>
                 <td className={COL.source}>
-                  <Badge variant={b.source === "IHSS" ? "warning" : "muted"}>{b.source}</Badge>
+                  <Badge variant={b.source === "IHSS" ? "warning" : "muted"}>{b.source === "IHSS" ? "Seguro Social" : "Empresa"}</Badge>
                 </td>
                 <td className={`${COL.initial} text-[13px] text-slate-gray tabular-nums`}>
                   {b.initialQty}

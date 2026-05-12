@@ -58,7 +58,7 @@ export function DependentForm({ tenantId, employeeId }: Props) {
             <select
               name="relationship"
               required
-              className="w-full bg-[#2a2825] border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white focus:outline-none focus:border-iron-gray"
+              className="w-full bg-input-bg border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white focus:outline-none focus:border-iron-gray"
             >
               <option value="">— Seleccionar —</option>
               {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
@@ -70,7 +70,7 @@ export function DependentForm({ tenantId, employeeId }: Props) {
             </label>
             <select
               name="gender"
-              className="w-full bg-[#2a2825] border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white focus:outline-none focus:border-iron-gray"
+              className="w-full bg-input-bg border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white focus:outline-none focus:border-iron-gray"
             >
               <option value="">Sin especificar</option>
               <option value="MASCULINO">Masculino</option>

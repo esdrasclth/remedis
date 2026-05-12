@@ -11,14 +11,20 @@ import { createWarehouse, updateWarehouse, deactivateWarehouse } from "@/lib/act
 
 type Warehouse = { id: string; name: string; source: string; isActive: boolean };
 
-interface Props { tenantId: string; warehouses: Warehouse[] }
+interface Props {
+  tenantId: string;
+  warehouses: Warehouse[];
+  clinicType?: "EMPRESA" | "PRIVADA";
+}
 
-const SOURCE_LABEL: Record<string, string> = { EMPRESA: "Empresa", IHSS: "IHSS" };
-const SOURCES = ["EMPRESA", "IHSS"] as const;
+const SOURCE_LABEL: Record<string, string> = { EMPRESA: "Empresa", IHSS: "Seguro Social" };
+const SOURCES_EMPRESA = ["EMPRESA", "IHSS"] as const;
+const SOURCES_PRIVADA = ["EMPRESA"] as const;
 
 type ModalMode = "create" | "edit";
 
-export function WarehousesPanel({ tenantId, warehouses: initial }: Props) {
+export function WarehousesPanel({ tenantId, warehouses: initial, clinicType = "EMPRESA" }: Props) {
+  const sources = clinicType === "PRIVADA" ? SOURCES_PRIVADA : SOURCES_EMPRESA;
   const router   = useRouter();
   const [wh,     setWh]     = useState(initial);
   const [modal,  setModal]  = useState(false);
@@ -77,7 +83,7 @@ export function WarehousesPanel({ tenantId, warehouses: initial }: Props) {
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Nombre</th>
                 <th className="w-28 px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Fuente</th>
                 <th className="w-28 px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Estado</th>
@@ -138,9 +144,9 @@ export function WarehousesPanel({ tenantId, warehouses: initial }: Props) {
               <select
                 value={source}
                 onChange={e => setSource(e.target.value)}
-                className="w-full appearance-none bg-[#2a2825] border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white pr-8 focus:outline-none focus:border-iron-gray"
+                className="w-full appearance-none bg-input-bg border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white pr-8 focus:outline-none focus:border-iron-gray"
               >
-                {SOURCES.map(s => <option key={s} value={s}>{SOURCE_LABEL[s]}</option>)}
+                {sources.map(s => <option key={s} value={s}>{SOURCE_LABEL[s]}</option>)}
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-iron-gray pointer-events-none" />
             </div>

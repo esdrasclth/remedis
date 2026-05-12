@@ -18,7 +18,14 @@ const COL = {
   action: "w-20    px-4 py-3 text-right",
 };
 
-export function EmployeeTable({ employees }: { employees: Employee[] }) {
+export function EmployeeTable({
+  employees,
+  clinicType = "EMPRESA",
+}: {
+  employees: Employee[];
+  clinicType?: "EMPRESA" | "PRIVADA";
+}) {
+  const isPrivada = clinicType === "PRIVADA";
   const [search, setSearch] = useState("");
 
   const filtered = employees.filter(e => {
@@ -44,7 +51,9 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
           />
         </div>
         <Link href="/patients/new">
-          <Button size="md"><Plus className="w-3.5 h-3.5" /> Nuevo paciente</Button>
+          <Button size="md">
+            <Plus className="w-3.5 h-3.5" /> {isPrivada ? "Nuevo paciente" : "Nuevo empleado"}
+          </Button>
         </Link>
       </div>
 
@@ -54,11 +63,16 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
             <Users className="w-5 h-5 text-iron-gray" />
           </div>
           <p className="text-[13px] text-slate-gray">
-            {search ? "Sin resultados para esa búsqueda" : "No hay pacientes registrados"}
+            {search
+              ? "Sin resultados para esa búsqueda"
+              : isPrivada ? "No hay pacientes registrados" : "No hay empleados registrados"}
           </p>
           {!search && (
             <Link href="/patients/new">
-              <Button size="sm"><Plus className="w-3.5 h-3.5" /> Registrar primer paciente</Button>
+              <Button size="sm">
+                <Plus className="w-3.5 h-3.5" />
+                {isPrivada ? "Registrar primer paciente" : "Registrar primer empleado"}
+              </Button>
             </Link>
           )}
         </div>
@@ -66,10 +80,14 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className={`${COL.name}   text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Paciente</th>
-                <th className={`${COL.emp}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>N° Empleado</th>
-                <th className={`${COL.dept}   text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Departamento</th>
+                <th className={`${COL.emp}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>
+                  {isPrivada ? "N° Expediente" : "N° Empleado"}
+                </th>
+                {!isPrivada && (
+                  <th className={`${COL.dept}   text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Departamento</th>
+                )}
                 <th className={`${COL.gender} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Género</th>
                 <th className={`${COL.appts}  text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Citas</th>
                 <th className={COL.action} />
@@ -87,9 +105,11 @@ export function EmployeeTable({ employees }: { employees: Employee[] }) {
                   <td className={`${COL.emp} font-mono text-[12px] text-slate-gray`}>
                     {e.employeeNumber}
                   </td>
-                  <td className={`${COL.dept} text-[12px] text-slate-gray`}>
-                    {e.department ?? "—"}
-                  </td>
+                  {!isPrivada && (
+                    <td className={`${COL.dept} text-[12px] text-slate-gray`}>
+                      {e.department ?? "—"}
+                    </td>
+                  )}
                   <td className={COL.gender}>
                     {e.gender ? (
                       <Badge variant="muted">

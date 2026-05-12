@@ -56,7 +56,7 @@ async function main() {
       id: "clinic-demo-001",
       tenantId: tenant.id,
       name: "Sede Principal",
-      address: "Tegucigalpa, Honduras",
+      address: "Ciudad de Ejemplo, País",
       phone: "+504 2222-0000",
     },
   });
@@ -67,7 +67,7 @@ async function main() {
     skipDuplicates: true,
     data: [
       { tenantId: tenant.id, clinicId: clinic.id, name: "Almacén Empresa", source: "EMPRESA" },
-      { tenantId: tenant.id, clinicId: clinic.id, name: "Almacén IHSS",    source: "IHSS" },
+      { tenantId: tenant.id, clinicId: clinic.id, name: "Almacén Seguro Social", source: "IHSS" },
     ],
   });
   console.log(`✓ Almacenes creados`);

@@ -22,7 +22,7 @@ export function Modal({ title, onClose, children, size = "md" }: ModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="absolute inset-0 bg-[var(--modal-overlay)]" onClick={onClose} />
       <div className={cn(
         "relative bg-ash-gray rounded-[12px] w-full mx-4 max-h-[90vh] overflow-y-auto",
         WIDTHS[size]

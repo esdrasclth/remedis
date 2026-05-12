@@ -35,7 +35,7 @@ export function DispensationHistory({ dispensations }: Props) {
     <div className="rounded-[12px] overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="bg-[#222120]">
+          <tr className="bg-table-header">
             <th className={`${COL.date}       text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Fecha</th>
             <th className={`${COL.patient}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Paciente</th>
             <th className={`${COL.type}       text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Modalidad</th>
@@ -74,7 +74,7 @@ export function DispensationHistory({ dispensations }: Props) {
                 <td className={COL.items}>
                   <div className="flex flex-wrap gap-1">
                     {products.slice(0, 3).map(name => (
-                      <span key={name} className="text-[11px] text-slate-gray bg-[#222120] rounded px-1.5 py-0.5 truncate max-w-[140px]">
+                      <span key={name} className="text-[11px] text-slate-gray bg-table-header rounded px-1.5 py-0.5 truncate max-w-[140px]">
                         {name}
                       </span>
                     ))}

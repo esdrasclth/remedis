@@ -10,6 +10,7 @@ export const productSchema = z.object({
   requiresPrescription: z.boolean().default(false),
   defaultSource: z.enum(["EMPRESA", "IHSS"]),
   minStock: z.coerce.number().min(0).default(0),
+  unitCost: z.coerce.number().min(0).optional(),
 });
 
 export const batchSchema = z.object({

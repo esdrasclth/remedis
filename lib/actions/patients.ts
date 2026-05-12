@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { employeeSchema, dependentSchema } from "@/lib/validations/patients";
+import { checkPlanLimit } from "@/lib/plan-limits";
 
 export type { EmployeeInput } from "@/lib/validations/patients";
 
@@ -67,6 +68,9 @@ export async function createEmployee(
 ): Promise<ActionResult<{ id: string }>> {
   const parsed = employeeSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+
+  const limit = await checkPlanLimit(tenantId, "employees");
+  if (!limit.allowed) return { success: false, error: limit.error };
 
   const existing = await prisma.employee.findUnique({
     where: { tenantId_employeeNumber: { tenantId, employeeNumber: parsed.data.employeeNumber } },

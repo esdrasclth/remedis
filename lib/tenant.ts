@@ -14,10 +14,16 @@ const TENANT_SELECT = {
   name: true,
   slug: true,
   plan: true,
+  clinicType: true,
   logo: true,
   primaryColor: true,
   config: true,
 } as const;
+
+export async function getClinicType(tenantId: string): Promise<"EMPRESA" | "PRIVADA"> {
+  const t = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { clinicType: true } });
+  return t?.clinicType ?? "EMPRESA";
+}
 
 export const getTenantBySlug = cache(async (slug: string) => {
   return prisma.tenant.findUnique({

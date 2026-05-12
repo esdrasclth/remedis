@@ -1,18 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Users, Package, Calendar, FileText, Pill, Stethoscope, Warehouse } from "lucide-react";
-import { getTenantDetail } from "@/lib/actions/admin";
+import { getTenantDetail, getPlanRequests } from "@/lib/actions/admin";
 import { Badge } from "@/components/ui/badge";
 import { TenantActions } from "@/components/admin/tenant-actions";
 
-const PLAN_VARIANT: Record<string, "muted" | "info" | "success"> = {
-  BASIC: "muted", PROFESSIONAL: "info", ENTERPRISE: "success",
+const PLAN_VARIANT: Record<string, "muted" | "info" | "success" | "warning"> = {
+  TRIAL: "warning", BASIC: "muted", PROFESSIONAL: "info", ENTERPRISE: "success",
 };
 const STATUS_VARIANT: Record<string, "success" | "danger"> = {
   ACTIVE: "success", SUSPENDED: "danger",
 };
 const STATUS_LABEL: Record<string, string> = { ACTIVE: "Activo", SUSPENDED: "Suspendido" };
-const PLAN_LABEL:   Record<string, string> = { BASIC: "Básico", PROFESSIONAL: "Profesional", ENTERPRISE: "Enterprise" };
+const PLAN_LABEL:   Record<string, string> = { TRIAL: "Trial", BASIC: "Básico", PROFESSIONAL: "Pro", ENTERPRISE: "Enterprise" };
 const ROLE_LABEL:   Record<string, string> = {
   SUPER_ADMIN: "Super Admin", ADMIN_CLINICA: "Admin", MEDICO: "Médico",
   ENFERMERA: "Enfermera", FARMACEUTICO: "Farmacéutico", RRHH: "RRHH",
@@ -25,7 +25,10 @@ export default async function TenantDetailPage({
   params: Promise<{ tenantId: string }>;
 }) {
   const { tenantId } = await params;
-  const tenant = await getTenantDetail(tenantId);
+  const [tenant, planRequests] = await Promise.all([
+    getTenantDetail(tenantId),
+    getPlanRequests(tenantId),
+  ]);
   if (!tenant) notFound();
 
   const config = (tenant.config ?? {}) as Record<string, unknown>;
@@ -43,6 +46,13 @@ export default async function TenantDetailPage({
               <h1 className="text-[20px] font-medium text-pure-white">{tenant.name}</h1>
               <Badge variant={PLAN_VARIANT[tenant.plan]}>{PLAN_LABEL[tenant.plan]}</Badge>
               <Badge variant={STATUS_VARIANT[tenant.status]}>{STATUS_LABEL[tenant.status]}</Badge>
+              <span className={`inline-flex items-center text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                tenant.clinicType === "PRIVADA"
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "bg-blue-500/10 text-blue-400"
+              }`}>
+                {tenant.clinicType === "PRIVADA" ? "Clínica Privada" : "Clínica Empresa"}
+              </span>
             </div>
             <p className="text-[13px] text-iron-gray font-mono mt-0.5">
               {tenant.slug}.remedis.com · Registro: {new Date(tenant.createdAt).toLocaleDateString("es-HN", { day: "numeric", month: "long", year: "numeric" })}
@@ -74,7 +84,7 @@ export default async function TenantDetailPage({
             </div>
             <table className="w-full">
               <thead>
-                <tr className="bg-[#222120]">
+                <tr className="bg-table-header">
                   <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Usuario</th>
                   <th className="w-32 px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Rol</th>
                   <th className="w-24 px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Estado</th>
@@ -125,7 +135,7 @@ export default async function TenantDetailPage({
                 {tenant.warehouses.map(w => (
                   <div key={w.id} className="flex items-center justify-between px-5 py-3">
                     <span className="text-[13px] text-pure-white">{w.name}</span>
-                    <Badge variant={w.source === "IHSS" ? "info" : "muted"}>{w.source}</Badge>
+                    <Badge variant={w.source === "IHSS" ? "info" : "muted"}>{w.source === "IHSS" ? "Seguro Social" : "Empresa"}</Badge>
                   </div>
                 ))}
               </div>
@@ -159,6 +169,11 @@ export default async function TenantDetailPage({
               tenantId={tenant.id}
               currentPlan={tenant.plan}
               currentStatus={tenant.status}
+              currentClinicType={tenant.clinicType}
+              trialEndsAt={tenant.trialEndsAt}
+              planExpiresAt={tenant.planExpiresAt}
+              planNotes={tenant.planNotes}
+              planRequests={planRequests}
             />
           </div>
         </div>

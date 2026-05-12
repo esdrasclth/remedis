@@ -49,7 +49,7 @@ export function OrderTable({ orders }: { orders: Order[] }) {
     <div className="rounded-[12px] overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="bg-[#222120]">
+          <tr className="bg-table-header">
             <th className={`${COL.date}     text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Fecha</th>
             <th className={`${COL.supplier} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Proveedor</th>
             <th className={`${COL.source}   text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Fuente</th>
@@ -76,7 +76,7 @@ export function OrderTable({ orders }: { orders: Order[] }) {
               <td className={COL.items}>
                 <div className="flex flex-wrap gap-1">
                   {o.items.slice(0, 3).map(i => (
-                    <span key={i.id} className="text-[11px] text-slate-gray bg-[#222120] rounded px-1.5 py-0.5 truncate max-w-[130px]">
+                    <span key={i.id} className="text-[11px] text-slate-gray bg-table-header rounded px-1.5 py-0.5 truncate max-w-[130px]">
                       {i.product.genericName}
                     </span>
                   ))}

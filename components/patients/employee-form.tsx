@@ -23,6 +23,7 @@ const BLOOD_TYPES: { value: string; label: string }[] = [
 interface Props {
   tenantId: string;
   employeeId?: string;
+  clinicType?: "EMPRESA" | "PRIVADA";
   defaultValues?: Partial<EmployeeInput> & {
     medicalHistory?: {
       bloodType?: string | null;
@@ -32,7 +33,8 @@ interface Props {
   };
 }
 
-export function EmployeeForm({ tenantId, employeeId, defaultValues = {} }: Props) {
+export function EmployeeForm({ tenantId, employeeId, clinicType = "EMPRESA", defaultValues = {} }: Props) {
+  const isPrivada = clinicType === "PRIVADA";
   const router  = useRouter();
   const [error,   setError]   = useState("");
   const [loading, setLoading] = useState(false);
@@ -95,7 +97,12 @@ export function EmployeeForm({ tenantId, employeeId, defaultValues = {} }: Props
       <section className="space-y-4">
         <h3 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide">Identificación</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Input name="employeeNumber" label="N° Empleado" required defaultValue={defaultValues.employeeNumber} />
+          <Input
+            name="employeeNumber"
+            label={isPrivada ? "N° Expediente" : "N° Empleado"}
+            required
+            defaultValue={defaultValues.employeeNumber}
+          />
           <Input name="firstName"      label="Nombre"      required defaultValue={defaultValues.firstName} />
           <Input name="lastName"       label="Apellido"    required defaultValue={defaultValues.lastName} />
         </div>
@@ -112,14 +119,16 @@ export function EmployeeForm({ tenantId, employeeId, defaultValues = {} }: Props
         <Input name="email" label="Correo electrónico" type="email" defaultValue={defaultValues.email} />
       </section>
 
-      {/* Información laboral */}
-      <section className="space-y-4">
-        <h3 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide">Información laboral</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <Input name="department" label="Departamento" defaultValue={defaultValues.department} />
-          <Input name="position"   label="Cargo"        defaultValue={defaultValues.position} />
-        </div>
-      </section>
+      {/* Información laboral — solo para clínicas de empresa */}
+      {!isPrivada && (
+        <section className="space-y-4">
+          <h3 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide">Información laboral</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <Input name="department" label="Departamento" defaultValue={defaultValues.department} />
+            <Input name="position"   label="Cargo"        defaultValue={defaultValues.position} />
+          </div>
+        </section>
+      )}
 
       {/* Antecedentes médicos */}
       <section className="space-y-4">
@@ -131,7 +140,7 @@ export function EmployeeForm({ tenantId, employeeId, defaultValues = {} }: Props
           <select
             value={bloodType}
             onChange={e => setBloodType(e.target.value)}
-            className="w-full bg-[#2a2825] border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white focus:outline-none focus:border-iron-gray"
+            className="w-full bg-input-bg border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-pure-white focus:outline-none focus:border-iron-gray"
           >
             <option value="">— Sin especificar —</option>
             {BLOOD_TYPES.map(bt => <option key={bt.value} value={bt.value}>{bt.label}</option>)}
@@ -157,7 +166,7 @@ export function EmployeeForm({ tenantId, employeeId, defaultValues = {} }: Props
               onChange={e => setAllergyInput(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addTag(allergies, setAllergies, allergyInput, setAllergyInput); }}}
               placeholder="Ej: Penicilina — presiona Enter para agregar"
-              className="flex-1 bg-[#2a2825] border border-iron-gray/40 rounded-[10px] px-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:border-iron-gray"
+              className="flex-1 bg-input-bg border border-iron-gray/40 rounded-[10px] px-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:border-iron-gray"
             />
             <Button type="button" variant="ghost" size="sm" onClick={() => addTag(allergies, setAllergies, allergyInput, setAllergyInput)}>
               Agregar
@@ -184,7 +193,7 @@ export function EmployeeForm({ tenantId, employeeId, defaultValues = {} }: Props
               onChange={e => setConditionInput(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addTag(conditions, setConditions, conditionInput, setConditionInput); }}}
               placeholder="Ej: Diabetes tipo 2 — presiona Enter para agregar"
-              className="flex-1 bg-[#2a2825] border border-iron-gray/40 rounded-[10px] px-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:border-iron-gray"
+              className="flex-1 bg-input-bg border border-iron-gray/40 rounded-[10px] px-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:border-iron-gray"
             />
             <Button type="button" variant="ghost" size="sm" onClick={() => addTag(conditions, setConditions, conditionInput, setConditionInput)}>
               Agregar

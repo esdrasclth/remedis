@@ -52,7 +52,7 @@ export function ClinicForm({ tenant, tenantId }: Props) {
           <label className="block text-[11px] font-medium text-slate-gray uppercase tracking-wide mb-1.5">
             Subdominio
           </label>
-          <div className="bg-[#222120] border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-iron-gray font-mono select-none">
+          <div className="bg-table-header border border-iron-gray/40 rounded-[10px] px-3 py-2.5 text-[13px] text-iron-gray font-mono select-none">
             {tenant.slug}.remedis.com
           </div>
         </div>
@@ -66,7 +66,7 @@ export function ClinicForm({ tenant, tenantId }: Props) {
       />
 
       {logo && (
-        <div className="flex items-center gap-3 p-3 bg-[#222120] rounded-[10px]">
+        <div className="flex items-center gap-3 p-3 bg-table-header rounded-[10px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={logo} alt="Logo preview" className="h-10 w-auto object-contain rounded" onError={e => (e.currentTarget.style.display = "none")} />
           <p className="text-[12px] text-slate-gray">Vista previa del logo</p>
@@ -74,7 +74,7 @@ export function ClinicForm({ tenant, tenantId }: Props) {
       )}
 
       <div className="flex items-center gap-3 pt-2 border-t border-white/[0.06]">
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-[#222120] rounded-[8px]">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-table-header rounded-[8px]">
           <Building2 className="w-3.5 h-3.5 text-iron-gray" />
           <span className="text-[12px] text-slate-gray">Plan: </span>
           <span className="text-[12px] text-pure-white font-medium">{PLAN_LABEL[tenant.plan] ?? tenant.plan}</span>

@@ -68,7 +68,7 @@ export function ProductTable({ products }: { products: Product[] }) {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className={`${COL.product}  text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Producto</th>
                 <th className={`${COL.category} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Categoría</th>
                 <th className={`${COL.form}     text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Presentación</th>
@@ -133,7 +133,7 @@ function ProductRow({ product: p }: { product: Product }) {
       {/* Source */}
       <td className={COL.source}>
         <Badge variant={p.defaultSource === "IHSS" ? "warning" : "muted"}>
-          {p.defaultSource}
+          {p.defaultSource === "IHSS" ? "Seguro Social" : "Empresa"}
         </Badge>
       </td>
 

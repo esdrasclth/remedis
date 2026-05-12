@@ -36,7 +36,7 @@ export async function getExpiringReport(tenantId: string, days = 90) {
       expiryDate:{ lte: threshold },
     },
     include: {
-      product:   { select: { genericName: true, commercialName: true, unit: true } },
+      product:   { select: { genericName: true, commercialName: true, unit: true, unitCost: true } },
       warehouse: { select: { name: true } },
     },
     orderBy: { expiryDate: "asc" },
@@ -117,6 +117,80 @@ export async function getMorbidityReport(tenantId: string, from: Date, to: Date)
     else map.set(d.cie10Code, { code: d.cie10Code, description: d.description, count: 1 });
   }
   return Array.from(map.values()).sort((a, b) => b.count - a.count);
+}
+
+// ─── Financial ────────────────────────────────────────────────────────────────
+
+export async function getFinancialReport(tenantId: string, year: number, month: number) {
+  const from = new Date(year, month - 1, 1);
+  const to   = new Date(year, month, 0, 23, 59, 59);
+
+  const [products, movements] = await Promise.all([
+    prisma.product.findMany({
+      where: { tenantId, isActive: true },
+      select: {
+        id: true, genericName: true, commercialName: true, unit: true, unitCost: true,
+        batches: { where: { isActive: true }, select: { currentQty: true } },
+      },
+      orderBy: { genericName: "asc" },
+    }),
+    prisma.inventoryMovement.findMany({
+      where: {
+        tenantId,
+        type: { in: ["ENTRADA", "SALIDA"] },
+        createdAt: { gte: from, lte: to },
+      },
+      select: { type: true, quantity: true, productId: true, reference: true },
+    }),
+  ]);
+
+  // Build a map of orderId → { productId → unitCost } from PurchaseOrderItems
+  // for ENTRADA movements that reference an OC (so old data works even if Product.unitCost was null)
+  const orderIds = [...new Set(
+    movements.filter(m => m.type === "ENTRADA" && m.reference).map(m => m.reference!)
+  )];
+  const ocCostMap = new Map<string, number>(); // key: `${orderId}:${productId}`
+  if (orderIds.length > 0) {
+    const ocItems = await prisma.purchaseOrderItem.findMany({
+      where: { purchaseOrderId: { in: orderIds }, unitCost: { not: null } },
+      select: { purchaseOrderId: true, productId: true, unitCost: true },
+    });
+    for (const item of ocItems) {
+      ocCostMap.set(`${item.purchaseOrderId}:${item.productId}`, item.unitCost!);
+    }
+  }
+
+  const productMap = new Map(products.map(p => [p.id, p]));
+
+  let totalIncoming = 0;
+  let totalOutgoing = 0;
+  const movMap = new Map<string, { incoming: number; outgoing: number }>();
+
+  for (const m of movements) {
+    const product = productMap.get(m.productId);
+    // For ENTRADA: prefer OC item cost, fall back to product.unitCost
+    // For SALIDA: use product.unitCost
+    const cost =
+      m.type === "ENTRADA" && m.reference
+        ? (ocCostMap.get(`${m.reference}:${m.productId}`) ?? product?.unitCost ?? 0)
+        : (product?.unitCost ?? 0);
+    const value   = m.quantity * cost;
+    const entry   = movMap.get(m.productId) ?? { incoming: 0, outgoing: 0 };
+    if (m.type === "ENTRADA") { entry.incoming += value; totalIncoming += value; }
+    else                      { entry.outgoing += value; totalOutgoing += value; }
+    movMap.set(m.productId, entry);
+  }
+
+  const productRows = products.map(p => {
+    const totalStock = p.batches.reduce((s, b) => s + b.currentQty, 0);
+    const value      = totalStock * (p.unitCost ?? 0);
+    const mov        = movMap.get(p.id) ?? { incoming: 0, outgoing: 0 };
+    return { ...p, totalStock, inventoryValue: value, ...mov };
+  });
+
+  const totalInventoryValue = productRows.reduce((s, p) => s + p.inventoryValue, 0);
+
+  return { productRows, totalInventoryValue, totalIncoming, totalOutgoing };
 }
 
 // ─── Dashboard summary ────────────────────────────────────────────────────────

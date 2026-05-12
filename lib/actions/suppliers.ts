@@ -158,6 +158,12 @@ export async function receiveMerchandise(
     });
 
     for (const b of batches) {
+      // Read unit cost from OC item
+      const orderItem = await tx.purchaseOrderItem.findUnique({
+        where: { id: b.orderItemId },
+        select: { unitCost: true },
+      });
+
       // Create product batch
       const newBatch = await tx.productBatch.create({
         data: {
@@ -191,6 +197,14 @@ export async function receiveMerchandise(
         where: { id: b.orderItemId },
         data:  { receivedQty: { increment: b.receivedQty } },
       });
+
+      // Auto-populate product unit cost from OC item if set
+      if (orderItem?.unitCost != null) {
+        await tx.product.update({
+          where: { id: b.productId },
+          data:  { unitCost: orderItem.unitCost },
+        });
+      }
     }
 
     // Recalculate order status
@@ -226,6 +240,6 @@ export async function searchProductsForOrder(tenantId: string, query: string) {
       }),
     },
     take: 10,
-    select: { id: true, genericName: true, commercialName: true, unit: true },
+    select: { id: true, genericName: true, commercialName: true, unit: true, unitCost: true },
   });
 }

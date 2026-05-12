@@ -12,6 +12,7 @@ type ProductResult = {
   id: string; genericName: string; commercialName: string | null;
   unit: string | null; form: string | null; concentration: string | null;
   requiresPrescription: boolean; totalStock: number;
+  nextBatch: { number: string; expiryDate: Date } | null;
 };
 type PatientOption = { id: string; firstName: string; lastName: string; employeeNumber: string; department: string | null };
 type CartItem = ProductResult & { quantity: number };
@@ -56,6 +57,13 @@ export function DispenseOTC({ tenantId, pharmacistId, onSuccess }: Props) {
   }, [prodQuery, tenantId]);
 
   function addToCart(p: ProductResult) {
+    if (p.requiresPrescription) {
+      setSaving(`"${p.genericName}" solo puede despacharse con receta médica.`);
+      setProdQuery("");
+      setProdResults([]);
+      return;
+    }
+    setSaving("");
     setCart(prev => {
       const existing = prev.find(c => c.id === p.id);
       if (existing) return prev.map(c => c.id === p.id ? { ...c, quantity: c.quantity + 1 } : c);
@@ -98,7 +106,7 @@ export function DispenseOTC({ tenantId, pharmacistId, onSuccess }: Props) {
           Paciente <span className="normal-case font-normal text-iron-gray">(opcional)</span>
         </p>
         {selectedPt ? (
-          <div className="flex items-center justify-between bg-[#2a2825] rounded-[8px] px-4 py-2.5">
+          <div className="flex items-center justify-between bg-input-bg rounded-[8px] px-4 py-2.5">
             <div>
               <p className="text-[13px] text-pure-white">{selectedPt.lastName}, {selectedPt.firstName}</p>
               <p className="text-[11px] font-mono text-slate-gray">{selectedPt.employeeNumber}</p>
@@ -114,10 +122,10 @@ export function DispenseOTC({ tenantId, pharmacistId, onSuccess }: Props) {
               value={ptQuery}
               onChange={e => setPtQuery(e.target.value)}
               placeholder="Buscar paciente..."
-              className="w-full bg-[#2a2825] rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none h-9"
+              className="w-full bg-input-bg rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none h-9"
             />
             {ptResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-[#2a2825] rounded-[8px] overflow-hidden z-10">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-input-bg rounded-[8px] overflow-hidden z-10">
                 {ptResults.map(p => (
                   <button key={p.id} type="button" onClick={() => { setSelectedPt(p); setPtResults([]); }}
                     className="w-full text-left px-4 py-2.5 hover:bg-white/[0.06] transition-colors">
@@ -140,10 +148,10 @@ export function DispenseOTC({ tenantId, pharmacistId, onSuccess }: Props) {
             value={prodQuery}
             onChange={e => setProdQuery(e.target.value)}
             placeholder="Buscar medicamento o insumo..."
-            className="w-full bg-[#2a2825] rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none h-9"
+            className="w-full bg-input-bg rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none h-9"
           />
           {prodResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-[#2a2825] rounded-[8px] overflow-hidden z-10 max-h-64 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-input-bg rounded-[8px] overflow-hidden z-10 max-h-64 overflow-y-auto">
               {prodResults.map(p => (
                 <button key={p.id} type="button" onClick={() => addToCart(p)}
                   className="w-full text-left px-4 py-2.5 hover:bg-white/[0.06] transition-colors flex items-center justify-between gap-3"
@@ -176,11 +184,17 @@ export function DispenseOTC({ tenantId, pharmacistId, onSuccess }: Props) {
           </p>
           <div className="space-y-1.5">
             {cart.map(item => (
-              <div key={item.id} className="flex items-center gap-3 bg-[#2a2825] rounded-[8px] px-4 py-2.5">
+              <div key={item.id} className="flex items-center gap-3 bg-input-bg rounded-[8px] px-4 py-2.5">
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] text-pure-white font-medium truncate">{item.genericName}</p>
                   <p className="text-[11px] text-slate-gray">
-                    Stock disponible: {item.totalStock} {item.unit ?? "u."}
+                    Stock: {item.totalStock} {item.unit ?? "u."}
+                    {item.nextBatch && (
+                      <span className="ml-2 text-iron-gray">
+                        · Lote <span className="font-mono">{item.nextBatch.number}</span>
+                        {" "}· Vence {new Date(item.nextBatch.expiryDate).toLocaleDateString("es-HN")}
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

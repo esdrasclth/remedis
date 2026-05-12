@@ -79,7 +79,7 @@ export function AppointmentForm({ tenantId, clinics, doctors }: Props) {
         <h3 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide">Paciente</h3>
 
         {selectedPatient ? (
-          <div className="flex items-center justify-between bg-[#2a2825] rounded-[8px] px-4 py-3">
+          <div className="flex items-center justify-between bg-input-bg rounded-[8px] px-4 py-3">
             <div>
               <p className="text-[13px] text-pure-white font-medium">
                 {selectedPatient.lastName}, {selectedPatient.firstName}
@@ -104,10 +104,10 @@ export function AppointmentForm({ tenantId, clinics, doctors }: Props) {
               value={patientQuery}
               onChange={e => setPatientQuery(e.target.value)}
               placeholder="Buscar empleado por nombre o número..."
-              className="w-full bg-[#2a2825] rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none transition-colors h-9"
+              className="w-full bg-input-bg rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none transition-colors h-9"
             />
             {patientResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-[#2a2825] rounded-[8px] overflow-hidden z-10">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-input-bg rounded-[8px] overflow-hidden z-10">
                 {patientResults.map(p => (
                   <button
                     key={p.id}

@@ -1,18 +1,22 @@
 import Link from "next/link";
-import { Settings, Building2, Users, FileText, Package } from "lucide-react";
-import { getTenantFromHeaders } from "@/lib/tenant";
-import { getTenantSettings, getTenantUsers } from "@/lib/actions/settings";
+import { Settings, Building2, Users, FileText, Package, Stethoscope, Bell } from "lucide-react";
+import { getTenantFromHeaders, getClinicType } from "@/lib/tenant";
+import { getTenantSettings, getTenantUsers, getDoctors, getAlertSettings } from "@/lib/actions/settings";
 import { getWarehouses } from "@/lib/actions/inventory";
 import { ClinicForm } from "@/components/settings/clinic-form";
 import { UsersPanel } from "@/components/settings/users-panel";
 import { PrescriptionForm } from "@/components/settings/prescription-form";
 import { WarehousesPanel } from "@/components/settings/warehouses-panel";
+import { DoctorsPanel } from "@/components/settings/doctors-panel";
+import { AlertSettingsForm } from "@/components/settings/alert-settings-form";
 
 const TABS = [
-  { key: "clinica",    label: "Clínica",  icon: Building2 },
-  { key: "usuarios",   label: "Usuarios", icon: Users },
-  { key: "recetas",    label: "Recetas",  icon: FileText },
-  { key: "almacenes",  label: "Almacenes", icon: Package },
+  { key: "clinica",   label: "Clínica",   icon: Building2 },
+  { key: "usuarios",  label: "Usuarios",  icon: Users },
+  { key: "medicos",   label: "Médicos",   icon: Stethoscope },
+  { key: "recetas",   label: "Recetas",   icon: FileText },
+  { key: "almacenes", label: "Almacenes", icon: Package },
+  { key: "alertas",   label: "Alertas",   icon: Bell },
 ] as const;
 
 type Tab = typeof TABS[number]["key"];
@@ -28,10 +32,13 @@ export default async function SettingsPage({
   const { tab: rawTab } = await searchParams;
   const tab: Tab = (TABS.some(t => t.key === rawTab) ? rawTab : "clinica") as Tab;
 
-  const [tenant, users, warehouses] = await Promise.all([
+  const [tenant, users, warehouses, doctors, alertSettings, clinicType] = await Promise.all([
     getTenantSettings(tenantId),
     getTenantUsers(tenantId),
     getWarehouses(tenantId),
+    getDoctors(tenantId),
+    getAlertSettings(tenantId),
+    getClinicType(tenantId),
   ]);
   if (!tenant) return null;
 
@@ -61,7 +68,7 @@ export default async function SettingsPage({
               href={`/settings?tab=${t.key}`}
               className={`flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] transition-colors ${
                 active
-                  ? "bg-sunbeam-yellow text-deep-space-black font-medium"
+                  ? "bg-sunbeam-yellow text-charcoal-black font-medium"
                   : "text-slate-gray hover:text-pure-white"
               }`}
             >
@@ -98,6 +105,18 @@ export default async function SettingsPage({
             <p className="text-[12px] text-slate-gray">Configura los almacenes físicos donde se almacena el inventario.</p>
           </div>
         )}
+        {tab === "medicos" && (
+          <div className="space-y-1 mb-6">
+            <h2 className="text-[14px] font-medium text-pure-white">Médicos</h2>
+            <p className="text-[12px] text-slate-gray">Gestiona el catálogo de médicos tratantes de la clínica.</p>
+          </div>
+        )}
+        {tab === "alertas" && (
+          <div className="space-y-1 mb-6">
+            <h2 className="text-[14px] font-medium text-pure-white">Alertas y umbrales</h2>
+            <p className="text-[12px] text-slate-gray">Configura qué tipos de alertas se generan y cuándo.</p>
+          </div>
+        )}
 
         {tab === "clinica" && (
           <ClinicForm
@@ -122,7 +141,13 @@ export default async function SettingsPage({
           />
         )}
         {tab === "almacenes" && (
-          <WarehousesPanel tenantId={tenantId} warehouses={warehouses} />
+          <WarehousesPanel tenantId={tenantId} warehouses={warehouses} clinicType={clinicType} />
+        )}
+        {tab === "medicos" && (
+          <DoctorsPanel tenantId={tenantId} doctors={doctors} />
+        )}
+        {tab === "alertas" && (
+          <AlertSettingsForm tenantId={tenantId} initial={alertSettings} />
         )}
       </div>
     </div>

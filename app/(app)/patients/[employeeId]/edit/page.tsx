@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getTenantFromHeaders } from "@/lib/tenant";
+import { getTenantFromHeaders, getClinicType } from "@/lib/tenant";
 import { getEmployee } from "@/lib/actions/patients";
 import { EmployeeForm } from "@/components/patients/employee-form";
 
@@ -10,7 +10,10 @@ export default async function EditPatientPage({ params }: { params: Promise<{ em
   const { tenantId } = await getTenantFromHeaders();
   if (!tenantId) return null;
 
-  const employee = await getEmployee(tenantId, employeeId);
+  const [employee, clinicType] = await Promise.all([
+    getEmployee(tenantId, employeeId),
+    getClinicType(tenantId),
+  ]);
   if (!employee) notFound();
 
   return (
@@ -30,6 +33,7 @@ export default async function EditPatientPage({ params }: { params: Promise<{ em
         <EmployeeForm
           tenantId={tenantId}
           employeeId={employeeId}
+          clinicType={clinicType}
           defaultValues={{
             employeeNumber: employee.employeeNumber,
             firstName:      employee.firstName,

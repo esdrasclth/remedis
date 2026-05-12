@@ -22,11 +22,11 @@ export function AdminSidebar() {
   }
 
   return (
-    <div className="w-[220px] shrink-0 h-screen flex flex-col bg-[#0e0d0b] border-r border-white/[0.04]">
+    <div className="w-[220px] shrink-0 h-screen flex flex-col bg-panel-bg border-r border-[var(--border-divider)]">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 h-[56px] border-b border-white/[0.04]">
+      <div className="flex items-center gap-2.5 px-5 h-[56px] border-b border-[var(--border-divider)]">
         <div className="w-7 h-7 rounded-[4px] bg-sunbeam-yellow flex items-center justify-center shrink-0">
-          <Activity className="w-4 h-4 text-deep-space-black" strokeWidth={2.5} />
+          <Activity className="w-4 h-4 text-charcoal-black" strokeWidth={2.5} />
         </div>
         <div>
           <span className="text-pure-white font-medium text-[14px] leading-none block">Remedis</span>
@@ -64,7 +64,7 @@ export function AdminSidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 pb-4 space-y-0.5 border-t border-white/[0.04] pt-3">
+      <div className="px-3 pb-4 space-y-0.5 border-t border-[var(--border-divider)] pt-3">
         <Link
           href="/dashboard"
           className="flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-[12px] text-iron-gray hover:text-slate-gray transition-colors"

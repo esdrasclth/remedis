@@ -14,11 +14,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "inline-flex items-center justify-center gap-2 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed",
           variant === "primary" &&
-            "bg-sunbeam-yellow text-deep-space-black hover:opacity-90 rounded-[6px]",
+            "bg-sunbeam-yellow text-charcoal-black hover:opacity-90 rounded-[6px]",
           variant === "secondary" &&
-            "bg-[#252320] text-[#d4d0cc] hover:bg-[#2e2c29] hover:text-white rounded-[6px]",
+            "bg-hover-bg text-slate-gray hover:bg-[var(--surface-input-focus)] hover:text-pure-white rounded-[6px]",
           variant === "ghost" &&
-            "text-slate-gray hover:text-white hover:bg-[#252320] rounded-[6px]",
+            "text-slate-gray hover:text-pure-white hover:bg-hover-bg rounded-[6px]",
           variant === "danger" &&
             "bg-[#ff492c]/10 text-blaze-orange hover:bg-[#ff492c]/20 rounded-[6px]",
           size === "sm" && "text-[12px] px-3 py-1.5 h-7",

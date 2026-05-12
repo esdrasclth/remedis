@@ -1,6 +1,7 @@
 import { getTenantFromHeaders } from "@/lib/tenant";
 import { getProducts, getLowStockCount, getExpiringCount } from "@/lib/actions/inventory";
 import { ProductTable } from "@/components/inventory/product-table";
+import { ExportButtons } from "@/components/ui/export-buttons";
 
 export default async function InventoryPage() {
   const { tenantId } = await getTenantFromHeaders();
@@ -34,11 +35,17 @@ export default async function InventoryPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-[22px] font-medium text-white">Inventario</h2>
-        <p className="text-[13px] text-slate-gray mt-0.5">
-          Catálogo de productos, lotes y movimientos
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-[22px] font-medium text-white">Inventario</h2>
+          <p className="text-[13px] text-slate-gray mt-0.5">
+            Catálogo de productos, lotes y movimientos
+          </p>
+        </div>
+        <ExportButtons
+          pdfUrl="/api/exports/inventory?format=pdf"
+          xlsxUrl="/api/exports/inventory?format=xlsx"
+        />
       </div>
 
       {/* Stats */}

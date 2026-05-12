@@ -6,6 +6,7 @@ import { getPurchaseOrders } from "@/lib/actions/suppliers";
 import { SupplierTable } from "@/components/suppliers/supplier-table";
 import { OrderTable } from "@/components/suppliers/order-table";
 import { Button } from "@/components/ui/button";
+import { ExportButtons } from "@/components/ui/export-buttons";
 
 export default async function SuppliersPage({
   searchParams,
@@ -33,15 +34,21 @@ export default async function SuppliersPage({
             {pendingOrders > 0 && ` · ${pendingOrders} orden${pendingOrders !== 1 ? "es" : ""} pendiente${pendingOrders !== 1 ? "s" : ""}`}
           </p>
         </div>
-        {tab === "ordenes" ? (
-          <Link href="/suppliers/orders/new">
-            <Button size="md"><Plus className="w-3.5 h-3.5" /> Nueva orden</Button>
-          </Link>
-        ) : (
-          <Link href="/suppliers/new">
-            <Button size="md"><Plus className="w-3.5 h-3.5" /> Nuevo proveedor</Button>
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <ExportButtons
+            pdfUrl="/api/exports/suppliers?format=pdf"
+            xlsxUrl="/api/exports/suppliers?format=xlsx"
+          />
+          {tab === "ordenes" ? (
+            <Link href="/suppliers/orders/new">
+              <Button size="md"><Plus className="w-3.5 h-3.5" /> Nueva orden</Button>
+            </Link>
+          ) : (
+            <Link href="/suppliers/new">
+              <Button size="md"><Plus className="w-3.5 h-3.5" /> Nuevo proveedor</Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
@@ -55,7 +62,7 @@ export default async function SuppliersPage({
             href={`/suppliers?tab=${t.key}`}
             className={`px-4 py-1.5 rounded-[6px] text-[13px] font-medium transition-colors ${
               tab === t.key
-                ? "bg-sunbeam-yellow text-deep-space-black"
+                ? "bg-sunbeam-yellow text-charcoal-black"
                 : "text-slate-gray hover:text-pure-white"
             }`}
           >

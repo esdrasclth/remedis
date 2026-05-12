@@ -75,7 +75,7 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
           <InfoItem label="Unidad">{product.unit ?? "—"}</InfoItem>
           <InfoItem label="Fuente">
             <Badge variant={product.defaultSource === "IHSS" ? "warning" : "muted"}>
-              {product.defaultSource}
+              {product.defaultSource === "IHSS" ? "Seguro Social" : "Empresa"}
             </Badge>
           </InfoItem>
           <InfoItem label="Receta">

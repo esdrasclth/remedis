@@ -19,7 +19,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={id}
           className={cn(
-            "bg-[#2a2825] rounded-[8px] px-3 py-2 text-[13px] text-white focus:outline-none focus:bg-[#322f2c] transition-colors appearance-none cursor-pointer h-9",
+            "bg-input-bg rounded-[8px] px-3 py-2 text-[13px] text-pure-white focus:outline-none focus:bg-input-focus transition-colors appearance-none cursor-pointer h-9",
             error && "outline outline-1 outline-blaze-orange/60",
             className
           )}

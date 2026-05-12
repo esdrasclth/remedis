@@ -3,12 +3,16 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
+import { sendEmail, newUserCredentialsEmail } from "@/lib/email";
 import {
   tenantInfoSchema,
   prescriptionSettingsSchema,
   inviteUserSchema,
   warehouseSchema,
+  doctorSchema,
+  alertSettingsSchema,
 } from "@/lib/validations/settings";
+import { checkPlanLimit } from "@/lib/plan-limits";
 
 type ActionResult = { success: true } | { success: false; error: string };
 
@@ -70,8 +74,18 @@ export async function inviteUser(tenantId: string, raw: unknown): Promise<Action
   const parsed = inviteUserSchema.safeParse(raw);
   if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
 
+  const limit = await checkPlanLimit(tenantId, "users");
+  if (!limit.allowed) return { success: false, error: limit.error };
+
+  if (parsed.data.role === "MEDICO") {
+    const doctorLimit = await checkPlanLimit(tenantId, "doctors");
+    if (!doctorLimit.allowed) return { success: false, error: doctorLimit.error };
+  }
+
   const exists = await prisma.user.findUnique({ where: { email: parsed.data.email } });
   if (exists) return { success: false, error: "Ya existe un usuario con ese email" };
+
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { name: true, slug: true } });
 
   const hashedPassword = await bcrypt.hash(parsed.data.password, 10);
   await prisma.user.create({
@@ -83,6 +97,22 @@ export async function inviteUser(tenantId: string, raw: unknown): Promise<Action
       hashedPassword,
     },
   });
+
+  if (tenant) {
+    sendEmail({
+      to:      parsed.data.email,
+      subject: `Tu acceso a Remedis — ${tenant.name}`,
+      html:    newUserCredentialsEmail({
+        userName:    parsed.data.name,
+        email:       parsed.data.email,
+        password:    parsed.data.password,
+        companyName: tenant.name,
+        slug:        tenant.slug,
+        role:        parsed.data.role,
+      }),
+    }).catch(err => console.error("[inviteUser] Email failed:", err));
+  }
+
   revalidatePath("/settings");
   return { success: true };
 }
@@ -118,6 +148,9 @@ export async function createWarehouse(tenantId: string, raw: unknown): Promise<A
   const parsed = warehouseSchema.safeParse(raw);
   if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
 
+  const limit = await checkPlanLimit(tenantId, "warehouses");
+  if (!limit.allowed) return { success: false, error: limit.error };
+
   await prisma.warehouse.create({ data: { tenantId, ...parsed.data } });
   revalidatePath("/settings");
   return { success: true };
@@ -134,6 +167,117 @@ export async function updateWarehouse(tenantId: string, warehouseId: string, raw
 
 export async function deactivateWarehouse(tenantId: string, warehouseId: string): Promise<ActionResult> {
   await prisma.warehouse.updateMany({ where: { id: warehouseId, tenantId }, data: { isActive: false } });
+  revalidatePath("/settings");
+  return { success: true };
+}
+
+// ─── Doctors ──────────────────────────────────────────────────────────────────
+
+export async function getDoctors(tenantId: string) {
+  return prisma.user.findMany({
+    where:   { tenantId, role: "MEDICO" },
+    select:  { id: true, name: true, email: true, specialty: true, licenseNumber: true, isActive: true, createdAt: true },
+    orderBy: { name: "asc" },
+  });
+}
+
+export async function createDoctor(tenantId: string, raw: unknown): Promise<ActionResult> {
+  const parsed = doctorSchema.safeParse(raw);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  if (!parsed.data.password) return { success: false, error: "Contraseña requerida al crear médico" };
+
+  const limit = await checkPlanLimit(tenantId, "doctors");
+  if (!limit.allowed) return { success: false, error: limit.error };
+
+  const exists = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+  if (exists) return { success: false, error: "Ya existe un usuario con ese email" };
+
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { name: true, slug: true } });
+
+  const hashedPassword = await bcrypt.hash(parsed.data.password, 10);
+  await prisma.user.create({
+    data: {
+      tenantId,
+      role:          "MEDICO",
+      name:          parsed.data.name,
+      email:         parsed.data.email,
+      specialty:     parsed.data.specialty || null,
+      licenseNumber: parsed.data.licenseNumber || null,
+      hashedPassword,
+    },
+  });
+
+  if (tenant && parsed.data.password) {
+    sendEmail({
+      to:      parsed.data.email,
+      subject: `Tu acceso a Remedis — ${tenant.name}`,
+      html:    newUserCredentialsEmail({
+        userName:    parsed.data.name,
+        email:       parsed.data.email,
+        password:    parsed.data.password,
+        companyName: tenant.name,
+        slug:        tenant.slug,
+        role:        "MEDICO",
+      }),
+    }).catch(err => console.error("[createDoctor] Email failed:", err));
+  }
+
+  revalidatePath("/settings");
+  return { success: true };
+}
+
+export async function updateDoctor(tenantId: string, userId: string, raw: unknown): Promise<ActionResult> {
+  const parsed = doctorSchema.safeParse(raw);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+
+  const updateData: Record<string, unknown> = {
+    name:          parsed.data.name,
+    specialty:     parsed.data.specialty || null,
+    licenseNumber: parsed.data.licenseNumber || null,
+  };
+
+  if (parsed.data.password) {
+    updateData.hashedPassword = await bcrypt.hash(parsed.data.password, 10);
+  }
+
+  await prisma.user.updateMany({ where: { id: userId, tenantId }, data: updateData });
+  revalidatePath("/settings");
+  return { success: true };
+}
+
+export async function toggleDoctorActive(tenantId: string, userId: string): Promise<ActionResult> {
+  const user = await prisma.user.findFirst({ where: { id: userId, tenantId } });
+  if (!user) return { success: false, error: "Médico no encontrado" };
+  await prisma.user.update({ where: { id: userId }, data: { isActive: !user.isActive } });
+  revalidatePath("/settings");
+  return { success: true };
+}
+
+// ─── Alert settings ───────────────────────────────────────────────────────────
+
+export async function getAlertSettings(tenantId: string) {
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { config: true } });
+  const c = (tenant?.config ?? {}) as Record<string, unknown>;
+  return {
+    expiryAlertDays:          (c.expiryAlertDays          as number  | undefined) ?? 30,
+    stockAlertEnabled:        (c.stockAlertEnabled        as boolean | undefined) ?? true,
+    expiryAlertEnabled:       (c.expiryAlertEnabled       as boolean | undefined) ?? true,
+    expiredAlertEnabled:      (c.expiredAlertEnabled      as boolean | undefined) ?? true,
+    prescriptionAlertEnabled: (c.prescriptionAlertEnabled as boolean | undefined) ?? true,
+  };
+}
+
+export async function updateAlertSettings(tenantId: string, raw: unknown): Promise<ActionResult> {
+  const parsed = alertSettingsSchema.safeParse(raw);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { config: true } });
+  const currentConfig = (tenant?.config ?? {}) as Record<string, unknown>;
+
+  await prisma.tenant.update({
+    where: { id: tenantId },
+    data:  { config: { ...currentConfig, ...parsed.data } },
+  });
   revalidatePath("/settings");
   return { success: true };
 }

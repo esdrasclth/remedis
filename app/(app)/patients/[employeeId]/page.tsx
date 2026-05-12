@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Stethoscope, Calendar, Pencil, UserPlus } from "lucide-react";
-import { getTenantFromHeaders } from "@/lib/tenant";
+import { getTenantFromHeaders, getClinicType } from "@/lib/tenant";
 import { getEmployee } from "@/lib/actions/patients";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,12 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
   const { tenantId } = await getTenantFromHeaders();
   if (!tenantId) return null;
 
-  const employee = await getEmployee(tenantId, employeeId);
+  const [employee, clinicType] = await Promise.all([
+    getEmployee(tenantId, employeeId),
+    getClinicType(tenantId),
+  ]);
   if (!employee) notFound();
+  const isPrivada = clinicType === "PRIVADA";
 
   const age = employee.birthDate
     ? Math.floor((Date.now() - new Date(employee.birthDate).getTime()) / (365.25 * 86400000))
@@ -44,7 +48,9 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
             <h1 className="text-[20px] font-medium text-pure-white">
               {employee.lastName}, {employee.firstName}
             </h1>
-            <p className="text-[13px] text-slate-gray mt-0.5 font-mono">{employee.employeeNumber}</p>
+            <p className="text-[13px] text-slate-gray mt-0.5 font-mono">
+              {isPrivada ? "Exp." : "Emp."} {employee.employeeNumber}
+            </p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -71,8 +77,10 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
               ["Fecha nac.",   employee.birthDate ? new Date(employee.birthDate).toLocaleDateString("es-HN") : "—"],
               ["Teléfono",     employee.phone ?? "—"],
               ["Correo",       employee.email ?? "—"],
-              ["Departamento", employee.department ?? "—"],
-              ["Cargo",        employee.position ?? "—"],
+              ...(!isPrivada ? [
+                ["Departamento", employee.department ?? "—"] as [string, string],
+                ["Cargo",        employee.position   ?? "—"] as [string, string],
+              ] : []),
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between gap-2">
                 <dt className="text-[12px] text-slate-gray shrink-0">{label}</dt>

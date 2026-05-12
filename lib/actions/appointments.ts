@@ -118,6 +118,19 @@ export async function updateAppointmentStatus(
   return { success: true, data: undefined };
 }
 
+export async function getAppointmentsRange(tenantId: string, start: Date, end: Date) {
+  return prisma.appointment.findMany({
+    where: { tenantId, scheduledAt: { gte: start, lte: end } },
+    orderBy: { scheduledAt: "asc" },
+    include: {
+      doctor:        { select: { name: true } },
+      employee:      { select: { firstName: true, lastName: true, employeeNumber: true } },
+      dependent:     { select: { firstName: true, lastName: true } },
+      medicalRecord: { select: { id: true } },
+    },
+  });
+}
+
 export async function getTodayAppointmentCount(tenantId: string) {
   const now   = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);

@@ -87,12 +87,12 @@ export function OrderForm({ tenantId, suppliers }: Props) {
         <h3 className="text-[11px] font-medium text-slate-gray uppercase tracking-wide">Datos generales</h3>
         <div className="grid grid-cols-2 gap-4">
           <Select name="supplierId" label="Proveedor" defaultValue="">
-            <option value="">Sin proveedor (IHSS u otro)</option>
+            <option value="">Sin proveedor (seguro u otro)</option>
             {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
           </Select>
           <Select name="source" label="Fuente de abastecimiento" defaultValue="EMPRESA">
             <option value="EMPRESA">Empresa</option>
-            <option value="IHSS">IHSS</option>
+            <option value="IHSS">Seguro Social</option>
           </Select>
         </div>
         <Textarea name="notes" label="Notas (opcional)" rows={2} />
@@ -108,10 +108,10 @@ export function OrderForm({ tenantId, suppliers }: Props) {
             value={prodQuery}
             onChange={e => setProdQuery(e.target.value)}
             placeholder="Buscar producto para agregar..."
-            className="w-full bg-[#2a2825] rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none h-9"
+            className="w-full bg-input-bg rounded-[8px] pl-9 pr-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none h-9"
           />
           {prodResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-[#2a2825] rounded-[8px] overflow-hidden z-10">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-input-bg rounded-[8px] overflow-hidden z-10">
               {prodResults.map(p => (
                 <button key={p.id} type="button" onClick={() => addItem(p)}
                   className="w-full text-left px-4 py-2.5 hover:bg-white/[0.06] transition-colors flex items-center justify-between">
@@ -134,7 +134,7 @@ export function OrderForm({ tenantId, suppliers }: Props) {
               <div className="col-span-1" />
             </div>
             {items.map(item => (
-              <div key={item.productId} className="grid grid-cols-12 gap-2 items-center bg-[#2a2825] rounded-[8px] px-3 py-2.5">
+              <div key={item.productId} className="grid grid-cols-12 gap-2 items-center bg-input-bg rounded-[8px] px-3 py-2.5">
                 <div className="col-span-5">
                   <p className="text-[13px] text-pure-white font-medium">{item.productName}</p>
                 </div>

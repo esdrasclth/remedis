@@ -53,7 +53,7 @@ export default async function AdminUsersPage({
       <div className="bg-ash-gray rounded-[12px] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#222120]">
+            <tr className="bg-table-header">
               <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Usuario</th>
               <th className="px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Tenant</th>
               <th className="w-36 px-4 py-2.5 text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide">Rol</th>

@@ -19,7 +19,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={id}
           className={cn(
-            "bg-[#2a2825] rounded-[8px] px-3 py-2 text-[13px] text-white placeholder:text-iron-gray focus:outline-none focus:bg-[#322f2c] transition-colors resize-none",
+            "bg-input-bg rounded-[8px] px-3 py-2 text-[13px] text-pure-white placeholder:text-iron-gray focus:outline-none focus:bg-input-focus transition-colors resize-none",
             error && "outline outline-1 outline-blaze-orange/60",
             className
           )}

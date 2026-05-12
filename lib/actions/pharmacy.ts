@@ -50,6 +50,7 @@ function allocateFEFO(
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
 export async function searchProductsWithStock(tenantId: string, query: string) {
+  const now = new Date();
   const products = await prisma.product.findMany({
     where: {
       tenantId,
@@ -67,16 +68,52 @@ export async function searchProductsWithStock(tenantId: string, query: string) {
       unit: true, form: true, concentration: true,
       requiresPrescription: true,
       batches: {
-        where: { isActive: true, currentQty: { gt: 0 }, expiryDate: { gt: new Date() } },
-        select: { currentQty: true },
+        where: { isActive: true, currentQty: { gt: 0 }, expiryDate: { gt: now } },
+        select: { currentQty: true, batchNumber: true, expiryDate: true },
+        orderBy: { expiryDate: "asc" },
       },
     },
   });
 
   return products.map(p => ({
-    ...p,
+    id: p.id, genericName: p.genericName, commercialName: p.commercialName,
+    unit: p.unit, form: p.form, concentration: p.concentration,
+    requiresPrescription: p.requiresPrescription,
     totalStock: p.batches.reduce((s, b) => s + b.currentQty, 0),
+    nextBatch: p.batches[0]
+      ? { number: p.batches[0].batchNumber, expiryDate: p.batches[0].expiryDate }
+      : null,
   }));
+}
+
+/** Returns FEFO batch suggestion (number + expiry) for each productId. */
+export async function getProductBatchSuggestions(
+  tenantId: string,
+  productIds: string[]
+): Promise<Record<string, { number: string; expiryDate: Date } | null>> {
+  if (productIds.length === 0) return {};
+  const now = new Date();
+  const batches = await prisma.productBatch.findMany({
+    where: {
+      productId: { in: productIds },
+      isActive: true,
+      currentQty: { gt: 0 },
+      expiryDate: { gt: now },
+      product: { tenantId },
+    },
+    orderBy: { expiryDate: "asc" },
+    select: { productId: true, batchNumber: true, expiryDate: true },
+  });
+
+  // For each product keep only the first (FEFO) batch
+  const result: Record<string, { number: string; expiryDate: Date } | null> = {};
+  for (const pid of productIds) result[pid] = null;
+  for (const b of batches) {
+    if (!result[b.productId]) {
+      result[b.productId] = { number: b.batchNumber, expiryDate: b.expiryDate };
+    }
+  }
+  return result;
 }
 
 export async function getActivePrescriptions(tenantId: string) {
@@ -93,7 +130,7 @@ export async function getActivePrescriptions(tenantId: string) {
       dependent:{ select: { id: true, firstName: true, lastName: true } },
       items: {
         include: {
-          product: { select: { genericName: true, commercialName: true, unit: true } },
+          product: { select: { genericName: true, commercialName: true, unit: true, unitCost: true } },
         },
       },
     },
@@ -130,6 +167,17 @@ export async function dispenseOTC(
   if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
 
   const { employeeId, dependentId, items, notes } = parsed.data;
+
+  // Block Rx-only products from OTC dispensation
+  for (const item of items) {
+    const product = await prisma.product.findFirst({
+      where: { id: item.productId, tenantId },
+      select: { requiresPrescription: true, genericName: true },
+    });
+    if (product?.requiresPrescription) {
+      return { success: false, error: `"${product.genericName}" requiere receta médica. Use la pestaña "Con receta".` };
+    }
+  }
 
   // Pre-fetch FEFO batches for all products
   const batchMap = new Map<string, { batchId: string; qty: number }[]>();

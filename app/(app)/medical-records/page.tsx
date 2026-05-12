@@ -4,6 +4,7 @@ import { getTenantFromHeaders } from "@/lib/tenant";
 import { getMedicalRecords } from "@/lib/actions/medical-records";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ExportButtons } from "@/components/ui/export-buttons";
 
 const COL = {
   date:     "w-36  px-4 py-3",
@@ -35,9 +36,12 @@ export default async function MedicalRecordsPage() {
           <h1 className="text-[20px] font-medium text-pure-white">Consultas</h1>
           <p className="text-[13px] text-slate-gray mt-0.5">{records.length} consultas registradas</p>
         </div>
-        <Link href="/medical-records/new">
-          <Button size="md"><Plus className="w-3.5 h-3.5" /> Nueva consulta</Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ExportButtons xlsxUrl="/api/exports/medical-records" />
+          <Link href="/medical-records/new">
+            <Button size="md"><Plus className="w-3.5 h-3.5" /> Nueva consulta</Button>
+          </Link>
+        </div>
       </div>
 
       {records.length === 0 ? (
@@ -54,7 +58,7 @@ export default async function MedicalRecordsPage() {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className={`${COL.date}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Fecha</th>
                 <th className={`${COL.patient} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Paciente</th>
                 <th className={`${COL.doctor}  text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Médico</th>
@@ -101,12 +105,18 @@ export default async function MedicalRecordsPage() {
                       ) : <span className="text-[12px] text-iron-gray">—</span>}
                     </td>
                     <td className={COL.action}>
-                      <Link
-                        href={`/medical-records/${r.id}`}
-                        className="text-[12px] text-iron-gray hover:text-pure-white opacity-0 group-hover:opacity-100 transition-all"
-                      >
-                        Ver →
-                      </Link>
+                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <ExportButtons
+                          pdfUrl={`/api/exports/medical-records/${r.id}`}
+                          compact
+                        />
+                        <Link
+                          href={`/medical-records/${r.id}`}
+                          className="text-[12px] text-iron-gray hover:text-pure-white"
+                        >
+                          Ver →
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );

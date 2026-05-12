@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ export function BatchForm({ tenantId, productId, warehouses }: BatchFormProps) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<BatchInput>({
     resolver: zodResolver(batchSchema) as Resolver<BatchInput>,
@@ -31,6 +33,9 @@ export function BatchForm({ tenantId, productId, warehouses }: BatchFormProps) {
       warehouseId: warehouses[0]?.id ?? "",
     },
   });
+
+  const expiryDateValue = watch("expiryDate");
+  const isExpired = expiryDateValue ? new Date(expiryDateValue) < new Date() : false;
 
   async function onSubmit(data: BatchInput) {
     setServerError(null);
@@ -74,13 +79,23 @@ export function BatchForm({ tenantId, productId, warehouses }: BatchFormProps) {
             error={errors.mfgDate?.message}
             {...register("mfgDate")}
           />
-          <Input
-            id="expiryDate"
-            label="Fecha de vencimiento *"
-            type="date"
-            error={errors.expiryDate?.message}
-            {...register("expiryDate")}
-          />
+          <div>
+            <Input
+              id="expiryDate"
+              label="Fecha de vencimiento *"
+              type="date"
+              error={errors.expiryDate?.message}
+              {...register("expiryDate")}
+            />
+            {isExpired && (
+              <div className="flex items-center gap-1.5 mt-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-blaze-orange shrink-0" />
+                <p className="text-[11px] text-blaze-orange">
+                  Este lote ya está vencido. Se registrará pero no estará disponible para dispensación.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -114,10 +129,10 @@ export function BatchForm({ tenantId, productId, warehouses }: BatchFormProps) {
               {...register("source")}
             >
               <option value="EMPRESA">Empresa</option>
-              <option value="IHSS">IHSS</option>
+              <option value="IHSS">Seguro Social</option>
             </Select>
             <p className="text-[11px] text-iron-gray mt-1.5">
-              Presupuesto que financia este medicamento: Empresa (compra directa) o IHSS (seguro social).
+              Presupuesto que financia este medicamento: Empresa (compra directa) o Seguro Social.
             </p>
           </div>
         </div>

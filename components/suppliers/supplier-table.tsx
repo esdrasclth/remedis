@@ -61,7 +61,7 @@ export function SupplierTable({ suppliers }: { suppliers: Supplier[] }) {
         <div className="rounded-[12px] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#222120]">
+              <tr className="bg-table-header">
                 <th className={`${COL.name}    text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Proveedor</th>
                 <th className={`${COL.rtn}     text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>RTN</th>
                 <th className={`${COL.contact} text-left text-[11px] font-medium text-slate-gray uppercase tracking-wide`}>Contacto</th>
