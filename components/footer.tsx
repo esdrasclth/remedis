@@ -43,7 +43,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <a href="/" className="flex items-center gap-2.5 mb-4" style={{ textDecoration: "none" }}>
-              <img src="/iconoremedis.png" alt="Remedis" style={{ width: 32, height: 32, borderRadius: "4px", objectFit: "contain", flexShrink: 0 }} />
+              <img src="/images/iconoremedis.png" alt="Remedis" style={{ width: 32, height: 32, borderRadius: "4px", objectFit: "contain", flexShrink: 0 }} />
               <span style={{ fontSize: "16px", fontWeight: 500, color: "#ffffff" }}>Remedis</span>
             </a>
             <p style={{ fontSize: "13px", fontWeight: 400, lineHeight: 1.6, color: "#4d505d", maxWidth: "240px" }}>

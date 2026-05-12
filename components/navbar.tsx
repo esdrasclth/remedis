@@ -34,7 +34,7 @@ export function Navbar() {
       <nav className="max-w-6xl mx-auto px-6 h-[62px] flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2.5 shrink-0">
-          <img src="/iconoremedis.png" alt="Remedis" style={{ width: 32, height: 32, borderRadius: "4px", objectFit: "contain" }} />
+          <img src="/images/iconoremedis.png" alt="Remedis" style={{ width: 32, height: 32, borderRadius: "4px", objectFit: "contain" }} />
           <span style={{ fontSize: "16px", fontWeight: 500, color: "#ffffff" }}>Remedis</span>
         </a>
 
