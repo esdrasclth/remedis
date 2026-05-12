@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Activity, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
 const NAV = [
   { label: "Características", href: "#features" },
@@ -34,12 +35,7 @@ export function Navbar() {
       <nav className="max-w-6xl mx-auto px-6 h-[62px] flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2.5 shrink-0">
-          <div
-            className="w-8 h-8 flex items-center justify-center shrink-0"
-            style={{ background: "#e4f222", borderRadius: "4px" }}
-          >
-            <Activity className="w-[18px] h-[18px] text-deep-space-black" strokeWidth={2.5} />
-          </div>
+          <Image src="/iconoremedis.png" alt="Remedis" width={32} height={32} style={{ borderRadius: "4px" }} />
           <span style={{ fontSize: "16px", fontWeight: 500, color: "#ffffff" }}>Remedis</span>
         </a>
 

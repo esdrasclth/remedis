@@ -1,4 +1,4 @@
-import { Activity } from "lucide-react";
+import Image from "next/image";
 
 const APP_URL = "https://remedis.brandsofts.com";
 
@@ -44,20 +44,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <a href="/" className="flex items-center gap-2.5 mb-4" style={{ textDecoration: "none" }}>
-              <div
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: "4px",
-                  background: "#e4f222",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Activity style={{ width: 18, height: 18, color: "#0c0a08" }} strokeWidth={2.5} />
-              </div>
+              <Image src="/iconoremedis.png" alt="Remedis" width={32} height={32} style={{ borderRadius: "4px", flexShrink: 0 }} />
               <span style={{ fontSize: "16px", fontWeight: 500, color: "#ffffff" }}>Remedis</span>
             </a>
             <p style={{ fontSize: "13px", fontWeight: 400, lineHeight: 1.6, color: "#4d505d", maxWidth: "240px" }}>

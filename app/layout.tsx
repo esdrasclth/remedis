@@ -13,11 +13,17 @@ export const metadata: Metadata = {
   title: "Remedis — Sistema de Gestión Clínica",
   description: "Expedientes médicos, farmacia, dispensación e integración con seguro social. El sistema todo-en-uno para clínicas empresariales y privadas.",
   keywords: "sistema clínica, gestión médica, seguro social, expedientes clínicos, farmacia empresarial, gestión clínica",
+  icons: {
+    icon:       "/iconoremedis.png",
+    apple:      "/iconoremedis.png",
+    shortcut:   "/iconoremedis.png",
+  },
   openGraph: {
     title: "Remedis — Gestión Clínica Todo-en-Uno",
     description: "El sistema todo-en-uno para clínicas empresariales y privadas.",
     url: "https://remedis.brandsofts.com",
     siteName: "Remedis",
+    images: [{ url: "/iconoremedis.png" }],
     locale: "es_LA",
     type: "website",
   },
