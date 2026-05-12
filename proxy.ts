@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/lib/auth";
 import { getTenantSlugFromHost } from "@/lib/tenant-edge";
 
 const PUBLIC_PATHS = ["/login", "/register", "/api/auth", "/_next", "/favicon"];
@@ -25,25 +25,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // Decode JWT from cookie — no database call, Edge-safe
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET!,
-  });
+  const session = await auth();
 
-  if (!token) {
+  if (!session?.user) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Guard /admin routes — SUPER_ADMIN only
-  if (pathname.startsWith("/admin") && token.role !== "SUPER_ADMIN") {
+  if (pathname.startsWith("/admin") && (session.user as any).role !== "SUPER_ADMIN") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  if (token.tenantId) {
-    requestHeaders.set("x-tenant-id", token.tenantId as string);
+  if ((session.user as any).tenantId) {
+    requestHeaders.set("x-tenant-id", (session.user as any).tenantId);
   }
 
   return NextResponse.next({ request: { headers: requestHeaders } });
