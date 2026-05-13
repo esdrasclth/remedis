@@ -1,6 +1,5 @@
 import { ArrowRight } from "lucide-react";
-
-const APP_URL = "https://remedis.brandsofts.com";
+import { APP_URL } from "@/lib/constants";
 
 export function CTA() {
   return (

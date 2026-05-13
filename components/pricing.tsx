@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Check, Zap } from "lucide-react";
-
-const APP_URL = "https://remedis.brandsofts.com";
+import { APP_URL } from "@/lib/constants";
 
 const PLANS = [
   {

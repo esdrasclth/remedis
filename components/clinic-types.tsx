@@ -1,6 +1,5 @@
 import { CheckCircle } from "lucide-react";
-
-const APP_URL = "https://remedis.brandsofts.com";
+import { APP_URL } from "@/lib/constants";
 
 const TYPES = [
   {

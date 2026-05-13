@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { APP_URL } from "@/lib/constants";
 
 const NAV = [
   { label: "Características", href: "#features" },
@@ -9,8 +10,6 @@ const NAV = [
   { label: "Planes",          href: "#pricing"  },
   { label: "FAQ",             href: "#faq"      },
 ];
-
-const APP_URL = "https://remedis.brandsofts.com";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
