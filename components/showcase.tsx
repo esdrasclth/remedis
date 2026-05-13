@@ -76,10 +76,10 @@ function SoapMockup() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "12px" }}>
         {[
-          { label: "S", title: "Subjetivo",  content: "Cefalea frontal 7/10.\nInicio hace 2 días.\nPeor con el ruido." },
-          { label: "O", title: "Objetivo",   content: "FC 78 · PA 120/80\nTemp 36.8°C\nPeso 72kg" },
-          { label: "A", title: "Análisis",   content: "Cefalea tensional G44.2\nHTA estadio 1" },
-          { label: "P", title: "Plan",       content: "Ibuprofeno 400mg c/8h\nControl en 7 días\nReposo relativo" },
+          { label: "S", title: "Subjetivo", content: "Cefalea frontal 7/10.\nInicio hace 2 días.\nPeor con el ruido." },
+          { label: "O", title: "Objetivo", content: "FC 78 · PA 120/80\nTemp 36.8°C\nPeso 72kg" },
+          { label: "A", title: "Análisis", content: "Cefalea tensional G44.2\nHTA estadio 1" },
+          { label: "P", title: "Plan", content: "Ibuprofeno 400mg c/8h\nControl en 7 días\nReposo relativo" },
         ].map((box) => (
           <div key={box.label} style={{ background: "#1a1919", borderRadius: "8px", padding: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
@@ -123,9 +123,9 @@ function DispensacionMockup() {
       </div>
 
       {[
-        { med: "Ibuprofeno 400mg",  dosis: "c/8h × 5d", cant: "15", status: "Dispensado", color: "#00d638" },
-        { med: "Loratadina 10mg",   dosis: "c/24h",     cant: "7",  status: "Pendiente",  color: "#ff492c" },
-        { med: "Omeprazol 20mg",    dosis: "c/12h",     cant: "10", status: "Dispensado", color: "#00d638" },
+        { med: "Ibuprofeno 400mg", dosis: "c/8h × 5d", cant: "15", status: "Dispensado", color: "#00d638" },
+        { med: "Loratadina 10mg", dosis: "c/24h", cant: "7", status: "Pendiente", color: "#ff492c" },
+        { med: "Omeprazol 20mg", dosis: "c/12h", cant: "10", status: "Dispensado", color: "#00d638" },
       ].map((row, i) => (
         <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 72px 44px 86px", gap: "8px", padding: "10px 8px", background: "#1a1919", borderRadius: "6px", marginBottom: "4px", border: "1px solid rgba(255,255,255,0.04)", alignItems: "center" }}>
           <span style={{ fontSize: "12px", color: "#fff" }}>{row.med}</span>
@@ -171,10 +171,10 @@ function InventarioMockup() {
       </div>
 
       {[
-        { prod: "Ibuprofeno 400mg",  lote: "L-2401", venc: "Feb/25", stock: "8",   status: "Stock bajo", color: "#ff492c" },
-        { prod: "Amoxicilina 500mg", lote: "L-2312", venc: "Dic/24", stock: "45",  status: "Normal",     color: "#00d638" },
-        { prod: "Loratadina 10mg",   lote: "L-2403", venc: "Mar/25", stock: "0",   status: "Agotado",    color: "#ff492c" },
-        { prod: "Metformina 850mg",  lote: "L-2402", venc: "Jun/25", stock: "120", status: "Normal",     color: "#00d638" },
+        { prod: "Ibuprofeno 400mg", lote: "L-2401", venc: "Feb/25", stock: "8", status: "Stock bajo", color: "#ff492c" },
+        { prod: "Amoxicilina 500mg", lote: "L-2312", venc: "Dic/24", stock: "45", status: "Normal", color: "#00d638" },
+        { prod: "Loratadina 10mg", lote: "L-2403", venc: "Mar/25", stock: "0", status: "Agotado", color: "#ff492c" },
+        { prod: "Metformina 850mg", lote: "L-2402", venc: "Jun/25", stock: "120", status: "Normal", color: "#00d638" },
       ].map((row, i) => (
         <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 56px 70px 46px 76px", gap: "8px", padding: "9px 8px", background: "#1a1919", borderRadius: "6px", marginBottom: "4px", border: `1px solid ${row.status === "Normal" ? "rgba(255,255,255,0.04)" : `${row.color}20`}`, alignItems: "center" }}>
           <span style={{ fontSize: "11px", color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.prod}</span>
@@ -204,9 +204,9 @@ function ReportesMockup() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", marginBottom: "14px" }}>
         {[
-          { label: "Consultas",       val: "247",   color: "#5683d2" },
-          { label: "Medicamentos",    val: "1,842", color: "#00d638" },
-          { label: "Médicos activos", val: "8",     color: "#e4f222" },
+          { label: "Consultas", val: "247", color: "#5683d2" },
+          { label: "Medicamentos", val: "1,842", color: "#00d638" },
+          { label: "Médicos activos", val: "8", color: "#e4f222" },
         ].map((k) => (
           <div key={k.label} style={{ background: "#1a1919", borderRadius: "8px", padding: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
             <p style={{ fontSize: "10px", color: k.color, marginBottom: "4px" }}>{k.label}</p>
@@ -232,9 +232,9 @@ function ReportesMockup() {
           <span style={{ fontSize: "11px", color: "#4d505d" }}>Top medicamentos dispensados</span>
         </div>
         {[
-          { med: "Ibuprofeno 400mg",  units: "384" },
-          { med: "Metformina 850mg",  units: "256" },
-          { med: "Loratadina 10mg",   units: "198" },
+          { med: "Ibuprofeno 400mg", units: "384" },
+          { med: "Metformina 850mg", units: "256" },
+          { med: "Loratadina 10mg", units: "198" },
         ].map((row, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.03)" : "none" }}>
             <span style={{ fontSize: "11px", color: "#fff" }}>{row.med}</span>
@@ -248,14 +248,14 @@ function ReportesMockup() {
 
 const MOCKUP_MAP: Record<string, React.ReactNode> = {
   expediente: <SoapMockup />,
-  farmacia:   <DispensacionMockup />,
+  farmacia: <DispensacionMockup />,
   inventario: <InventarioMockup />,
-  reportes:   <ReportesMockup />,
+  reportes: <ReportesMockup />,
 };
 
 export function Showcase() {
   const [active, setActive] = useState("expediente");
-  const [fading, setFading]   = useState(false);
+  const [fading, setFading] = useState(false);
 
   function handleTab(id: string) {
     if (id === active || fading) return;
@@ -270,6 +270,7 @@ export function Showcase() {
 
   return (
     <section
+      id="demo"
       style={{
         background: "#0c0a08",
         padding: "128px 0",
@@ -277,7 +278,6 @@ export function Showcase() {
         overflow: "hidden",
       }}
     >
-      {/* Dot grid texture */}
       <div
         style={{
           position: "absolute", inset: 0, pointerEvents: "none",
@@ -285,7 +285,6 @@ export function Showcase() {
           backgroundSize: "28px 28px",
         }}
       />
-      {/* Top glow */}
       <div
         style={{
           position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
@@ -295,12 +294,7 @@ export function Showcase() {
       />
 
       <div style={{ maxWidth: "1152px", margin: "0 auto", padding: "0 24px", position: "relative" }}>
-
-        {/* Header */}
-        <div
-          className="animate-in"
-          style={{ textAlign: "center", marginBottom: "64px" }}
-        >
+        <div className="animate-in" style={{ textAlign: "center", marginBottom: "64px" }}>
           <p style={{ fontSize: "13px", color: "#5683d2", letterSpacing: "0.04em", marginBottom: "12px" }}>
             VE EL SISTEMA EN ACCIÓN
           </p>
@@ -314,13 +308,10 @@ export function Showcase() {
           </h2>
         </div>
 
-        {/* Grid: tabs left, mockup right */}
         <div className="grid grid-cols-1 lg:grid-cols-[5fr_6fr] gap-12 items-start">
-
-          {/* Left — tab list */}
           <div className="animate-in" style={{ transitionDelay: "100ms" }}>
             {TABS.map((tab) => {
-              const Icon     = tab.icon;
+              const Icon = tab.icon;
               const isActive = tab.id === active;
               return (
                 <div
@@ -383,7 +374,6 @@ export function Showcase() {
             })}
           </div>
 
-          {/* Right — mockup */}
           <div className="lg:sticky" style={{ top: "96px" }}>
             <div
               className="animate-in"
@@ -403,7 +393,6 @@ export function Showcase() {
                   animation: "floatY 5s ease-in-out infinite",
                 }}
               >
-                {/* Browser chrome */}
                 <div
                   style={{
                     background: "#1a1919",
@@ -431,7 +420,6 @@ export function Showcase() {
                   </div>
                 </div>
 
-                {/* Dynamic content */}
                 {MOCKUP_MAP[active]}
               </div>
             </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SITE_URL } from "@/lib/constants";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -10,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://remedis.brandsofts.com"),
+  metadataBase: new URL(SITE_URL),
   title: "Remedis — Sistema de Gestión Clínica",
   description: "Expedientes médicos, farmacia, dispensación e integración con seguro social. El sistema todo-en-uno para clínicas empresariales y privadas.",
   keywords: "sistema clínica, gestión médica, seguro social, expedientes clínicos, farmacia empresarial, gestión clínica",
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Remedis — Gestión Clínica Todo-en-Uno",
     description: "El sistema todo-en-uno para clínicas empresariales y privadas.",
-    url: "https://remedis.brandsofts.com",
+    url: SITE_URL,
     siteName: "Remedis",
     images: [{ url: "/images/iconoremedis.png" }],
     locale: "es_LA",

@@ -2,10 +2,10 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import { APP_URL } from "@/lib/constants";
 
 const STATS = [
-  { value: "2",    label: "Tipos de clínica"    },
-  { value: "11",   label: "Módulos integrados"   },
+  { value: "2", label: "Tipos de clínica" },
+  { value: "11", label: "Módulos integrados" },
   { value: "SS", label: "Seguro Social incluido" },
-  { value: "14d",  label: "Prueba gratuita"      },
+  { value: "14d", label: "Prueba gratuita" },
 ];
 
 const TRUST = [
@@ -19,90 +19,82 @@ export function Hero() {
     <section
       className="relative min-h-screen flex flex-col justify-center pt-[62px] overflow-hidden"
       style={{
-        backgroundImage:    "url('/images/fondo.jpg')",
-        backgroundSize:     "cover",
+        backgroundImage: "url('/images/fondo.jpg')",
+        backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundRepeat:   "no-repeat",
+        backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Dark overlay so text stays readable over the photo */}
       <div
         className="absolute inset-0"
         style={{ background: "linear-gradient(135deg, rgba(12,10,8,0.82) 0%, rgba(11,13,27,0.70) 100%)" }}
       />
 
-      {/* Top gradient so the navbar is always readable */}
       <div
         className="absolute top-0 left-0 right-0 h-32 pointer-events-none"
         style={{ background: "linear-gradient(to bottom, rgba(12,10,8,0.6) 0%, transparent 100%)" }}
       />
 
-      {/* Content */}
       <div className="relative w-full max-w-6xl mx-auto px-6 py-24">
-
-        {/* Badge */}
         <div
           className="inline-flex items-center gap-2 mb-8"
           style={{
-            background:   "rgba(255,255,255,0.08)",
-            border:       "1px solid rgba(255,255,255,0.14)",
+            background: "rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.14)",
             borderRadius: "4px",
-            padding:      "6px 14px",
-            animation:    "fadeInUp 0.5s ease both",
+            padding: "6px 14px",
+            animation: "fadeInUp 0.5s ease both",
           }}
         >
           <span style={{ fontSize: "13px" }}>🌎</span>
           <span style={{ fontSize: "13px", fontWeight: 400, color: "#d2cecb" }}>
-            Para clínicas de cualquier país
+            Para clínicas que gestionan pacientes, farmacia y seguro social
           </span>
         </div>
 
-        {/* Headline */}
         <h1
           style={{
-            fontSize:      "clamp(40px, 6.5vw, 72px)",
-            fontWeight:    500,
-            lineHeight:    1.04,
-            color:         "#ffffff",
+            fontSize: "clamp(40px, 6.5vw, 72px)",
+            fontWeight: 500,
+            lineHeight: 1.04,
+            color: "#ffffff",
             letterSpacing: "-0.02em",
-            maxWidth:      "840px",
-            marginBottom:  "24px",
-            animation:     "fadeInUp 0.6s 0.1s ease both",
+            maxWidth: "840px",
+            marginBottom: "24px",
+            animation: "fadeInUp 0.6s 0.1s ease both",
           }}
         >
           Salud que se gestiona,{" "}
           <span style={{ color: "#e4f222" }}>vida que se cuida.</span>
         </h1>
 
-        {/* Sub */}
         <p
           style={{
-            fontSize:     "18px",
-            fontWeight:   400,
-            lineHeight:   1.38,
-            color:        "rgba(255,255,255,0.70)",
-            maxWidth:     "520px",
+            fontSize: "18px",
+            fontWeight: 400,
+            lineHeight: 1.38,
+            color: "rgba(255,255,255,0.70)",
+            maxWidth: "520px",
             marginBottom: "40px",
-            animation:    "fadeInUp 0.6s 0.2s ease both",
+            animation: "fadeInUp 0.6s 0.2s ease both",
           }}
         >
           El sistema todo-en-uno para clínicas empresariales y privadas.
           Expedientes, farmacia, dispensación e integración con seguro social.
         </p>
 
-        {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-start gap-3 mb-8" style={{ animation: "fadeInUp 0.6s 0.3s ease both" }}>
           <a
             href={`${APP_URL}/register`}
             className="flex items-center gap-2 hover:opacity-90 transition-opacity"
             style={{
-              background:     "#e4f222",
-              color:          "#0c0a08",
-              fontSize:       "14px",
-              fontWeight:     500,
-              borderRadius:   "4px",
-              padding:        "10px 20px",
-              boxShadow:      "rgba(255,255,255,0.6) 0px 0px 2px 0px inset",
+              background: "#e4f222",
+              color: "#0c0a08",
+              fontSize: "14px",
+              fontWeight: 500,
+              borderRadius: "4px",
+              padding: "10px 20px",
+              boxShadow: "rgba(255,255,255,0.6) 0px 0px 2px 0px inset",
               textDecoration: "none",
             }}
           >
@@ -113,13 +105,13 @@ export function Hero() {
             href="#features"
             className="flex items-center gap-2 transition-colors hover:text-white"
             style={{
-              background:     "rgba(255,255,255,0.08)",
-              color:          "#ffffff",
-              fontSize:       "14px",
-              fontWeight:     400,
-              borderRadius:   "4px",
-              padding:        "10px 20px",
-              border:         "1px solid rgba(255,255,255,0.18)",
+              background: "rgba(255,255,255,0.08)",
+              color: "#ffffff",
+              fontSize: "14px",
+              fontWeight: 400,
+              borderRadius: "4px",
+              padding: "10px 20px",
+              border: "1px solid rgba(255,255,255,0.18)",
               textDecoration: "none",
             }}
           >
@@ -127,7 +119,6 @@ export function Hero() {
           </a>
         </div>
 
-        {/* Trust signals */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-20" style={{ animation: "fadeIn 0.6s 0.4s ease both" }}>
           {TRUST.map(t => (
             <span key={t} className="flex items-center gap-1.5" style={{ fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
@@ -137,16 +128,15 @@ export function Hero() {
           ))}
         </div>
 
-        {/* Stats row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-16" style={{ animation: "fadeInUp 0.6s 0.5s ease both" }}>
           {STATS.map(s => (
             <div
               key={s.label}
               style={{
-                background:   "rgba(11,13,27,0.70)",
-                border:       "1px solid rgba(255,255,255,0.10)",
+                background: "rgba(11,13,27,0.70)",
+                border: "1px solid rgba(255,255,255,0.10)",
                 borderRadius: "12px",
-                padding:      "20px 24px",
+                padding: "20px 24px",
                 backdropFilter: "blur(12px)",
               }}
             >
@@ -158,26 +148,24 @@ export function Hero() {
           ))}
         </div>
 
-        {/* Dashboard mockup */}
         <div
           style={{
-            border:         "1px solid rgba(255,255,255,0.10)",
-            borderRadius:   "12px",
-            overflow:       "hidden",
-            background:     "rgba(20,18,16,0.85)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "12px",
+            overflow: "hidden",
+            background: "rgba(20,18,16,0.85)",
             backdropFilter: "blur(16px)",
-            animation:      "fadeInUp 0.7s 0.6s ease both, floatY 5s 1.5s ease-in-out infinite",
+            animation: "fadeInUp 0.7s 0.6s ease both, floatY 5s 1.5s ease-in-out infinite",
           }}
         >
-          {/* Browser chrome */}
           <div
             style={{
-              background:   "rgba(26,25,25,0.95)",
+              background: "rgba(26,25,25,0.95)",
               borderBottom: "1px solid rgba(255,255,255,0.06)",
-              padding:      "10px 16px",
-              display:      "flex",
-              alignItems:   "center",
-              gap:          "8px",
+              padding: "10px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
             <div className="flex gap-1.5">
@@ -195,9 +183,7 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Mock content */}
           <div className="flex" style={{ minHeight: "340px" }}>
-            {/* Sidebar */}
             <div
               className="hidden sm:flex flex-col"
               style={{ width: "176px", background: "#0e0d0b", borderRight: "1px solid rgba(255,255,255,0.04)", padding: "12px" }}
@@ -208,17 +194,17 @@ export function Hero() {
                 </div>
                 <span style={{ fontSize: "12px", fontWeight: 500, color: "#ffffff" }}>Mi Clínica</span>
               </div>
-              {["Dashboard","Pacientes","Citas","Consultas","Recetas","Farmacia","Inventario","Reportes"].map((item, i) => (
+              {["Dashboard", "Pacientes", "Citas", "Consultas", "Recetas", "Farmacia", "Inventario", "Reportes"].map((item, i) => (
                 <div
                   key={item}
                   className="flex items-center gap-2 mb-0.5"
                   style={{
-                    padding:      "6px 8px",
+                    padding: "6px 8px",
                     borderRadius: "4px",
-                    background:   i === 0 ? "#0b0d1b" : "transparent",
-                    color:        i === 0 ? "#e4f222" : "#4d505d",
-                    fontSize:     "11px",
-                    fontWeight:   i === 0 ? 500 : 400,
+                    background: i === 0 ? "#0b0d1b" : "transparent",
+                    color: i === 0 ? "#e4f222" : "#4d505d",
+                    fontSize: "11px",
+                    fontWeight: i === 0 ? 500 : 400,
                   }}
                 >
                   <div style={{ width: 5, height: 5, borderRadius: "50%", background: i === 0 ? "#e4f222" : "#2a2825" }} />
@@ -227,7 +213,6 @@ export function Hero() {
               ))}
             </div>
 
-            {/* Main */}
             <div style={{ flex: 1, padding: "20px", overflow: "hidden" }}>
               <div className="flex items-center justify-between mb-5">
                 <div>
@@ -239,9 +224,9 @@ export function Hero() {
 
               <div className="grid grid-cols-3 gap-3 mb-5">
                 {[
-                  { label: "Citas hoy",      val: "12", accent: "#5683d2" },
-                  { label: "Stock crítico",   val: "3",  accent: "#ff492c" },
-                  { label: "Recetas activas", val: "8",  accent: "#00d638" },
+                  { label: "Citas hoy", val: "12", accent: "#5683d2" },
+                  { label: "Stock crítico", val: "3", accent: "#ff492c" },
+                  { label: "Recetas activas", val: "8", accent: "#00d638" },
                 ].map(k => (
                   <div key={k.label} style={{ background: "#1a1919", borderRadius: "12px", padding: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
                     <div style={{ fontSize: "10px", color: k.accent, marginBottom: 4 }}>{k.label}</div>

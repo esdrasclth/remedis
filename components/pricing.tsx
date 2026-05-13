@@ -6,12 +6,12 @@ import { APP_URL } from "@/lib/constants";
 
 const PLANS = [
   {
-    key:      "BASIC",
-    name:     "Basic",
-    monthly:  699,
-    annual:   7689,   // 699 × 11 — 1 mes gratis
-    popular:  false,
-    limits:   "2 médicos · 5 usuarios · 1 almacén",
+    key: "BASIC",
+    name: "Basic",
+    monthly: 699,
+    annual: 7689,
+    popular: false,
+    limits: "2 médicos · 5 usuarios · 1 almacén",
     features: [
       "Expedientes médicos SOAP",
       "Recetas digitales con PDF",
@@ -24,12 +24,12 @@ const PLANS = [
     ],
   },
   {
-    key:      "PROFESSIONAL",
-    name:     "Pro",
-    monthly:  1299,
-    annual:   14289,  // 1299 × 11 — 1 mes gratis
-    popular:  true,
-    limits:   "8 médicos · 20 usuarios · 5 almacenes",
+    key: "PROFESSIONAL",
+    name: "Pro",
+    monthly: 1299,
+    annual: 14289,
+    popular: true,
+    limits: "8 médicos · 20 usuarios · 5 almacenes",
     features: [
       "Todo lo incluido en Basic",
       "Reportes financieros avanzados",
@@ -42,12 +42,12 @@ const PLANS = [
     ],
   },
   {
-    key:      "ENTERPRISE",
-    name:     "Enterprise",
-    monthly:  2499,
-    annual:   27489,  // 2499 × 11 — 1 mes gratis
-    popular:  false,
-    limits:   "Médicos, usuarios y almacenes ilimitados",
+    key: "ENTERPRISE",
+    name: "Enterprise",
+    monthly: 2499,
+    annual: 27489,
+    popular: false,
+    limits: "Médicos, usuarios y almacenes ilimitados",
     features: [
       "Todo lo incluido en Pro",
       "Usuarios y médicos ilimitados",
@@ -67,8 +67,6 @@ export function Pricing() {
   return (
     <section id="pricing" className="py-32" style={{ background: "#ffffff" }}>
       <div className="max-w-6xl mx-auto px-6">
-
-        {/* Header */}
         <div className="grid md:grid-cols-2 gap-8 items-end mb-12">
           <div>
             <p style={{ fontSize: "13px", fontWeight: 400, color: "#5683d2", marginBottom: "12px", letterSpacing: "0.04em" }}>
@@ -76,10 +74,10 @@ export function Pricing() {
             </p>
             <h2
               style={{
-                fontSize:   "clamp(32px, 5vw, 48px)",
+                fontSize: "clamp(32px, 5vw, 48px)",
                 fontWeight: 500,
                 lineHeight: 1.14,
-                color:      "#0c0a08",
+                color: "#0c0a08",
               }}
             >
               Precios claros. Sin letra pequeña.
@@ -90,18 +88,17 @@ export function Pricing() {
               Prueba gratuita de 14 días. Sin tarjeta de crédito.
             </p>
 
-            {/* Toggle */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setAnnual(false)}
                 style={{
-                  fontSize:   "13px",
+                  fontSize: "13px",
                   fontWeight: 400,
-                  color:      !annual ? "#0c0a08" : "#999ba3",
+                  color: !annual ? "#0c0a08" : "#999ba3",
                   background: "none",
-                  border:     "none",
-                  cursor:     "pointer",
-                  padding:    0,
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
                   transition: "color 0.15s",
                 }}
               >
@@ -112,29 +109,29 @@ export function Pricing() {
                 onClick={() => setAnnual(v => !v)}
                 aria-label="Cambiar a plan anual"
                 style={{
-                  width:        44,
-                  height:       24,
+                  width: 44,
+                  height: 24,
                   borderRadius: "100px",
-                  background:   annual ? "#0c0a08" : "rgba(0,0,0,0.12)",
-                  border:       "none",
-                  cursor:       "pointer",
-                  position:     "relative",
-                  transition:   "background 0.2s",
-                  flexShrink:   0,
+                  background: annual ? "#0c0a08" : "rgba(0,0,0,0.12)",
+                  border: "none",
+                  cursor: "pointer",
+                  position: "relative",
+                  transition: "background 0.2s",
+                  flexShrink: 0,
                 }}
               >
                 <span
                   style={{
-                    position:     "absolute",
-                    top:          3,
-                    left:         annual ? 23 : 3,
-                    width:        18,
-                    height:       18,
+                    position: "absolute",
+                    top: 3,
+                    left: annual ? 23 : 3,
+                    width: 18,
+                    height: 18,
                     borderRadius: "50%",
-                    background:   "#ffffff",
-                    boxShadow:    "0 1px 3px rgba(0,0,0,0.2)",
-                    transition:   "left 0.2s",
-                    display:      "block",
+                    background: "#ffffff",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                    transition: "left 0.2s",
+                    display: "block",
                   }}
                 />
               </button>
@@ -142,13 +139,13 @@ export function Pricing() {
               <button
                 onClick={() => setAnnual(true)}
                 style={{
-                  fontSize:   "13px",
+                  fontSize: "13px",
                   fontWeight: 400,
-                  color:      annual ? "#0c0a08" : "#999ba3",
+                  color: annual ? "#0c0a08" : "#999ba3",
                   background: "none",
-                  border:     "none",
-                  cursor:     "pointer",
-                  padding:    0,
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
                   transition: "color 0.15s",
                 }}
               >
@@ -157,14 +154,14 @@ export function Pricing() {
 
               <span
                 style={{
-                  fontSize:     "11px",
-                  fontWeight:   500,
-                  color:        annual ? "#0c0a08" : "#999ba3",
-                  background:   annual ? "#e4f222" : "rgba(0,0,0,0.06)",
-                  border:       "none",
+                  fontSize: "11px",
+                  fontWeight: 500,
+                  color: annual ? "#0c0a08" : "#999ba3",
+                  background: annual ? "#e4f222" : "rgba(0,0,0,0.06)",
+                  border: "none",
                   borderRadius: "4px",
-                  padding:      "2px 8px",
-                  transition:   "all 0.2s",
+                  padding: "2px 8px",
+                  transition: "all 0.2s",
                 }}
               >
                 1 mes gratis
@@ -173,38 +170,38 @@ export function Pricing() {
           </div>
         </div>
 
-        {/* Cards */}
         <div className="grid md:grid-cols-3 gap-4">
           {PLANS.map(p => {
-            const price = annual ? Math.round(p.annual / 12) : p.monthly;
+            const price = annual ? p.annual : p.monthly;
+            const monthlyEquivalent = Math.round(p.annual / 12);
             const saved = p.monthly * 12 - p.annual;
 
             return (
               <div
                 key={p.key}
                 style={{
-                  background:   p.popular ? "#0c0a08" : "#f4f2f0",
-                  border:       p.popular ? "none" : "1px solid rgba(0,0,0,0.08)",
+                  background: p.popular ? "#0c0a08" : "#f4f2f0",
+                  border: p.popular ? "none" : "1px solid rgba(0,0,0,0.08)",
                   borderRadius: "12px",
-                  padding:      "28px 24px",
-                  position:     "relative",
+                  padding: "28px 24px",
+                  position: "relative",
                 }}
               >
                 {p.popular && (
                   <div
                     style={{
-                      position:      "absolute",
-                      top:           -1,
-                      left:          "50%",
-                      transform:     "translateX(-50%)",
-                      background:    "#e4f222",
-                      color:         "#0c0a08",
-                      fontSize:      "10px",
-                      fontWeight:    500,
+                      position: "absolute",
+                      top: -1,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      background: "#e4f222",
+                      color: "#0c0a08",
+                      fontSize: "10px",
+                      fontWeight: 500,
                       letterSpacing: "0.06em",
-                      padding:       "3px 12px",
-                      borderRadius:  "0 0 6px 6px",
-                      whiteSpace:    "nowrap",
+                      padding: "3px 12px",
+                      borderRadius: "0 0 6px 6px",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     MÁS POPULAR
@@ -224,33 +221,38 @@ export function Pricing() {
                       L.&nbsp;{price.toLocaleString("es-HN")}
                     </span>
                     <p style={{ fontSize: "12px", fontWeight: 400, color: p.popular ? "#4d505d" : "#999ba3", marginTop: "4px" }}>
-                      {annual ? "/mes · cobro anual" : "/mes"}
+                      {annual ? "/año" : "/mes"}
                     </p>
                     {annual && (
-                      <p style={{ fontSize: "12px", fontWeight: 400, color: "#00d638", marginTop: "4px" }}>
-                        Ahorras L.&nbsp;{saved.toLocaleString("es-HN")} al año
-                      </p>
+                      <>
+                        <p style={{ fontSize: "12px", fontWeight: 400, color: p.popular ? "#999ba3" : "#4d505d", marginTop: "4px" }}>
+                          Equivale a L.&nbsp;{monthlyEquivalent.toLocaleString("es-HN")} al mes pagando anual.
+                        </p>
+                        <p style={{ fontSize: "12px", fontWeight: 400, color: "#00d638", marginTop: "4px" }}>
+                          Ahorras L.&nbsp;{saved.toLocaleString("es-HN")} al año
+                        </p>
+                      </>
                     )}
                   </div>
 
                   <a
                     href={`${APP_URL}/register`}
                     style={{
-                      display:        "flex",
-                      alignItems:     "center",
+                      display: "flex",
+                      alignItems: "center",
                       justifyContent: "center",
-                      gap:            "6px",
-                      width:          "100%",
-                      background:     p.popular ? "#e4f222" : "transparent",
-                      color:          p.popular ? "#0c0a08" : "#0c0a08",
-                      fontSize:       "14px",
-                      fontWeight:     500,
-                      borderRadius:   "4px",
-                      padding:        "10px 20px",
-                      border:         p.popular ? "none" : "1px solid rgba(0,0,0,0.15)",
+                      gap: "6px",
+                      width: "100%",
+                      background: p.popular ? "#e4f222" : "transparent",
+                      color: "#0c0a08",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      borderRadius: "4px",
+                      padding: "10px 20px",
+                      border: p.popular ? "none" : "1px solid rgba(0,0,0,0.15)",
                       textDecoration: "none",
-                      marginBottom:   "24px",
-                      boxShadow:      p.popular ? "rgba(255,255,255,0.6) 0px 0px 2px 0px inset" : "none",
+                      marginBottom: "24px",
+                      boxShadow: p.popular ? "rgba(255,255,255,0.6) 0px 0px 2px 0px inset" : "none",
                     }}
                   >
                     {p.popular && <Zap style={{ width: 14, height: 14 }} />}

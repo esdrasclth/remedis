@@ -49,6 +49,36 @@ body {
   font-feature-settings: "ss01";
 }
 
+input,
+textarea,
+select {
+  color: #ffffff;
+  background-color: transparent;
+  caret-color: #e4f222;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #4d505d;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #e4f222;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.04) inset;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.04) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+select option {
+  background-color: #0c0a08;
+  color: #ffffff;
+}
+
 ::selection {
   background: #e4f222;
   color: #0c0a08;

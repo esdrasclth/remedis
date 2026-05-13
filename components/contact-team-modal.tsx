@@ -9,16 +9,20 @@ type ContactTeamModalProps = {
   onClose: () => void;
 };
 
-const DEFAULT_CLINIC_TYPE = "Clínica privada";
+const DEFAULT_CLINIC_TYPE = "";
 
 export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
+  const startedAtRef = useRef<number>(Date.now());
   const [clinicType, setClinicType] = useState(DEFAULT_CLINIC_TYPE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   useEffect(() => {
-    if (open) setClinicType(DEFAULT_CLINIC_TYPE);
+    if (open) {
+      setClinicType(DEFAULT_CLINIC_TYPE);
+      startedAtRef.current = Date.now();
+    }
   }, [open]);
 
   useEffect(() => {
@@ -66,6 +70,8 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
           phone,
           clinic: clinic || clinicType,
           message: `${message}\n\nEnviado desde: ${APP_URL}`,
+          website: String(formData.get("website") || "").trim(),
+          startedAt: String(startedAtRef.current),
         }),
       });
 
@@ -116,8 +122,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(228,242,34,0.10) 0%, transparent 65%)",
+            background: "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(228,242,34,0.10) 0%, transparent 65%)",
           }}
         />
 
@@ -206,6 +211,14 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
           </div>
 
           <form className="p-8 sm:p-10 lg:p-12" onSubmit={handleSubmit}>
+            <input type="hidden" name="startedAt" value={String(startedAtRef.current)} />
+            <div aria-hidden="true" className="hidden">
+              <label>
+                Website
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" />
+              </label>
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-4">
               <label className="flex flex-col gap-2 sm:col-span-1">
                 <span style={{ fontSize: "12px", fontWeight: 500, color: "#d2cecb" }}>Nombre</span>
@@ -217,8 +230,11 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     type="text"
                     placeholder="Tu nombre"
                     required
-                    className="w-full bg-transparent outline-none text-white placeholder:text-[#4d505d]"
-                    style={{ fontSize: "14px" }}
+                    className="w-full bg-transparent outline-none placeholder:text-[#4d505d]"
+                    autoComplete="name"
+                    onFocus={(event) => event.currentTarget.select()}
+                    onClick={(event) => event.currentTarget.select()}
+                    style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
               </label>
@@ -232,8 +248,11 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     type="email"
                     placeholder="correo@empresa.com"
                     required
-                    className="w-full bg-transparent outline-none text-white placeholder:text-[#4d505d]"
-                    style={{ fontSize: "14px" }}
+                    className="w-full bg-transparent outline-none placeholder:text-[#4d505d]"
+                    autoComplete="email"
+                    onFocus={(event) => event.currentTarget.select()}
+                    onClick={(event) => event.currentTarget.select()}
+                    style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
               </label>
@@ -244,13 +263,22 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                   name="clinic"
                   value={clinicType}
                   onChange={(event) => setClinicType(event.target.value)}
-                  className="rounded-[10px] border border-white/10 bg-white/[0.04] px-3 py-3 outline-none text-white focus:border-[#e4f222]/50"
-                  style={{ fontSize: "14px" }}
+                  className="rounded-[10px] border border-white/10 bg-white/[0.04] px-3 py-3 outline-none focus:border-[#e4f222]/50"
+                  style={{
+                    fontSize: "14px",
+                    color: "#ffffff",
+                    WebkitTextFillColor: "#ffffff",
+                    backgroundColor: "rgba(255,255,255,0.04)",
+                    colorScheme: "dark",
+                  }}
                 >
-                  <option value="Clínica privada">Clínica privada</option>
-                  <option value="Clínica empresarial">Clínica empresarial</option>
-                  <option value="Consultorio">Consultorio</option>
-                  <option value="Otra">Otra</option>
+                  <option value="" disabled hidden style={{ backgroundColor: "#0c0a08", color: "#ffffff" }}>
+                    Selecciona el tipo de clínica
+                  </option>
+                  <option value="Clínica privada" style={{ backgroundColor: "#0c0a08", color: "#ffffff" }}>Clínica privada</option>
+                  <option value="Clínica empresarial" style={{ backgroundColor: "#0c0a08", color: "#ffffff" }}>Clínica empresarial</option>
+                  <option value="Consultorio" style={{ backgroundColor: "#0c0a08", color: "#ffffff" }}>Consultorio</option>
+                  <option value="Otra" style={{ backgroundColor: "#0c0a08", color: "#ffffff" }}>Otra</option>
                 </select>
               </label>
 
@@ -262,8 +290,11 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     name="phone"
                     type="tel"
                     placeholder="+504 ..."
-                    className="w-full bg-transparent outline-none text-white placeholder:text-[#4d505d]"
-                    style={{ fontSize: "14px" }}
+                    className="w-full bg-transparent outline-none placeholder:text-[#4d505d]"
+                    autoComplete="tel"
+                    onFocus={(event) => event.currentTarget.select()}
+                    onClick={(event) => event.currentTarget.select()}
+                    style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
               </label>
@@ -277,8 +308,9 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     rows={5}
                     placeholder="Cuéntanos cuántos usuarios necesitas, si tu clínica es privada o empresarial y cualquier detalle importante."
                     required
-                    className="w-full bg-transparent outline-none text-white placeholder:text-[#4d505d] resize-none"
-                    style={{ fontSize: "14px" }}
+                    className="w-full bg-transparent outline-none placeholder:text-[#4d505d] resize-none"
+                    spellCheck={true}
+                    style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
               </label>
@@ -335,7 +367,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
               </p>
             )}
             <p style={{ fontSize: "12px", fontWeight: 400, color: "#4d505d", marginTop: "16px", lineHeight: 1.5 }}>
-              {feedback ? "Puedes cerrar este modal o enviar otro mensaje." : "Al enviar, el mensaje llegará directamente a esdrasclth@brandsofts.com a través de Resend."}
+              {feedback ? "Puedes cerrar este modal o enviar otro mensaje." : "Tu mensaje se enviará al equipo de Remedis."}
             </p>
           </form>
         </div>

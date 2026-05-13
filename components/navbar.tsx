@@ -6,14 +6,15 @@ import { APP_URL } from "@/lib/constants";
 
 const NAV = [
   { label: "Características", href: "#features" },
-  { label: "Clínicas",        href: "#clinics"  },
-  { label: "Planes",          href: "#pricing"  },
-  { label: "FAQ",             href: "#faq"      },
+  { label: "Demo", href: "#demo" },
+  { label: "Clínicas", href: "#clinics" },
+  { label: "Planes", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen]         = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 24);
@@ -60,7 +61,6 @@ export function Navbar() {
           >
             Iniciar sesión
           </a>
-          {/* Primary CTA — DESIGN.md: yellow, deep-space text, 4px radius, 10px/20px padding */}
           <a
             href={`${APP_URL}/register`}
             style={{

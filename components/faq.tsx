@@ -49,18 +49,16 @@ export function FAQ() {
     <section id="faq" className="py-32" style={{ background: "#f4f2f0" }}>
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid md:grid-cols-[280px_1fr] gap-16 lg:gap-24">
-
-          {/* Left */}
           <div>
             <p style={{ fontSize: "13px", fontWeight: 400, color: "#5683d2", marginBottom: "12px", letterSpacing: "0.04em" }}>
               PREGUNTAS FRECUENTES
             </p>
             <h2
               style={{
-                fontSize:     "clamp(28px, 4vw, 40px)",
-                fontWeight:   500,
-                lineHeight:   1.17,
-                color:        "#0c0a08",
+                fontSize: "clamp(28px, 4vw, 40px)",
+                fontWeight: 500,
+                lineHeight: 1.17,
+                color: "#0c0a08",
                 marginBottom: "16px",
               }}
             >
@@ -77,7 +75,6 @@ export function FAQ() {
             </a>
           </div>
 
-          {/* Accordion */}
           <div>
             {FAQS.map((f, i) => {
               const isOpen = open === i;
@@ -88,17 +85,17 @@ export function FAQ() {
                     onClick={() => toggle(i)}
                     className="w-full flex items-start justify-between gap-4 text-left"
                     style={{
-                      padding:    "20px 0",
+                      padding: "20px 0",
                       background: "none",
-                      border:     "none",
-                      cursor:     "pointer",
+                      border: "none",
+                      cursor: "pointer",
                     }}
                   >
                     <span
                       style={{
-                        fontSize:   "14px",
+                        fontSize: "14px",
                         fontWeight: 500,
-                        color:      isOpen ? "#0c0a08" : "#4d505d",
+                        color: isOpen ? "#0c0a08" : "#4d505d",
                         lineHeight: 1.5,
                         transition: "color 0.15s",
                       }}
@@ -108,7 +105,7 @@ export function FAQ() {
                     <span style={{ flexShrink: 0, marginTop: "2px" }}>
                       {isOpen
                         ? <Minus style={{ width: 16, height: 16, color: "#0c0a08" }} />
-                        : <Plus  style={{ width: 16, height: 16, color: "#999ba3" }} />
+                        : <Plus style={{ width: 16, height: 16, color: "#999ba3" }} />
                       }
                     </span>
                   </button>
@@ -116,10 +113,10 @@ export function FAQ() {
                   {isOpen && (
                     <p
                       style={{
-                        fontSize:      "14px",
-                        fontWeight:    400,
-                        lineHeight:    1.6,
-                        color:         "#4d505d",
+                        fontSize: "14px",
+                        fontWeight: 400,
+                        lineHeight: 1.6,
+                        color: "#4d505d",
                         paddingBottom: "20px",
                       }}
                     >

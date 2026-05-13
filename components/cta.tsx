@@ -13,15 +13,14 @@ export function CTA() {
       <div className="max-w-6xl mx-auto px-6">
         <div
           style={{
-            background:   "#0c0a08",
+            background: "#0c0a08",
             borderRadius: "12px",
-            padding:      "80px 40px",
-            textAlign:    "center",
-            position:     "relative",
-            overflow:     "hidden",
+            padding: "80px 40px",
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden",
           }}
         >
-          {/* Subtle glow */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -35,10 +34,10 @@ export function CTA() {
             </p>
             <h2
               style={{
-                fontSize:     "clamp(32px, 5vw, 48px)",
-                fontWeight:   500,
-                lineHeight:   1.14,
-                color:        "#ffffff",
+                fontSize: "clamp(32px, 5vw, 48px)",
+                fontWeight: 500,
+                lineHeight: 1.14,
+                color: "#ffffff",
                 marginBottom: "16px",
               }}
             >
@@ -46,10 +45,10 @@ export function CTA() {
             </h2>
             <p
               style={{
-                fontSize:     "18px",
-                fontWeight:   400,
-                lineHeight:   1.38,
-                color:        "#999ba3",
+                fontSize: "18px",
+                fontWeight: 400,
+                lineHeight: 1.38,
+                color: "#999ba3",
                 marginBottom: "40px",
               }}
             >
@@ -61,14 +60,14 @@ export function CTA() {
                 href={`${APP_URL}/register`}
                 className="flex items-center gap-2 hover:opacity-90 transition-opacity w-full sm:w-auto justify-center"
                 style={{
-                  background:     "#e4f222",
-                  color:          "#0c0a08",
-                  fontSize:       "14px",
-                  fontWeight:     500,
-                  borderRadius:   "4px",
-                  padding:        "10px 20px",
+                  background: "#e4f222",
+                  color: "#0c0a08",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  borderRadius: "4px",
+                  padding: "10px 20px",
                   textDecoration: "none",
-                  boxShadow:      "rgba(255,255,255,0.6) 0px 0px 2px 0px inset",
+                  boxShadow: "rgba(255,255,255,0.6) 0px 0px 2px 0px inset",
                 }}
               >
                 Comenzar gratis — 14 días
@@ -79,16 +78,16 @@ export function CTA() {
                 onClick={() => setOpen(true)}
                 className="flex items-center gap-2 w-full sm:w-auto justify-center transition-colors hover:text-white"
                 style={{
-                  background:     "transparent",
-                  color:          "#ffffff",
-                  fontSize:       "14px",
-                  fontWeight:     400,
-                  borderRadius:   "4px",
-                  padding:        "10px 20px",
-                  border:         "1px solid rgba(255,255,255,0.12)",
+                  background: "transparent",
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  border: "1px solid rgba(255,255,255,0.12)",
                   textDecoration: "none",
                 }}
-                >
+              >
                 Hablar con el equipo
               </button>
             </div>
