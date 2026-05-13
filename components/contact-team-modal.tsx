@@ -9,12 +9,13 @@ type ContactTeamModalProps = {
   onClose: () => void;
 };
 
-const TEAM_EMAIL = "esdrasclth@brandsofts.com";
 const DEFAULT_CLINIC_TYPE = "Clínica privada";
 
 export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
   const [clinicType, setClinicType] = useState(DEFAULT_CLINIC_TYPE);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   useEffect(() => {
     if (open) setClinicType(DEFAULT_CLINIC_TYPE);
@@ -42,8 +43,10 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
 
   if (!open) return null;
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsSubmitting(true);
+    setFeedback(null);
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -53,24 +56,40 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
     const phone = String(formData.get("phone") || "").trim();
     const message = String(formData.get("message") || "").trim();
 
-    const subject = encodeURIComponent(`Contacto comercial Remedis - ${clinic || clinicType}`);
-    const body = encodeURIComponent(
-      [
-        `Nombre: ${name || "No indicado"}`,
-        `Tipo de clínica: ${clinic || clinicType}`,
-        `Correo: ${email || "No indicado"}`,
-        `Teléfono: ${phone || "No indicado"}`,
-        "",
-        "Mensaje:",
-        message || "No indicado",
-        "",
-        `Enviado desde: ${APP_URL}`,
-      ].join("\n")
-    );
+    try {
+      const response = await fetch("/api/contact-team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          clinic: clinic || clinicType,
+          message: `${message}\n\nEnviado desde: ${APP_URL}`,
+        }),
+      });
 
-    window.location.href = `mailto:${TEAM_EMAIL}?subject=${subject}&body=${body}`;
-    onClose();
-    form.reset();
+      const result = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(result.error || "No se pudo enviar el mensaje.");
+      }
+
+      setFeedback({
+        type: "success",
+        message: "Tu mensaje fue enviado al equipo. Te contactarán pronto por correo.",
+      });
+      form.reset();
+      setClinicType(DEFAULT_CLINIC_TYPE);
+      window.setTimeout(onClose, 1100);
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "Ocurrió un error al enviar el mensaje.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -197,6 +216,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     name="name"
                     type="text"
                     placeholder="Tu nombre"
+                    required
                     className="w-full bg-transparent outline-none text-white placeholder:text-[#4d505d]"
                     style={{ fontSize: "14px" }}
                   />
@@ -211,6 +231,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     name="email"
                     type="email"
                     placeholder="correo@empresa.com"
+                    required
                     className="w-full bg-transparent outline-none text-white placeholder:text-[#4d505d]"
                     style={{ fontSize: "14px" }}
                   />
@@ -255,6 +276,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     name="message"
                     rows={5}
                     placeholder="Cuéntanos cuántos usuarios necesitas, si tu clínica es privada o empresarial y cualquier detalle importante."
+                    required
                     className="w-full bg-transparent outline-none text-white placeholder:text-[#4d505d] resize-none"
                     style={{ fontSize: "14px" }}
                   />
@@ -265,6 +287,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
             <div className="flex flex-col sm:flex-row gap-3 mt-6">
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="inline-flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                 style={{
                   background: "#e4f222",
@@ -275,9 +298,11 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                   padding: "12px 20px",
                   textDecoration: "none",
                   boxShadow: "rgba(255,255,255,0.6) 0px 0px 2px 0px inset",
+                  opacity: isSubmitting ? 0.7 : 1,
+                  cursor: isSubmitting ? "wait" : "pointer",
                 }}
               >
-                Enviar consulta
+                {isSubmitting ? "Enviando..." : "Enviar consulta"}
               </button>
               <button
                 type="button"
@@ -297,8 +322,20 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
               </button>
             </div>
 
+            {feedback && (
+              <p
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  marginTop: "10px",
+                  color: feedback.type === "success" ? "#00d638" : "#ff492c",
+                }}
+              >
+                {feedback.message}
+              </p>
+            )}
             <p style={{ fontSize: "12px", fontWeight: 400, color: "#4d505d", marginTop: "16px", lineHeight: 1.5 }}>
-              Al enviar, se abrirá tu cliente de correo con la información lista para compartir con el equipo.
+              {feedback ? "Puedes cerrar este modal o enviar otro mensaje." : "Al enviar, el mensaje llegará directamente a esdrasclth@brandsofts.com a través de Resend."}
             </p>
           </form>
         </div>
