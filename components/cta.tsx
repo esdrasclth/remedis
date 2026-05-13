@@ -1,7 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { APP_URL } from "@/lib/constants";
+import { ContactTeamModal } from "@/components/contact-team-modal";
 
 export function CTA() {
+  const [open, setOpen] = useState(false);
+
   return (
     <section className="py-32" style={{ background: "#ffffff" }}>
       <div className="max-w-6xl mx-auto px-6">
@@ -68,8 +74,9 @@ export function CTA() {
                 Comenzar gratis — 14 días
                 <ArrowRight style={{ width: 16, height: 16 }} />
               </a>
-              <a
-                href="mailto:esdrasclth@brandsofts.com"
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
                 className="flex items-center gap-2 w-full sm:w-auto justify-center transition-colors hover:text-white"
                 style={{
                   background:     "transparent",
@@ -81,13 +88,14 @@ export function CTA() {
                   border:         "1px solid rgba(255,255,255,0.12)",
                   textDecoration: "none",
                 }}
-              >
+                >
                 Hablar con el equipo
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </div>
+      <ContactTeamModal open={open} onClose={() => setOpen(false)} />
     </section>
   );
 }
