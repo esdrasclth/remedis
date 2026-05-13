@@ -15,12 +15,14 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
   const firstFieldRef = useRef<HTMLInputElement | null>(null);
   const startedAtRef = useRef<number>(Date.now());
   const [clinicType, setClinicType] = useState(DEFAULT_CLINIC_TYPE);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   useEffect(() => {
     if (open) {
       setClinicType(DEFAULT_CLINIC_TYPE);
+      setFocusedField(null);
       startedAtRef.current = Date.now();
     }
   }, [open]);
@@ -100,8 +102,8 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center px-4 py-6 sm:px-6"
-      onMouseDown={onClose}
+      className="fixed inset-0 z-[80] flex items-end justify-center px-3 py-3 sm:items-center sm:px-6 sm:py-6"
+      onClick={onClose}
       role="presentation"
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" aria-hidden="true" />
@@ -110,10 +112,10 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="contact-team-title"
-        className="relative w-full max-w-5xl overflow-hidden"
-        onMouseDown={(event) => event.stopPropagation()}
+        className="relative w-full max-w-5xl overflow-hidden max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)]"
+        onClick={(event) => event.stopPropagation()}
         style={{
-          borderRadius: "16px",
+          borderRadius: "24px",
           border: "1px solid rgba(255,255,255,0.08)",
           background: "#0c0a08",
           boxShadow: "0 28px 80px rgba(0,0,0,0.55)",
@@ -126,8 +128,8 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
           }}
         />
 
-        <div className="relative grid lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="p-8 sm:p-10 lg:p-12 border-b lg:border-b-0 lg:border-r border-white/[0.06]">
+        <div className="relative grid max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)] overflow-y-auto overscroll-contain lg:grid-cols-[0.95fr_1.05fr] [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]">
+          <div className="p-6 sm:p-8 lg:p-12 border-b lg:border-b-0 lg:border-r border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
@@ -157,7 +159,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
               Te respondemos por correo con una propuesta clara para tu tipo de operación, sin compromiso.
             </p>
 
-            <div className="flex flex-col gap-3">
+            <div className="hidden lg:flex flex-col gap-3">
               {[
                 {
                   icon: Building2,
@@ -210,7 +212,7 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
             </div>
           </div>
 
-          <form className="p-8 sm:p-10 lg:p-12" onSubmit={handleSubmit}>
+          <form className="p-6 sm:p-8 lg:p-12" onSubmit={handleSubmit}>
             <input type="hidden" name="startedAt" value={String(startedAtRef.current)} />
             <div aria-hidden="true" className="hidden">
               <label>
@@ -228,12 +230,14 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                     ref={firstFieldRef}
                     name="name"
                     type="text"
-                    placeholder="Tu nombre"
                     required
                     className="w-full bg-transparent outline-none placeholder:text-[#4d505d]"
                     autoComplete="name"
-                    onFocus={(event) => event.currentTarget.select()}
-                    onClick={(event) => event.currentTarget.select()}
+                    placeholder={focusedField === "name" ? "" : "Tu nombre"}
+                    onFocus={() => {
+                      setFocusedField("name");
+                    }}
+                    onBlur={() => setFocusedField((value) => (value === "name" ? null : value))}
                     style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
@@ -246,12 +250,14 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                   <input
                     name="email"
                     type="email"
-                    placeholder="correo@empresa.com"
                     required
                     className="w-full bg-transparent outline-none placeholder:text-[#4d505d]"
                     autoComplete="email"
-                    onFocus={(event) => event.currentTarget.select()}
-                    onClick={(event) => event.currentTarget.select()}
+                    placeholder={focusedField === "email" ? "" : "correo@empresa.com"}
+                    onFocus={() => {
+                      setFocusedField("email");
+                    }}
+                    onBlur={() => setFocusedField((value) => (value === "email" ? null : value))}
                     style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
@@ -263,6 +269,8 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                   name="clinic"
                   value={clinicType}
                   onChange={(event) => setClinicType(event.target.value)}
+                  onFocus={() => setFocusedField("clinic")}
+                  onBlur={() => setFocusedField((value) => (value === "clinic" ? null : value))}
                   className="rounded-[10px] border border-white/10 bg-white/[0.04] px-3 py-3 outline-none focus:border-[#e4f222]/50"
                   style={{
                     fontSize: "14px",
@@ -289,11 +297,13 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                   <input
                     name="phone"
                     type="tel"
-                    placeholder="+504 ..."
                     className="w-full bg-transparent outline-none placeholder:text-[#4d505d]"
                     autoComplete="tel"
-                    onFocus={(event) => event.currentTarget.select()}
-                    onClick={(event) => event.currentTarget.select()}
+                    placeholder={focusedField === "phone" ? "" : "+504 ..."}
+                    onFocus={() => {
+                      setFocusedField("phone");
+                    }}
+                    onBlur={() => setFocusedField((value) => (value === "phone" ? null : value))}
                     style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
@@ -306,10 +316,12 @@ export function ContactTeamModal({ open, onClose }: ContactTeamModalProps) {
                   <textarea
                     name="message"
                     rows={5}
-                    placeholder="Cuéntanos cuántos usuarios necesitas, si tu clínica es privada o empresarial y cualquier detalle importante."
                     required
                     className="w-full bg-transparent outline-none placeholder:text-[#4d505d] resize-none"
                     spellCheck={true}
+                    placeholder={focusedField === "message" ? "" : "Cuéntanos cuántos usuarios necesitas, si tu clínica es privada o empresarial y cualquier detalle importante."}
+                    onFocus={() => setFocusedField("message")}
+                    onBlur={() => setFocusedField((value) => (value === "message" ? null : value))}
                     style={{ fontSize: "14px", color: "#ffffff", WebkitTextFillColor: "#ffffff", backgroundColor: "transparent" }}
                   />
                 </div>
