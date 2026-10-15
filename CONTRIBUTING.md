@@ -11,11 +11,14 @@ Requisitos: **Node 20+**, **pnpm** y **Docker**.
 
 ```bash
 pnpm install
-cp .env.example .env
-docker compose up -d postgres
+cp apps/web/.env.example apps/web/.env
+docker run -d --name remedis-db -p 5432:5432 -e POSTGRES_USER=remedis -e POSTGRES_PASSWORD=remedis_dev -e POSTGRES_DB=remedis postgres:16-alpine
 pnpm db:setup      # migraciones + seed
-pnpm dev
+pnpm dev:web
 ```
+
+El repositorio es un monorepo: el sistema está en `apps/web` y la landing en
+`apps/landing`. Todo se instala una vez desde la raíz.
 
 El seed crea una **Clínica Demo** con un usuario por rol e imprime las
 contraseñas al terminar.
@@ -24,9 +27,11 @@ contraseñas al terminar.
 
 La configuración de Prisma resuelve `DATABASE_URL` desde el entorno del
 proceso. Por eso los scripts usan `node --env-file=.env`. Si ejecutas Prisma a
-mano, expórtalas primero o fallará con `PrismaConfigEnvError`:
+mano, hazlo desde `apps/web` y expórtalas primero o fallará con
+`PrismaConfigEnvError`:
 
 ```bash
+cd apps/web
 set -a; . ./.env; set +a
 node node_modules/prisma/build/index.js migrate status
 ```
@@ -83,6 +88,16 @@ pnpm build
 ```
 
 Si cambiaste el esquema, añade la migración y súbela con el cambio.
+
+Si tocaste el `Dockerfile` o las dependencias de `apps/web`, comprueba también
+la imagen, que es lo que se despliega:
+
+```bash
+docker build -t remedis-web .
+```
+
+El build `standalone` de Next.js en un monorepo replica la ruta `apps/web`
+dentro de `.next/standalone`; por eso la imagen arranca desde `/app/apps/web`.
 
 ---
 

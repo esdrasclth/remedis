@@ -1,5 +1,5 @@
 {
-  "name": "remedis",
+  "name": "@remedis/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -41,15 +41,6 @@
     "xlsx": "^0.18.5",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@prisma/engines",
-      "esbuild",
-      "prisma",
-      "sharp",
-      "unrs-resolver"
-    ]
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",

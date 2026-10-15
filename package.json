@@ -1,0 +1,24 @@
+{
+  "name": "remedis",
+  "private": true,
+  "packageManager": "pnpm@10.33.2",
+  "description": "Sistema de gestión clínica multiempresa y su landing.",
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=@remedis/web",
+    "dev:landing": "turbo dev --filter=@remedis/landing",
+    "build": "turbo build",
+    "build:web": "turbo build --filter=@remedis/web",
+    "build:landing": "turbo build --filter=@remedis/landing",
+    "lint": "turbo lint",
+    "db:migrate": "pnpm --filter @remedis/web db:migrate",
+    "db:seed": "pnpm --filter @remedis/web db:seed",
+    "db:setup": "pnpm --filter @remedis/web db:setup"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

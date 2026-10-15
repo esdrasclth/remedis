@@ -8,7 +8,8 @@
 
 [![Licencia AGPL v3](https://img.shields.io/badge/licencia-AGPL--3.0-d9f24a)](LICENSE)
 [![Node 20](https://img.shields.io/badge/node-20-d9f24a)](https://nodejs.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-15-000000)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000)](https://nextjs.org/)
+[![Turborepo](https://img.shields.io/badge/Turborepo-2-EF4444)](https://turbo.build/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)](https://www.postgresql.org/)
 
 Expediente médico de empleados y sus dependientes, agenda, recetas,
@@ -98,17 +99,38 @@ que es donde una clínica pequeña pierde dinero sin darse cuenta.
 > Las capturas salen de una instancia local con **datos clínicos inventados**:
 > ninguna persona, diagnóstico ni expediente corresponde a nadie real.
 
-## Tecnologías
+### La landing
+
+La página pública presenta el producto, sus planes y un formulario para hablar
+con el equipo, que llega por correo con Resend.
+
+![Landing de Remedis](docs/capturas/landing.png)
+
+## Arquitectura
+
+El repositorio es un monorepo con las dos caras del producto:
+
+| App | Qué es | Producción |
+| --- | --- | --- |
+| **`apps/web`** | El sistema clínico | Dokploy · [app.remedis.brandsofts.com](https://app.remedis.brandsofts.com) |
+| **`apps/landing`** | La página pública | Vercel · [remedis.brandsofts.com](https://remedis.brandsofts.com) |
+
+La landing no depende del sistema: solo enlaza al registro y al inicio de
+sesión.
+
+### Tecnologías
 
 | Área | Tecnología |
 | --- | --- |
-| Aplicación | Next.js 15 (App Router), React, TypeScript |
+| Aplicación | Next.js 16 (App Router), React 19, TypeScript |
 | Base de datos | PostgreSQL con Prisma |
 | Sesión | Auth.js con roles por módulo |
 | Archivos | MinIO / S3 |
 | Correo | Resend |
 | Suscripciones | Stripe |
-| Desarrollo | Docker Compose |
+| Landing | Next.js 16 y Tailwind 4, en Vercel |
+| Monorepo | pnpm workspaces y Turborepo |
+| Despliegue | Docker en Dokploy (app) y Vercel (landing) |
 
 ## Puesta en marcha
 
@@ -117,12 +139,14 @@ Requisitos: **Node 20+**, **pnpm** y **Docker**.
 ```bash
 git clone https://github.com/esdrasclth/remedis.git
 cd remedis
-pnpm install
-cp .env.example .env       # revisa los valores antes de seguir
+pnpm install                              # una vez, para las dos apps
+cp apps/web/.env.example apps/web/.env    # revisa los valores antes de seguir
 
-docker compose up -d postgres
+docker run -d --name remedis-db -p 5432:5432 -e POSTGRES_USER=remedis -e POSTGRES_PASSWORD=remedis_dev -e POSTGRES_DB=remedis postgres:16-alpine
+
 pnpm db:setup              # migraciones + seed
-pnpm dev                   # http://localhost:3000
+pnpm dev:web               # http://localhost:3000
+pnpm dev:landing           # http://localhost:3001
 ```
 
 `pnpm db:setup` deja una **Clínica Demo** con cinco usuarios, uno por rol
@@ -132,22 +156,39 @@ propósito del seed es poder entrar, no simular una clínica.
 
 Los scripts de base usan `node --env-file=.env` porque la configuración de
 Prisma exige las variables en el entorno, no sólo en el archivo. Si ejecutas
-Prisma a mano, exporta primero:
+Prisma a mano, hazlo desde `apps/web` y exporta primero:
 
 ```bash
+cd apps/web
 set -a; . ./.env; set +a
 ```
 
 ## Estructura
 
 ```text
-app/
-  (admin)/admin/    consola del operador: empresas y usuarios
-  (app)/            el sistema: pacientes, citas, consultas, recetas,
-                    incapacidades, farmacia, inventario, reportes
-prisma/             esquema, migraciones y seed
-docs/capturas/      imágenes de este README
+apps/
+  web/
+    app/(admin)/admin/  consola del operador: empresas y usuarios
+    app/(app)/          el sistema: pacientes, citas, consultas, recetas,
+                        incapacidades, farmacia, inventario, reportes
+    prisma/             esquema, migraciones y seed
+  landing/
+    app/                la página y la API del formulario de contacto
+    components/         secciones de la landing
+docs/capturas/          imágenes de este README
+Dockerfile              imagen de apps/web para Dokploy
+docker-compose.yml      app y PostgreSQL en Dokploy
 ```
+
+## Scripts
+
+| Comando | Qué hace |
+| --- | --- |
+| `pnpm dev` | Las dos apps en modo desarrollo |
+| `pnpm dev:web` / `pnpm dev:landing` | Solo una |
+| `pnpm build` | Build de las dos apps |
+| `pnpm db:setup` | Migraciones y seed de la base |
+| `pnpm lint` | ESLint |
 
 ## Contribuir
 
